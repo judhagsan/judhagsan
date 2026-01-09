@@ -1,3 +1,3 @@
-# Pindorama
+# Judhagsan
 
-RPG Multiplayer 2D
+Engenheiro da Computação :) antes Artista.
