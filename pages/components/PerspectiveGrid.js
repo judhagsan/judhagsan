@@ -1,153 +1,143 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export default function PerspectiveGrid() {
+  const [dimensions, setDimensions] = useState({ width: 1920, height: 1080 });
+  const [offset, setOffset] = useState(0);
+
+  useEffect(() => {
+    // Atualiza dimensões
+    const updateDimensions = () => {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+    updateDimensions();
+    window.addEventListener("resize", updateDimensions);
+
+    // Loop de animação bem lento
+    let animationFrame;
+    const animate = () => {
+      // Invertido: subtraindo para ir "para dentro" (afastando)
+      setOffset((prev) => {
+        let next = prev - 0.002;
+        if (next < 0) next += 1;
+        return next;
+      });
+      animationFrame = requestAnimationFrame(animate);
+    };
+    animationFrame = requestAnimationFrame(animate);
+
+    return () => {
+      window.removeEventListener("resize", updateDimensions);
+      cancelAnimationFrame(animationFrame);
+    };
+  }, []);
+
+  const { width, height } = dimensions;
+  const cx = width / 2;
+  const cy = height / 2;
+
+  // 1. Linhas Diagonais (Quinas principais)
+  const cornerLines = [
+    { x1: cx, y1: cy, x2: 0, y2: 0 },
+    { x1: cx, y1: cy, x2: width, y2: 0 },
+    { x1: cx, y1: cy, x2: width, y2: height },
+    { x1: cx, y1: cy, x2: 0, y2: height },
+  ];
+
+  // 2. Linhas Radiais Extras
+  const extraLines = [];
+  const linesPerWall = 8; // Aumentado para mais densidade
+
+  // Top
+  for (let i = 1; i <= linesPerWall; i++) {
+    const x = (width * i) / (linesPerWall + 1);
+    extraLines.push({ x1: cx, y1: cy, x2: x, y2: 0 });
+  }
+  // Bottom
+  for (let i = 1; i <= linesPerWall; i++) {
+    const x = (width * i) / (linesPerWall + 1);
+    extraLines.push({ x1: cx, y1: cy, x2: x, y2: height });
+  }
+  // Left
+  for (let i = 1; i <= linesPerWall; i++) {
+    const y = (height * i) / (linesPerWall + 1);
+    extraLines.push({ x1: cx, y1: cy, x2: 0, y2: y });
+  }
+  // Right
+  for (let i = 1; i <= linesPerWall; i++) {
+    const y = (height * i) / (linesPerWall + 1);
+    extraLines.push({ x1: cx, y1: cy, x2: width, y2: y });
+  }
+
+  const allRadialLines = [...cornerLines, ...extraLines];
+
+  // 3. Retângulos de profundidade Animados
+  const gridRects = [];
+  const numRects = 30; // Aumentado para mais densidade
+  const maxScale = 1.5;
+
+  for (let i = 0; i < numRects; i++) {
+    let t = (i + offset) / numRects;
+
+    if (t > 1) t -= 1;
+    if (t < 0) t += 1;
+
+    // Escala não-linear para perspectiva
+    const scale = Math.pow(t, 2.5);
+
+    const rectW = width * scale * maxScale;
+    const rectH = height * scale * maxScale;
+
+    // Opacidade suave
+    const opacity = Math.min(1, t * 5);
+
+    if (rectW > 1) {
+      gridRects.push({
+        x: cx - rectW / 2,
+        y: cy - rectH / 2,
+        width: rectW,
+        height: rectH,
+        opacity,
+      });
+    }
+  }
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0 bg-[#050505]">
-      <div className="perspective-container">
-        <div className="grid-plane ceiling"></div>
-        <div className="grid-plane floor"></div>
-        <div className="grid-plane left-wall"></div>
-        <div className="grid-plane right-wall"></div>
-      </div>
+      <svg className="w-full h-full opacity-30" width="100%" height="100%">
+        {/* Linhas Radiais (Estáticas) */}
+        {allRadialLines.map((line, i) => (
+          <line
+            key={`r-${i}`}
+            x1={line.x1}
+            y1={line.y1}
+            x2={line.x2}
+            y2={line.y2}
+            stroke="rgba(150, 150, 150, 0.3)"
+            strokeWidth={i < 4 ? 3 : 2}
+          />
+        ))}
 
-      {/* Vignette - ajustada para suavizar as bordas onde o flicker é pior */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,#050505_90%)] z-10 pointer-events-none"></div>
+        {/* Retângulos (Animados) */}
+        {gridRects.map((rect, i) => (
+          <rect
+            key={`g-${i}`}
+            x={rect.x}
+            y={rect.y}
+            width={rect.width}
+            height={rect.height}
+            fill="none"
+            stroke="rgba(150, 150, 150, 0.3)"
+            strokeWidth="2"
+            opacity={rect.opacity}
+          />
+        ))}
+      </svg>
 
-      <style jsx>{`
-        .perspective-container {
-          perspective: 600px;
-          width: 100%;
-          height: 100%;
-          position: absolute;
-          transform-style: preserve-3d;
-          /* Otimização de renderização */
-          contain: strict;
-        }
-
-        .grid-plane {
-          position: absolute;
-          backface-visibility: hidden; /* Importante para performance */
-          /* TRUQUE DO ANTI-ALIASING:
-             Em vez de cortar seco no 6px, fazemos uma transição suave entre 5px e 7px.
-             Isso mata o serrilhado que causa o flicker.
-          */
-          background-image: linear-gradient(
-              to right,
-              rgba(255, 255, 255, 0.4) 5px,
-              transparent 7px
-            ),
-            linear-gradient(
-              to bottom,
-              rgba(255, 255, 255, 0.4) 5px,
-              transparent 7px
-            );
-          background-size: 140px 140px;
-
-          /* Força a GPU a gerenciar essa camada */
-          will-change: background-position, transform;
-        }
-
-        .ceiling {
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 300vmax;
-          transform-origin: top;
-          /* translateZ(0) ajuda a evitar sub-pixel jitter */
-          transform: rotateX(-90deg) translateZ(0);
-          animation: ceiling-scroll 20s linear infinite;
-          -webkit-mask-image: linear-gradient(
-            to bottom,
-            black 10%,
-            transparent 70%
-          );
-          mask-image: linear-gradient(to bottom, black 10%, transparent 70%);
-        }
-
-        .floor {
-          bottom: 0;
-          left: 0;
-          right: 0;
-          height: 300vmax;
-          transform-origin: bottom;
-          transform: rotateX(90deg) translateZ(0);
-          animation: floor-scroll 20s linear infinite;
-          -webkit-mask-image: linear-gradient(
-            to top,
-            black 10%,
-            transparent 70%
-          );
-          mask-image: linear-gradient(to top, black 10%, transparent 70%);
-        }
-
-        .left-wall {
-          top: 0;
-          bottom: 0;
-          left: 0;
-          width: 300vmax;
-          transform-origin: left;
-          transform: rotateY(90deg) translateZ(0);
-          animation: left-scroll 20s linear infinite;
-          -webkit-mask-image: linear-gradient(
-            to right,
-            black 10%,
-            transparent 70%
-          );
-          mask-image: linear-gradient(to right, black 10%, transparent 70%);
-        }
-
-        .right-wall {
-          top: 0;
-          bottom: 0;
-          right: 0;
-          width: 300vmax;
-          transform-origin: right;
-          transform: rotateY(-90deg) translateZ(0);
-          animation: right-scroll 20s linear infinite;
-          -webkit-mask-image: linear-gradient(
-            to left,
-            black 10%,
-            transparent 70%
-          );
-          mask-image: linear-gradient(to left, black 10%, transparent 70%);
-        }
-
-        @keyframes floor-scroll {
-          0% {
-            background-position: 0 100%;
-          }
-          100% {
-            background-position: 0 calc(100% + 140px);
-          }
-        }
-
-        @keyframes ceiling-scroll {
-          0% {
-            background-position: 0 0;
-          }
-          100% {
-            background-position: 0 -140px;
-          }
-        }
-
-        @keyframes left-scroll {
-          0% {
-            background-position: 0 0;
-          }
-          100% {
-            background-position: -140px 0;
-          }
-        }
-
-        @keyframes right-scroll {
-          0% {
-            background-position: 100% 0;
-          }
-          100% {
-            background-position: calc(100% + 140px) 0;
-          }
-        }
-      `}</style>
+      {/* Vignette */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,#050505_100%)] z-10 pointer-events-none"></div>
     </div>
   );
 }
