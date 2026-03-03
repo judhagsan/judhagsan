@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@plugin "daisyui" {
+  themes: sunset;
+}
+
+@theme {
+  --font-outfit: "Outfit", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-[#0a0a0a] text-white antialiased font-outfit;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-gradient-to-br from-white/10 to-white/0 backdrop-blur-sm border border-white/20;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+  }
+
+  .glass-button {
+    @apply bg-white/20 backdrop-blur-md hover:bg-white/30 transition-all border border-white/10;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+
+  .cyan-glow {
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+  }
+
+  /* Noise Static Effect */
+  .bg-noise {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAACAgIBAQEAAAAAAAD///8AAAB3Rl2sAAAACXBIWXMAAA7EAAAOxAGTK7hGAAAAQUlEQVQ4y2NgwA04GfACQkGgEAg5AIL2A8WAFgAFjI0QAsYIImAMiB8gYAzE7wdCxhgCxgjCYAyM/gH2A2M7wBgA2sIxS885U7cAAAAASUVORK5CYII=");
+    background-size: 64px 64px;
+    background-repeat: repeat;
+  }
+
+  .animate-noise {
+    animation: noise 0.2s steps(3) infinite;
+  }
+}
+
+@keyframes noise {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  10% {
+    transform: translate(-5%, -5%);
+  }
+
+  20% {
+    transform: translate(-10%, 5%);
+  }
+
+  30% {
+    transform: translate(5%, -10%);
+  }
+
+  40% {
+    transform: translate(-5%, 15%);
+  }
+
+  50% {
+    transform: translate(-10%, 5%);
+  }
+
+  60% {
+    transform: translate(15%, 0);
+  }
+
+  70% {
+    transform: translate(0, 10%);
+  }
+
+  80% {
+    transform: translate(-15%, 0);
+  }
+
+  90% {
+    transform: translate(10%, 5%);
+  }
+
+  100% {
+    transform: translate(5%, 0);
+  }
+}
+
+/* Custom Web Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@900&display=swap");
