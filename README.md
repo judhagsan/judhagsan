@@ -322,5 +322,3 @@ O projeto possui **GitHub Actions** configuradas para rodar em cada **Pull Reque
 ## Licença
 
 Este projeto está licenciado sob a [MIT License](LICENSE).
-
-Copyright (c) 2024 Filipe Deschamps
