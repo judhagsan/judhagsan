@@ -1,4 +1,3 @@
-import React from "react";
 import PerspectiveGrid from "./PerspectiveGrid";
 
 export default function MainFrame({ children }) {
