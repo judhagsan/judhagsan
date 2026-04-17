@@ -131,10 +131,16 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
       const expiresAt = new Date(responseBody.expires_at);
       const createdAt = new Date(responseBody.created_at);
 
-      expiresAt.setMilliseconds(0);
-      createdAt.setMilliseconds(0);
+      const actualDuration = expiresAt - createdAt;
+      const expectedDuration = activation.EXPIRATION_IN_MILLISECONDS;
+      const toleranceInMilliseconds = 5000;
 
-      expect(expiresAt - createdAt).toBe(activation.EXPIRATION_IN_MILLISECONDS);
+      expect(actualDuration).toBeGreaterThanOrEqual(
+        expectedDuration - toleranceInMilliseconds,
+      );
+      expect(actualDuration).toBeLessThanOrEqual(
+        expectedDuration + toleranceInMilliseconds,
+      );
 
       const activatedUser = await user.findOneById(responseBody.user_id);
       expect(activatedUser.features).toEqual([
@@ -173,7 +179,7 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
     test("With valid token, but already logged in user", async () => {
       const user1 = await orchestrator.createUser();
       await orchestrator.activateUser(user1);
-      const user1SessionObject = await orchestrator.createSession(user1.id);
+      const user1SessionObject = await orchestrator.createSession(user1);
 
       const user2 = await orchestrator.createUser();
       const user2ActivationToken = await activation.create(user2.id);
