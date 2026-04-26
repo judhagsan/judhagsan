@@ -1,9 +1,21 @@
 import Head from "next/head";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 import CardYoutube from "./components/cardYoutube";
 import CardPindorama from "./components/cardPindorama";
 import MainFrame from "./components/MainFrame";
+import useUser from "hooks/useUser";
 
 export default function SamuraiDashboard() {
+  const router = useRouter();
+  const { isLoading, isLoggedIn } = useUser();
+
+  useEffect(() => {
+    if (!isLoading && isLoggedIn) {
+      router.replace("/sessao");
+    }
+  }, [isLoading, isLoggedIn, router]);
+
   return (
     <MainFrame>
       <Head>
