@@ -1,5 +1,34 @@
+import { useEffect, useState } from "react";
 import { DownloadIcon, BookIcon } from "@primer/octicons-react";
+
+const PLATFORMS = {
+  windows: { label: "Windows" },
+  macos: { label: "macOS" },
+  linux: { label: "Linux" },
+};
+
+function detectPlatform() {
+  if (typeof navigator === "undefined") return null;
+  const ua = navigator.userAgent;
+  if (/Windows/i.test(ua)) return "windows";
+  if (/Mac|iPhone|iPad/i.test(ua)) return "macos";
+  if (/Linux|X11/i.test(ua)) return "linux";
+  return null;
+}
+
 export default function CardPindorama() {
+  const [platform, setPlatform] = useState(null);
+
+  useEffect(() => {
+    setPlatform(detectPlatform());
+  }, []);
+
+  const detected = platform && PLATFORMS[platform];
+  const downloadHref = detected ? `/api/v1/download/${platform}` : null;
+  const downloadLabel = detected
+    ? `Download ${detected.label}`
+    : "Download indisponível";
+
   return (
     <div className="w-full h-full">
       <div className="glass-card rounded-[35px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-full">
@@ -29,23 +58,25 @@ export default function CardPindorama() {
           </p>
 
           <div className="flex gap-4">
-            {/* Windows Download */}
-            <button className="cursor-pointer flex items-center gap-3 px-8 py-3 bg-blue-500/10 hover:bg-blue-500/30 border border-blue-500/30 hover:border-blue-500/60 text-blue-200 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] active:scale-95 group">
+            {/* Download (auto-detects platform, proxied via API) */}
+            <a
+              href={downloadHref || "#"}
+              aria-disabled={!downloadHref}
+              onClick={(e) => {
+                if (!downloadHref) e.preventDefault();
+              }}
+              className={`flex items-center gap-3 px-8 py-3 bg-cyan-500/10 border border-cyan-500/30 text-cyan-200 rounded-xl transition-all duration-300 group ${
+                downloadHref
+                  ? "cursor-pointer hover:bg-cyan-500/30 hover:border-cyan-500/60 hover:scale-105 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95"
+                  : "opacity-50 cursor-not-allowed"
+              }`}
+            >
               <DownloadIcon
                 size={20}
-                className="group-hover:text-blue-400 transition-colors"
+                className="group-hover:text-cyan-400 transition-colors"
               />
-              <span className="font-semibold text-base">Windows</span>
-            </button>
-
-            {/* Linux Download */}
-            <button className="cursor-pointer flex items-center gap-3 px-8 py-3 bg-yellow-500/10 hover:bg-yellow-500/30 border border-yellow-500/30 hover:border-yellow-500/60 text-yellow-200 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(234,179,8,0.3)] active:scale-95 group">
-              <DownloadIcon
-                size={20}
-                className="group-hover:text-yellow-400 transition-colors"
-              />
-              <span className="font-semibold text-base">Linux</span>
-            </button>
+              <span className="font-semibold text-base">{downloadLabel}</span>
+            </a>
 
             {/* Documentation Button */}
             <button className="cursor-pointer flex items-center gap-3 px-8 py-3 bg-purple-500/10 hover:bg-purple-500/30 border border-purple-500/30 hover:border-purple-500/60 text-purple-200 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] active:scale-95 group">
