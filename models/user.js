@@ -240,6 +240,34 @@ async function hashPasswordInObject(userInputValues) {
   userInputValues.password = hashedPassword;
 }
 
+async function remove(username) {
+  const removedUser = await runDeleteQuery(username);
+  return removedUser;
+
+  async function runDeleteQuery(username) {
+    const results = await database.query({
+      text: `
+        DELETE FROM
+          users
+        WHERE
+          LOWER(username) = LOWER($1)
+        RETURNING
+          *
+        ;`,
+      values: [username],
+    });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "O username informado não foi encontrado no sistema.",
+        action: "Verifique se o username está digitado corretamente.",
+      });
+    }
+
+    return results.rows[0];
+  }
+}
+
 async function setFeatures(userId, features) {
   const updatedUser = await runUpdateQuery(userId, features);
   return updatedUser;
@@ -294,6 +322,7 @@ const user = {
   findOneByUsername,
   findOneByEmail,
   update,
+  remove,
   setFeatures,
   addFeatures,
 };

@@ -5,7 +5,7 @@ import useUser from "hooks/useUser";
 import usePrivacyPanel from "hooks/usePrivacyPanel";
 import useActiveCard from "hooks/useActiveCard";
 
-const PAGES_WITH_PRIVACY_PANEL = ["/", "/cadastro"];
+const PAGES_WITH_PRIVACY_PANEL = ["/", "/cadastro", "/sessao"];
 
 export default function MainFrame({ children }) {
   const router = useRouter();
