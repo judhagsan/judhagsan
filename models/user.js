@@ -96,10 +96,12 @@ async function findOneByEmail(email) {
 }
 
 async function create(userInputValues) {
+  validatePrivacyAcceptance(userInputValues);
   await validateUniqueUsername(userInputValues.username);
   await validateUniqueEmail(userInputValues.email);
   await hashPasswordInObject(userInputValues);
   injectDefaultFeaturesInObject(userInputValues);
+  stampPrivacyAcceptedAt(userInputValues);
 
   const newUser = await runInsertQuery(userInputValues);
   return newUser;
@@ -108,9 +110,9 @@ async function create(userInputValues) {
     const results = await database.query({
       text: `
         INSERT INTO
-          users (username, email, password, features)
+          users (username, email, password, features, privacy_accepted_at)
         VALUES
-          ($1, $2, $3, $4)
+          ($1, $2, $3, $4, $5)
         RETURNING
           *
         ;`,
@@ -119,6 +121,7 @@ async function create(userInputValues) {
         userInputValues.email,
         userInputValues.password,
         userInputValues.features,
+        userInputValues.privacy_accepted_at,
       ],
     });
     return results.rows[0];
@@ -126,6 +129,20 @@ async function create(userInputValues) {
 
   function injectDefaultFeaturesInObject(userInputValues) {
     userInputValues.features = ["read:activation_token"];
+  }
+
+  function stampPrivacyAcceptedAt(userInputValues) {
+    userInputValues.privacy_accepted_at = new Date();
+  }
+}
+
+function validatePrivacyAcceptance(userInputValues) {
+  if (userInputValues.privacy_accepted !== true) {
+    throw new ValidationError({
+      message:
+        "É necessário aceitar a Política de Privacidade para se cadastrar.",
+      action: "Marque a opção de aceite e tente novamente.",
+    });
   }
 }
 

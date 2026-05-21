@@ -2,14 +2,29 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import PerspectiveGrid from "./PerspectiveGrid";
 import useUser from "hooks/useUser";
+import usePrivacyPanel from "hooks/usePrivacyPanel";
+import useActiveCard from "hooks/useActiveCard";
+
+const PAGES_WITH_PRIVACY_PANEL = ["/", "/cadastro"];
 
 export default function MainFrame({ children }) {
   const router = useRouter();
   const { isLoading, isLoggedIn, logout } = useUser();
+  const { open: openPrivacyPanel } = usePrivacyPanel();
+  const { setActiveCard, reset: resetActiveCard } = useActiveCard();
+  const hasPrivacyPanel = PAGES_WITH_PRIVACY_PANEL.includes(router.pathname);
 
   async function handleLogout() {
     await logout();
+    resetActiveCard();
     router.push("/");
+  }
+
+  async function handleAuthCardClick(card) {
+    setActiveCard(card);
+    if (router.pathname !== "/") {
+      await router.push("/");
+    }
   }
 
   return (
@@ -28,9 +43,30 @@ export default function MainFrame({ children }) {
         <div className="absolute inset-0 border-[1px] border-white/10 pointer-events-none"></div>
       </div>
 
+      {/* Privacy Link */}
+      <div className="absolute top-2 left-[3%] z-50 flex items-center gap-6 h-6 leading-none">
+        {hasPrivacyPanel ? (
+          <button
+            type="button"
+            onClick={openPrivacyPanel}
+            className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+          >
+            Privacidade
+          </button>
+        ) : (
+          <Link
+            href="/privacidade"
+            className="inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+          >
+            Privacidade
+          </Link>
+        )}
+      </div>
+
       {/* External Logo */}
       <Link
         href={isLoggedIn ? "/sessao" : "/"}
+        onClick={resetActiveCard}
         className="absolute top-2 left-1/2 -translate-x-1/2 z-50 cursor-pointer"
       >
         <img
@@ -53,18 +89,20 @@ export default function MainFrame({ children }) {
             </button>
           ) : (
             <>
-              <Link
-                href="/login"
-                className="inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+              <button
+                type="button"
+                onClick={() => handleAuthCardClick("login")}
+                className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
               >
                 Login
-              </Link>
-              <Link
-                href="/cadastro"
-                className="inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAuthCardClick("cadastro")}
+                className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
               >
                 Cadastrar
-              </Link>
+              </button>
             </>
           ))}
       </div>

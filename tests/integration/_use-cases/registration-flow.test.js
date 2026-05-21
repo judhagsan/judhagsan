@@ -25,6 +25,7 @@ describe("Use case: Registration Flow (all successful)", () => {
         username: "RegistrationFlow",
         email: "registration.flow@judhagsan.com",
         password: "RegistrationFlowPassword",
+        privacy_accepted: true,
       }),
     });
 
