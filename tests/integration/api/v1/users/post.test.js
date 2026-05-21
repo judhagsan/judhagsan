@@ -22,6 +22,7 @@ describe("POST /api/v1/users", () => {
           username: "filipedeschamps",
           email: "contato@curso.dev",
           password: "senha123",
+          privacy_accepted: true,
         }),
       });
 
@@ -66,6 +67,7 @@ describe("POST /api/v1/users", () => {
           username: "emailduplicado1",
           email: "duplicado@curso.dev",
           password: "senha123",
+          privacy_accepted: true,
         }),
       });
 
@@ -80,6 +82,7 @@ describe("POST /api/v1/users", () => {
           username: "emailduplicado2",
           email: "Duplicado@curso.dev",
           password: "senha123",
+          privacy_accepted: true,
         }),
       });
 
@@ -95,6 +98,32 @@ describe("POST /api/v1/users", () => {
       });
     });
 
+    test("Without privacy acceptance", async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "semaceite",
+          email: "semaceite@curso.dev",
+          password: "senha123",
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message:
+          "É necessário aceitar a Política de Privacidade para se cadastrar.",
+        action: "Marque a opção de aceite e tente novamente.",
+        status_code: 400,
+      });
+    });
+
     test("With duplicated `username`", async () => {
       const response1 = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
@@ -105,6 +134,7 @@ describe("POST /api/v1/users", () => {
           username: "usernameduplicado",
           email: "usernameduplicado1@curso.dev",
           password: "senha123",
+          privacy_accepted: true,
         }),
       });
 
@@ -119,6 +149,7 @@ describe("POST /api/v1/users", () => {
           username: "UsernameDuplicado",
           email: "usernameduplicado2@curso.dev",
           password: "senha123",
+          privacy_accepted: true,
         }),
       });
 
@@ -151,6 +182,7 @@ describe("POST /api/v1/users", () => {
           username: "usuariologado",
           email: "usuariologado@curso.dev",
           password: "senha123",
+          privacy_accepted: true,
         }),
       });
 
