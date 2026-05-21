@@ -8,6 +8,7 @@ export default createRouter()
   .use(controller.injectAnonymousOrUser)
   .get(getHandler)
   .patch(controller.canRequest("update:user"), patchHandler)
+  .delete(controller.canRequest("delete:user"), deleteHandler)
   .handler(controller.errorHandlers);
 
 async function getHandler(request, response) {
@@ -48,4 +49,26 @@ async function patchHandler(request, response) {
   );
 
   return response.status(200).json(secureOutputValues);
+}
+
+async function deleteHandler(request, response) {
+  const username = request.query.username;
+  const userTryingToDelete = request.context.user;
+  const targetUser = await user.findOneByUsername(username);
+
+  if (!authorization.can(userTryingToDelete, "delete:user", targetUser)) {
+    throw new ForbiddenError({
+      message: "Você não possui permissão para excluir outro usuário.",
+      action:
+        "Verifique se você possui a feature necessária para excluir outro usuário.",
+    });
+  }
+
+  await user.remove(username);
+
+  if (userTryingToDelete.id === targetUser.id) {
+    controller.clearSessionCookie(response);
+  }
+
+  return response.status(204).end();
 }

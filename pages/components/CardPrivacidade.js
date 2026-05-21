@@ -37,7 +37,7 @@ export default function CardPrivacidade({ onClose }) {
                 type="button"
                 onClick={onClose}
                 aria-label="Fechar"
-                className="cursor-pointer text-white/50 hover:text-white transition-colors shrink-0"
+                className="cursor-pointer text-red-400 hover:text-red-300 transition-colors shrink-0"
               >
                 <XIcon size={16} />
               </button>
