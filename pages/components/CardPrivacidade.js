@@ -101,6 +101,19 @@ export default function CardPrivacidade({ onClose }) {
                 tratado. Ao verificar atualizações, o seu endereço IP é
                 registrado pelo servidor.
               </li>
+              <li>
+                <span className="text-white/90">
+                  Especificações do dispositivo (telemetria do Pindorama):
+                </span>{" "}
+                ao fazer login no Software, registramos sistema operacional,
+                processador (CPU), memória RAM, placa gráfica (GPU) e versão do
+                Pindorama. Essa informação é usada exclusivamente para
+                diagnóstico de bugs, suporte e desenvolvimento da
+                compatibilidade do Software com diferentes hardwares. Você pode
+                visualizar, pausar a atualização ou excluir essas informações a
+                qualquer momento em{" "}
+                <span className="text-cyan-300">/sessao</span>.
+              </li>
             </ul>
           </Section>
 
@@ -109,6 +122,11 @@ export default function CardPrivacidade({ onClose }) {
               <li>Criação, autenticação e gerenciamento da sua conta.</li>
               <li>Envio de email transacional de ativação de conta.</li>
               <li>Distribuição e atualização do software Pindorama.</li>
+              <li>
+                Diagnóstico de bugs, suporte técnico e desenvolvimento da
+                compatibilidade do Software com diferentes hardwares (via
+                especificações de dispositivo coletadas após login).
+              </li>
               <li>
                 Garantia de segurança (prevenção de fraude, abuso e detecção de
                 incidentes).
@@ -172,6 +190,11 @@ export default function CardPrivacidade({ onClose }) {
                 Dados de conta: enquanto o cadastro estiver ativo. Após
                 solicitação de exclusão, em até 15 dias úteis (exceto quando a
                 guarda for exigida por obrigação legal).
+              </li>
+              <li>
+                Especificações de dispositivo: enquanto o dispositivo estiver em
+                uso. Você pode excluir manualmente a qualquer momento em{" "}
+                <span className="text-cyan-300">/sessao</span>.
               </li>
               <li>
                 Logs de servidor: retidos pelo prazo padrão do provedor de

@@ -24,6 +24,9 @@ const availableFeatures = [
   // STATUS
   "read:status",
   "read:status:all",
+
+  // DEVICES (telemetria de hardware do Pindorama)
+  "manage:device",
 ];
 
 function can(user, feature, resource) {
