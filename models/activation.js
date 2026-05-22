@@ -103,6 +103,7 @@ async function activateUserByUserId(userId) {
     "read:session",
     "update:user",
     "delete:user",
+    "manage:device",
   ]);
   return activatedUser;
 }

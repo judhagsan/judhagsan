@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import CardYoutube from "../components/cardYoutube";
 import CardUsuario from "../components/CardUsuario";
+import CardDispositivos from "../components/CardDispositivos";
 import CardSessao from "../components/CardSessao";
 import CardPrivacidade from "../components/CardPrivacidade";
 import CardContato from "../components/CardContato";
@@ -34,9 +35,11 @@ export default function SessaoPage() {
         <div className="relative z-10 flex-1 flex flex-col p-10">
           {/* Center Section - Usuário (top-left) + Sessão (center) + Privacidade (right, pushes center) */}
           <div className="flex-1 min-h-0 -mt-8 relative">
-            {/* User card pinned to top-left */}
-            <div className="absolute top-0 left-0 w-1/4">
+            {/* Coluna esquerda: User card + Dispositivos card, empilhados.
+                max-h-full + overflow-y-auto pra rolar caso a lista cresça. */}
+            <div className="absolute top-0 left-0 w-1/4 max-h-full flex flex-col gap-4 overflow-y-auto pr-2">
               {isLoggedIn && <CardUsuario user={user} />}
+              {isLoggedIn && <CardDispositivos />}
             </div>
 
             {/* Sessão + Privacidade as centered flex group (privacy pushes center left when open) */}

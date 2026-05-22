@@ -148,6 +148,7 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
         "read:session",
         "update:user",
         "delete:user",
+        "manage:device",
       ]);
     });
 

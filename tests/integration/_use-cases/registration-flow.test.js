@@ -79,6 +79,7 @@ describe("Use case: Registration Flow (all successful)", () => {
       "read:session",
       "update:user",
       "delete:user",
+      "manage:device",
     ]);
   });
 

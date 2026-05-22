@@ -46,6 +46,21 @@ async function getHandler(request, response) {
     values: [userFound.id],
   });
 
+  const devicesResult = await database.query({
+    text: `
+      SELECT
+        os, cpu, ram_bytes, gpu, pindorama_version,
+        upload_paused, first_seen_at, last_seen_at
+      FROM
+        user_devices
+      WHERE
+        user_id = $1
+      ORDER BY
+        last_seen_at DESC
+    ;`,
+    values: [userFound.id],
+  });
+
   const exportData = {
     _meta: {
       exported_at: new Date().toISOString(),
@@ -60,6 +75,7 @@ async function getHandler(request, response) {
     },
     sessions: sessionsResult.rows,
     activation_tokens: activationTokensResult.rows,
+    devices: devicesResult.rows,
   };
 
   const today = new Date().toISOString().split("T")[0];
