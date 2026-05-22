@@ -96,10 +96,13 @@ async function findOneByEmail(email) {
 }
 
 async function create(userInputValues) {
+  validatePrivacyAcceptance(userInputValues);
+  validatePasswordComplexity(userInputValues.password);
   await validateUniqueUsername(userInputValues.username);
   await validateUniqueEmail(userInputValues.email);
   await hashPasswordInObject(userInputValues);
   injectDefaultFeaturesInObject(userInputValues);
+  stampPrivacyAcceptedAt(userInputValues);
 
   const newUser = await runInsertQuery(userInputValues);
   return newUser;
@@ -108,9 +111,9 @@ async function create(userInputValues) {
     const results = await database.query({
       text: `
         INSERT INTO
-          users (username, email, password, features)
+          users (username, email, password, features, privacy_accepted_at)
         VALUES
-          ($1, $2, $3, $4)
+          ($1, $2, $3, $4, $5)
         RETURNING
           *
         ;`,
@@ -119,6 +122,7 @@ async function create(userInputValues) {
         userInputValues.email,
         userInputValues.password,
         userInputValues.features,
+        userInputValues.privacy_accepted_at,
       ],
     });
     return results.rows[0];
@@ -126,6 +130,35 @@ async function create(userInputValues) {
 
   function injectDefaultFeaturesInObject(userInputValues) {
     userInputValues.features = ["read:activation_token"];
+  }
+
+  function stampPrivacyAcceptedAt(userInputValues) {
+    userInputValues.privacy_accepted_at = new Date();
+  }
+}
+
+function validatePrivacyAcceptance(userInputValues) {
+  if (userInputValues.privacy_accepted !== true) {
+    throw new ValidationError({
+      message:
+        "É necessário aceitar a Política de Privacidade para se cadastrar.",
+      action: "Marque a opção de aceite e tente novamente.",
+    });
+  }
+}
+
+function validatePasswordComplexity(password) {
+  if (typeof password !== "string" || password.length < 8) {
+    throw new ValidationError({
+      message: "A senha deve ter no mínimo 8 caracteres.",
+      action: "Escolha uma senha com pelo menos 8 caracteres.",
+    });
+  }
+  if (password.length > 72) {
+    throw new ValidationError({
+      message: "A senha deve ter no máximo 72 caracteres.",
+      action: "Reduza o tamanho da senha.",
+    });
   }
 }
 
@@ -141,6 +174,7 @@ async function update(username, userInputValues) {
   }
 
   if ("password" in userInputValues) {
+    validatePasswordComplexity(userInputValues.password);
     await hashPasswordInObject(userInputValues);
   }
 
@@ -223,6 +257,34 @@ async function hashPasswordInObject(userInputValues) {
   userInputValues.password = hashedPassword;
 }
 
+async function remove(username) {
+  const removedUser = await runDeleteQuery(username);
+  return removedUser;
+
+  async function runDeleteQuery(username) {
+    const results = await database.query({
+      text: `
+        DELETE FROM
+          users
+        WHERE
+          LOWER(username) = LOWER($1)
+        RETURNING
+          *
+        ;`,
+      values: [username],
+    });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "O username informado não foi encontrado no sistema.",
+        action: "Verifique se o username está digitado corretamente.",
+      });
+    }
+
+    return results.rows[0];
+  }
+}
+
 async function setFeatures(userId, features) {
   const updatedUser = await runUpdateQuery(userId, features);
   return updatedUser;
@@ -277,6 +339,7 @@ const user = {
   findOneByUsername,
   findOneByEmail,
   update,
+  remove,
   setFeatures,
   addFeatures,
 };

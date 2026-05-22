@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { SignInIcon, AlertFillIcon } from "@primer/octicons-react";
 
-export default function CardLogin() {
+export default function CardLogin({ onCadastroClick }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -98,12 +98,22 @@ export default function CardLogin() {
 
           <p className="text-xs text-white/50 text-center mt-2">
             Não tem conta?{" "}
-            <Link
-              href="/cadastro"
-              className="text-cyan-300 hover:text-cyan-200 transition-colors"
-            >
-              Cadastrar
-            </Link>
+            {onCadastroClick ? (
+              <button
+                type="button"
+                onClick={onCadastroClick}
+                className="cursor-pointer text-cyan-300 hover:text-cyan-200 transition-colors"
+              >
+                Cadastrar
+              </button>
+            ) : (
+              <Link
+                href="/cadastro"
+                className="text-cyan-300 hover:text-cyan-200 transition-colors"
+              >
+                Cadastrar
+              </Link>
+            )}
           </p>
         </form>
       </div>
