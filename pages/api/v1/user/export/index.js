@@ -2,6 +2,7 @@ import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
 import user from "models/user.js";
 import session from "models/session.js";
+import auditLog from "models/auditLog.js";
 import database from "infra/database.js";
 
 export default createRouter()
@@ -49,8 +50,7 @@ async function getHandler(request, response) {
     _meta: {
       exported_at: new Date().toISOString(),
       format_version: "1.0",
-      description:
-        "Exportação completa dos dados pessoais conforme Art. 18 V da LGPD.",
+      description: "Exportação completa dos dados pessoais do usuário.",
     },
     user: {
       username: userFound.username,
@@ -74,6 +74,13 @@ async function getHandler(request, response) {
     "Cache-Control",
     "no-store, no-cache, max-age=0, must-revalidate",
   );
+
+  await auditLog.record({
+    action: "user.exported",
+    actorUserId: userFound.id,
+    targetUserId: userFound.id,
+    ip: controller.getClientIp(request),
+  });
 
   return response.status(200).json(exportData);
 }

@@ -1,4 +1,5 @@
 import orchestrator from "tests/orchestrator.js";
+import user from "models/user.js";
 import webserver from "infra/webserver.js";
 
 beforeAll(async () => {
@@ -40,7 +41,7 @@ describe("GET /api/v1/user/export", () => {
       const body = await response.json();
 
       expect(body._meta.format_version).toBe("1.0");
-      expect(body._meta.description).toContain("Art. 18 V da LGPD");
+      expect(body._meta.description).toContain("dados pessoais");
 
       expect(body.user.username).toBe("exporter");
       expect(body.user.email).toBe("exporter@judhagsan.com");
@@ -73,8 +74,8 @@ describe("GET /api/v1/user/export", () => {
       });
       expect(signupResponse.status).toBe(201);
 
-      const userViaApi = await signupResponse.json();
-      await orchestrator.activateUser({ id: userViaApi.id });
+      const userViaApi = await user.findOneByUsername("apiexporter");
+      await orchestrator.activateUser(userViaApi);
       const sessionObject = await orchestrator.createSession(userViaApi);
 
       const response = await fetch(`${webserver.origin}/api/v1/user/export`, {

@@ -18,6 +18,11 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick }) {
   async function handleSubmit(event) {
     event.preventDefault();
 
+    if (password.length < 8) {
+      setErrorMessage("A senha deve ter no mínimo 8 caracteres.");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setErrorMessage("As senhas não conferem.");
       return;
@@ -80,14 +85,14 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick }) {
               <CheckCircleFillIcon size={24} />
             </div>
             <p className="text-base text-white/90 font-semibold">
-              Conta criada!
+              Verifique seu email
             </p>
             <p className="text-xs leading-relaxed max-w-xs flex items-start gap-2 justify-center">
               <MailIcon size={14} className="mt-0.5 text-cyan-300 shrink-0" />
               <span>
-                Enviamos um link de ativação para{" "}
-                <span className="text-cyan-300">{registeredEmail}</span>.
-                Confira sua caixa de entrada para ativar seu cadastro.
+                Se <span className="text-cyan-300">{registeredEmail}</span>{" "}
+                ainda não estava cadastrado, enviamos um link de ativação. Caso
+                contrário, você receberá uma notificação sobre a tentativa.
               </span>
             </p>
             <button
@@ -144,8 +149,9 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick }) {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   autoComplete="new-password"
+                  minLength={8}
                   className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors"
-                  placeholder="••••••••"
+                  placeholder="mín. 8 caracteres"
                 />
               </label>
 

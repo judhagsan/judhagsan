@@ -121,12 +121,29 @@ Equipe Judhagsan`,
   });
 }
 
+async function sendDuplicateAccountNoticeToUser(existingUser) {
+  await email.send({
+    from: "Judhagsan <contato@judhagsan.com>",
+    to: existingUser.email,
+    subject: "Tentativa de cadastro com seu email em Judhagsan",
+    text: `${existingUser.username}, alguém tentou criar uma nova conta em judhagsan.com utilizando este endereço de email.
+
+Se foi você, saiba que sua conta já existe — basta fazer login em ${webserver.origin}/login.
+
+Se não foi você, recomendamos alterar sua senha como precaução.
+
+Atenciosamente,
+Equipe Judhagsan`,
+  });
+}
+
 const activation = {
   findOneValidById,
   create,
   markTokenAsUsed,
   activateUserByUserId,
   sendEmailToUser,
+  sendDuplicateAccountNoticeToUser,
   EXPIRATION_IN_MILLISECONDS,
 };
 

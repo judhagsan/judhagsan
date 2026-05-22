@@ -26,6 +26,9 @@ export class ServiceError extends Error {
     this.name = "ServiceError";
     this.action = action || "Verifique se o serviço está disponível.";
     this.statusCode = 503;
+    // `context` é mantido apenas para diagnóstico server-side (cause/log).
+    // Não é serializado em toJSON() para evitar vazamento de dados pessoais
+    // (ex.: destinatário, assunto e corpo de email) na resposta HTTP.
     this.context = context;
   }
 
@@ -35,7 +38,6 @@ export class ServiceError extends Error {
       message: this.message,
       action: this.action,
       status_code: this.statusCode,
-      context: this.context,
     };
   }
 }
@@ -110,6 +112,29 @@ export class UnauthorizedError extends Error {
     this.name = "UnauthorizedError";
     this.action = action || "Faça novamente o login para continuar.";
     this.statusCode = 401;
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      action: this.action,
+      status_code: this.statusCode,
+    };
+  }
+}
+
+export class RateLimitError extends Error {
+  constructor({ cause, message, action, retryAfter }) {
+    super(message || "Muitas requisições.", {
+      cause,
+    });
+    this.name = "RateLimitError";
+    this.action =
+      action ||
+      `Aguarde ${retryAfter || 60} segundos antes de tentar novamente.`;
+    this.statusCode = 429;
+    this.retryAfter = retryAfter;
   }
 
   toJSON() {

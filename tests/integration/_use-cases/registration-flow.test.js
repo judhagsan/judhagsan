@@ -11,7 +11,7 @@ beforeAll(async () => {
 });
 
 describe("Use case: Registration Flow (all successful)", () => {
-  let createUserResponseBody;
+  let createdUser;
   let activationTokenId;
   let createSessionsResponseBody;
 
@@ -31,15 +31,11 @@ describe("Use case: Registration Flow (all successful)", () => {
 
     expect(createUserResponse.status).toBe(201);
 
-    createUserResponseBody = await createUserResponse.json();
+    const createUserResponseBody = await createUserResponse.json();
+    expect(createUserResponseBody.message).toContain("link de ativação");
 
-    expect(createUserResponseBody).toEqual({
-      id: createUserResponseBody.id,
-      username: "RegistrationFlow",
-      features: ["read:activation_token"],
-      created_at: createUserResponseBody.created_at,
-      updated_at: createUserResponseBody.updated_at,
-    });
+    createdUser = await user.findOneByUsername("RegistrationFlow");
+    expect(createdUser.features).toEqual(["read:activation_token"]);
   });
 
   test("Receive activation email", async () => {
@@ -59,7 +55,7 @@ describe("Use case: Registration Flow (all successful)", () => {
     const activationTokenObject =
       await activation.findOneValidById(activationTokenId);
 
-    expect(activationTokenObject.user_id).toBe(createUserResponseBody.id);
+    expect(activationTokenObject.user_id).toBe(createdUser.id);
     expect(activationTokenObject.used_at).toBe(null);
   });
 
@@ -105,7 +101,7 @@ describe("Use case: Registration Flow (all successful)", () => {
 
     createSessionsResponseBody = await createSessionsResponse.json();
 
-    expect(createSessionsResponseBody.user_id).toBe(createUserResponseBody.id);
+    expect(createSessionsResponseBody.user_id).toBe(createdUser.id);
   });
 
   test("Get user information", async () => {
@@ -119,6 +115,6 @@ describe("Use case: Registration Flow (all successful)", () => {
 
     const userResponseBody = await userResponse.json();
 
-    expect(userResponseBody.id).toBe(createUserResponseBody.id);
+    expect(userResponseBody.id).toBe(createdUser.id);
   });
 });

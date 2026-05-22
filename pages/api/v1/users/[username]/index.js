@@ -2,6 +2,7 @@ import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
 import user from "models/user.js";
 import authorization from "models/authorization.js";
+import auditLog from "models/auditLog.js";
 import { ForbiddenError } from "infra/errors.js";
 
 export default createRouter()
@@ -10,6 +11,8 @@ export default createRouter()
   .patch(controller.canRequest("update:user"), patchHandler)
   .delete(controller.canRequest("delete:user"), deleteHandler)
   .handler(controller.errorHandlers);
+
+const NO_STORE = "no-store, no-cache, max-age=0, must-revalidate";
 
 async function getHandler(request, response) {
   const userTryingToGet = request.context.user;
@@ -22,6 +25,7 @@ async function getHandler(request, response) {
     userFound,
   );
 
+  response.setHeader("Cache-Control", NO_STORE);
   return response.status(200).json(secureOutputValues);
 }
 
@@ -42,12 +46,20 @@ async function patchHandler(request, response) {
 
   const updatedUser = await user.update(username, userInputValues);
 
+  await auditLog.record({
+    action: "user.updated",
+    actorUserId: userTryingToPatch.id,
+    targetUserId: updatedUser.id,
+    ip: controller.getClientIp(request),
+  });
+
   const secureOutputValues = authorization.filterOutput(
     userTryingToPatch,
     "read:user",
     updatedUser,
   );
 
+  response.setHeader("Cache-Control", NO_STORE);
   return response.status(200).json(secureOutputValues);
 }
 
@@ -65,6 +77,13 @@ async function deleteHandler(request, response) {
   }
 
   await user.remove(username);
+
+  await auditLog.record({
+    action: "user.deleted",
+    actorUserId: userTryingToDelete.id,
+    targetUserId: targetUser.id,
+    ip: controller.getClientIp(request),
+  });
 
   if (userTryingToDelete.id === targetUser.id) {
     controller.clearSessionCookie(response);
