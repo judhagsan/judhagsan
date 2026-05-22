@@ -2,17 +2,17 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import PerspectiveGrid from "./PerspectiveGrid";
 import useUser from "hooks/useUser";
-import usePrivacyPanel from "hooks/usePrivacyPanel";
+import useSidePanel from "hooks/useSidePanel";
 import useActiveCard from "hooks/useActiveCard";
 
-const PAGES_WITH_PRIVACY_PANEL = ["/", "/cadastro", "/sessao"];
+const PAGES_WITH_SIDE_PANEL = ["/", "/cadastro", "/sessao"];
 
 export default function MainFrame({ children }) {
   const router = useRouter();
   const { isLoading, isLoggedIn, logout } = useUser();
-  const { open: openPrivacyPanel } = usePrivacyPanel();
+  const { setActivePanel } = useSidePanel();
   const { setActiveCard, reset: resetActiveCard } = useActiveCard();
-  const hasPrivacyPanel = PAGES_WITH_PRIVACY_PANEL.includes(router.pathname);
+  const hasSidePanel = PAGES_WITH_SIDE_PANEL.includes(router.pathname);
 
   async function handleLogout() {
     await logout();
@@ -43,22 +43,38 @@ export default function MainFrame({ children }) {
         <div className="absolute inset-0 border-[1px] border-white/10 pointer-events-none"></div>
       </div>
 
-      {/* Privacy Link */}
+      {/* Top-left Links - Privacidade + Contato */}
       <div className="absolute top-2 left-[3%] z-50 flex items-center gap-6 h-6 leading-none">
-        {hasPrivacyPanel ? (
+        {hasSidePanel ? (
           <button
             type="button"
-            onClick={openPrivacyPanel}
+            onClick={() => setActivePanel("privacy")}
             className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
           >
-            Privacidade
+            Termos de Uso
           </button>
         ) : (
           <Link
             href="/privacidade"
             className="inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
           >
-            Privacidade
+            Termos de Uso
+          </Link>
+        )}
+        {hasSidePanel ? (
+          <button
+            type="button"
+            onClick={() => setActivePanel("contact")}
+            className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+          >
+            Contato
+          </button>
+        ) : (
+          <Link
+            href="/contato"
+            className="inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+          >
+            Contato
           </Link>
         )}
       </div>

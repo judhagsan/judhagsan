@@ -6,20 +6,17 @@ import CardPindorama from "./components/cardPindorama";
 import CardLogin from "./components/CardLogin";
 import CardCadastro from "./components/CardCadastro";
 import CardPrivacidade from "./components/CardPrivacidade";
+import CardContato from "./components/CardContato";
 import MainFrame from "./components/MainFrame";
 import useUser from "hooks/useUser";
-import usePrivacyPanel from "hooks/usePrivacyPanel";
+import useSidePanel from "hooks/useSidePanel";
 import useActiveCard from "hooks/useActiveCard";
 
 export default function SamuraiDashboard() {
   const router = useRouter();
   const { isLoading, isLoggedIn } = useUser();
   const { activeCard, setActiveCard } = useActiveCard();
-  const {
-    isOpen: isPrivacyOpen,
-    open: openPrivacyPanel,
-    close: closePrivacyPanel,
-  } = usePrivacyPanel();
+  const { activePanel, setActivePanel, close: closeSidePanel } = useSidePanel();
 
   useEffect(() => {
     if (!isLoading && isLoggedIn) {
@@ -35,7 +32,7 @@ export default function SamuraiDashboard() {
   } else if (activeCard === "cadastro") {
     centerCard = (
       <CardCadastro
-        onPrivacyClick={openPrivacyPanel}
+        onPrivacyClick={() => setActivePanel("privacy")}
         onLoginClick={() => setActiveCard("login")}
       />
     );
@@ -67,10 +64,15 @@ export default function SamuraiDashboard() {
 
             <div
               className={`transition-all duration-500 ease-out overflow-hidden h-[90%] ${
-                isPrivacyOpen ? "w-3/5 opacity-100" : "w-0 opacity-0"
+                activePanel ? "w-3/5 opacity-100" : "w-0 opacity-0"
               }`}
             >
-              <CardPrivacidade onClose={closePrivacyPanel} />
+              {activePanel === "privacy" && (
+                <CardPrivacidade onClose={closeSidePanel} />
+              )}
+              {activePanel === "contact" && (
+                <CardContato onClose={closeSidePanel} />
+              )}
             </div>
           </div>
 

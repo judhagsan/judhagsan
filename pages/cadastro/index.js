@@ -2,15 +2,12 @@ import Head from "next/head";
 import CardYoutube from "../components/cardYoutube";
 import CardCadastro from "../components/CardCadastro";
 import CardPrivacidade from "../components/CardPrivacidade";
+import CardContato from "../components/CardContato";
 import MainFrame from "../components/MainFrame";
-import usePrivacyPanel from "hooks/usePrivacyPanel";
+import useSidePanel from "hooks/useSidePanel";
 
 export default function CadastroPage() {
-  const {
-    isOpen: isPrivacyOpen,
-    open: openPrivacyPanel,
-    close: closePrivacyPanel,
-  } = usePrivacyPanel();
+  const { activePanel, setActivePanel, close: closeSidePanel } = useSidePanel();
 
   return (
     <MainFrame>
@@ -26,15 +23,20 @@ export default function CadastroPage() {
           {/* Center Section - Cadastro + Privacidade panel */}
           <div className="flex-1 flex items-center justify-center min-h-0 gap-6 -mt-8">
             <div className="w-1/3 shrink-0">
-              <CardCadastro onPrivacyClick={openPrivacyPanel} />
+              <CardCadastro onPrivacyClick={() => setActivePanel("privacy")} />
             </div>
 
             <div
               className={`transition-all duration-500 ease-out overflow-hidden h-[90%] ${
-                isPrivacyOpen ? "w-3/5 opacity-100" : "w-0 opacity-0"
+                activePanel ? "w-3/5 opacity-100" : "w-0 opacity-0"
               }`}
             >
-              <CardPrivacidade onClose={closePrivacyPanel} />
+              {activePanel === "privacy" && (
+                <CardPrivacidade onClose={closeSidePanel} />
+              )}
+              {activePanel === "contact" && (
+                <CardContato onClose={closeSidePanel} />
+              )}
             </div>
           </div>
 
