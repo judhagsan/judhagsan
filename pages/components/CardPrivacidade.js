@@ -116,7 +116,7 @@ export default function CardPrivacidade({ onClose }) {
             </ul>
           </Section>
 
-          <Section title="4. Base legal (Art. 7º LGPD)">
+          <Section title="4. Base legal">
             <ul className="list-disc pl-5 flex flex-col gap-1">
               <li>
                 <span className="text-white/90">Consentimento</span> — fornecido
@@ -158,10 +158,9 @@ export default function CardPrivacidade({ onClose }) {
           <Section title="6. Transferência internacional">
             <p>
               Os dados são processados em servidores localizados nos Estados
-              Unidos. A transferência ocorre com base nas hipóteses previstas no
-              Art. 33 da LGPD (execução de contrato e legítimo interesse), com
-              adoção de medidas técnicas e contratuais de proteção pelos
-              prestadores indicados acima.
+              Unidos. A transferência ocorre com base em execução de contrato e
+              legítimo interesse, com adoção de medidas técnicas e contratuais
+              de proteção pelos prestadores indicados acima.
             </p>
           </Section>
 
@@ -219,40 +218,16 @@ export default function CardPrivacidade({ onClose }) {
             </p>
           </Section>
 
-          <Section title="11. Seus direitos como titular (Art. 18 LGPD)">
-            <p>A qualquer momento você pode:</p>
-            <ul className="list-disc pl-5 flex flex-col gap-1">
-              <li>Confirmar a existência de tratamento dos seus dados;</li>
-              <li>Acessar os dados que mantemos sobre você;</li>
-              <li>Corrigir dados incompletos, inexatos ou desatualizados;</li>
-              <li>
-                Solicitar a anonimização, bloqueio ou eliminação de dados
-                desnecessários ou tratados em desconformidade;
-              </li>
-              <li>
-                Solicitar a portabilidade dos seus dados a outro fornecedor;
-              </li>
-              <li>Eliminar os dados tratados com base no seu consentimento;</li>
-              <li>
-                Obter informação sobre entidades públicas ou privadas com as
-                quais compartilhamos seus dados;
-              </li>
-              <li>
-                Revogar o consentimento dado anteriormente, a qualquer momento.
-              </li>
-            </ul>
-          </Section>
-
-          <Section title="12. Alterações nesta política">
+          <Section title="11. Alterações nesta política">
             <p>
               Eventuais alterações serão publicadas nesta página com a
               respectiva data de atualização. Recomendamos consultas periódicas.
             </p>
           </Section>
 
-          <Section title="13. Encarregado de Tratamento (DPO)">
+          <Section title="12. Contato para questões de privacidade">
             <p>
-              Identidade do Encarregado pelo Tratamento de Dados Pessoais:{" "}
+              Responsável:{" "}
               <span className="text-white/90">
                 JUDHA GUILHERME DE OLIVEIRA SANTOS
               </span>{" "}

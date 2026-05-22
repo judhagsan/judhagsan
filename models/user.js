@@ -97,6 +97,7 @@ async function findOneByEmail(email) {
 
 async function create(userInputValues) {
   validatePrivacyAcceptance(userInputValues);
+  validatePasswordComplexity(userInputValues.password);
   await validateUniqueUsername(userInputValues.username);
   await validateUniqueEmail(userInputValues.email);
   await hashPasswordInObject(userInputValues);
@@ -146,6 +147,21 @@ function validatePrivacyAcceptance(userInputValues) {
   }
 }
 
+function validatePasswordComplexity(password) {
+  if (typeof password !== "string" || password.length < 8) {
+    throw new ValidationError({
+      message: "A senha deve ter no mínimo 8 caracteres.",
+      action: "Escolha uma senha com pelo menos 8 caracteres.",
+    });
+  }
+  if (password.length > 72) {
+    throw new ValidationError({
+      message: "A senha deve ter no máximo 72 caracteres.",
+      action: "Reduza o tamanho da senha.",
+    });
+  }
+}
+
 async function update(username, userInputValues) {
   const currentUser = await findOneByUsername(username);
 
@@ -158,6 +174,7 @@ async function update(username, userInputValues) {
   }
 
   if ("password" in userInputValues) {
+    validatePasswordComplexity(userInputValues.password);
     await hashPasswordInObject(userInputValues);
   }
 
