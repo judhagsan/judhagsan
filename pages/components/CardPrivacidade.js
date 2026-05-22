@@ -25,7 +25,7 @@ export default function CardPrivacidade({ onClose }) {
         <div className="shrink-0 mb-5 flex items-center justify-between gap-4 relative z-10">
           <h2 className="text-xl font-semibold text-white/90 flex items-center gap-2">
             <ShieldLockIcon size={20} className="text-cyan-300" />
-            Política de Privacidade
+            Termos de Uso
           </h2>
           <div className="flex items-center gap-4">
             <p className="text-xs uppercase tracking-widest text-white/40 flex items-center gap-2">
@@ -48,16 +48,28 @@ export default function CardPrivacidade({ onClose }) {
         <div className="flex-1 min-h-0 overflow-y-auto pr-3 relative z-10 flex flex-col gap-6">
           <Section title="1. Quem somos">
             <p>
-              Esta política descreve como o site{" "}
-              <span className="text-cyan-300">judhagsan.com</span> e o software
-              desktop <span className="text-cyan-300">Pindorama</span> tratam
-              seus dados pessoais, em conformidade com a Lei Geral de Proteção
-              de Dados (Lei nº 13.709/2018 — LGPD).
+              Estes Termos e Condições de Uso têm como objetivo regular a
+              utilização do site{" "}
+              <span className="text-cyan-300">judhagsan.com</span> e do software{" "}
+              <span className="text-cyan-300">Pindorama</span> pelos seus
+              Usuários, desenvolvidos por{" "}
+              <span className="text-white/90">
+                JUDHA GUILHERME DE OLIVEIRA SANTOS
+              </span>
+              , com sede em São Paulo — SP (Brasil), inscrito sob o CNPJ nº{" "}
+              <span className="text-white/90">35.266.920/0001-30</span>.
             </p>
             <p>
-              O controlador dos dados é o responsável pelo domínio judhagsan.com
-              (Judhagsan), referido nesta política simplesmente como
-              &quot;nós&quot;.
+              Para a utilização do site judhagsan.com e do software Pindorama é
+              obrigatório ler e aceitar os Termos e Condições de Uso.
+            </p>
+            <p>
+              Eventuais alterações nos Termos e Condições de Uso entram em vigor
+              no momento de sua publicação e os Usuários serão informados destas
+              alterações por email. Caso não as aceite, o acesso ao
+              judhagsan.com ou ao Pindorama pelo Usuário deverá ser
+              interrompido. Cabe também ao Usuário verificar regularmente se
+              existem atualizações aos Termos e Condições de Uso.
             </p>
           </Section>
 
@@ -65,28 +77,29 @@ export default function CardPrivacidade({ onClose }) {
             <p>Coletamos apenas o estritamente necessário para o serviço:</p>
             <ul className="list-disc pl-5 flex flex-col gap-1">
               <li>
-                <span className="text-white/90">Cadastro:</span> username, email
-                e senha (armazenada apenas como hash bcrypt, jamais em texto
-                puro).
+                <span className="text-white/90">Cadastro:</span> nome de
+                usuário, email e senha (sempre armazenada com criptografia,
+                nunca em texto puro).
               </li>
               <li>
-                <span className="text-white/90">Sessão:</span> token de sessão
-                em cookie <code className="text-cyan-300">session_id</code>{" "}
-                (httpOnly), data de criação e expiração.
+                <span className="text-white/90">Sessão:</span> identificador de
+                sessão para manter você autenticado, com data de criação e
+                expiração.
               </li>
               <li>
-                <span className="text-white/90">Ativação de conta:</span> token
-                temporário enviado por email (válido por 15 minutos).
+                <span className="text-white/90">Ativação de conta:</span> link
+                temporário enviado por email para confirmar o cadastro.
               </li>
               <li>
                 <span className="text-white/90">Logs de servidor:</span>{" "}
-                endereço IP e User-Agent, registrados pelo provedor de
-                hospedagem para fins de segurança e operação.
+                endereço IP e informações do navegador, registrados pelo
+                provedor de hospedagem para fins de segurança e operação.
               </li>
               <li>
                 <span className="text-white/90">Pindorama (desktop):</span> ao
-                fazer login no app, o mesmo conjunto de dados acima é tratado.
-                Ao verificar atualizações, seu IP é registrado pelo servidor.
+                fazer login no Software, o mesmo conjunto de dados acima é
+                tratado. Ao verificar atualizações, o seu endereço IP é
+                registrado pelo servidor.
               </li>
             </ul>
           </Section>
@@ -111,7 +124,8 @@ export default function CardPrivacidade({ onClose }) {
               </li>
               <li>
                 <span className="text-white/90">Execução de contrato</span> —
-                para prover o serviço solicitado (login, distribuição do app).
+                para prover o serviço solicitado (login, distribuição do
+                Software).
               </li>
               <li>
                 <span className="text-white/90">Legítimo interesse</span> — para
@@ -170,62 +184,38 @@ export default function CardPrivacidade({ onClose }) {
           <Section title="8. Segurança">
             <ul className="list-disc pl-5 flex flex-col gap-1">
               <li>
-                Senhas armazenadas com hash bcrypt (14 rounds em produção).
+                Senhas armazenadas com criptografia, jamais em texto puro.
               </li>
+              <li>Cookies de sessão protegidos para evitar acesso indevido.</li>
+              <li>Identificadores de sessão gerados de forma aleatória.</li>
               <li>
-                Cookies de sessão com flags{" "}
-                <code className="text-cyan-300">httpOnly</code>,{" "}
-                <code className="text-cyan-300">secure</code> e{" "}
-                <code className="text-cyan-300">sameSite=lax</code>.
+                Toda a comunicação entre o seu dispositivo e os servidores é
+                criptografada.
               </li>
-              <li>
-                Tokens de sessão gerados por gerador criptográfico seguro (96
-                caracteres hexadecimais).
-              </li>
-              <li>Conexões via HTTPS e banco de dados com SSL.</li>
             </ul>
           </Section>
 
           <Section title="9. Cookies">
             <p>
-              Utilizamos um único cookie estritamente necessário (
-              <code className="text-cyan-300">session_id</code>) para manter sua
-              sessão autenticada. Não utilizamos cookies de analytics, marketing
-              ou rastreamento.
+              Utilizamos apenas um cookie estritamente necessário para manter a
+              sua sessão autenticada. Não utilizamos cookies de analytics,
+              marketing ou rastreamento.
             </p>
           </Section>
 
           <Section title="10. Pindorama (software desktop)">
             <p>
-              Caso você utilize o Pindorama, observe que o aplicativo armazena
-              localmente, no seu computador, o token de sessão e dados básicos
-              do perfil para permitir login persistente:
+              Caso você utilize o Pindorama, o Software armazena localmente no
+              seu computador o identificador da sua sessão e dados básicos do
+              perfil para permitir login persistente. Você pode desativar o
+              login persistente desmarcando a opção{" "}
+              <span className="text-white/90">&quot;Stay signed in&quot;</span>{" "}
+              na tela de login do Software.
             </p>
-            <ul className="list-disc pl-5 flex flex-col gap-1">
-              <li>
-                <span className="text-white/90">macOS:</span>{" "}
-                <code className="text-cyan-300 text-xs">
-                  ~/Library/Application Support/Pindorama/session.toml
-                </code>
-              </li>
-              <li>
-                <span className="text-white/90">Linux:</span>{" "}
-                <code className="text-cyan-300 text-xs">
-                  ~/.config/Pindorama/session.toml
-                </code>
-              </li>
-              <li>
-                <span className="text-white/90">Windows:</span>{" "}
-                <code className="text-cyan-300 text-xs">
-                  %APPDATA%\Pindorama\session.toml
-                </code>
-              </li>
-            </ul>
             <p>
-              Você pode desativar o login persistente desmarcando a opção
-              &quot;Stay signed in&quot; na tela de login do app. A verificação
-              automática de atualizações envia uma requisição HTTPS ao
-              judhagsan.com contendo a versão do app e o sistema operacional.
+              A verificação automática de atualizações envia uma requisição ao
+              judhagsan.com contendo apenas a versão do Software e o sistema
+              operacional utilizado.
             </p>
           </Section>
 
@@ -253,44 +243,23 @@ export default function CardPrivacidade({ onClose }) {
             </ul>
           </Section>
 
-          <Section title="12. Como exercer seus direitos">
-            <p>
-              Envie um email para{" "}
-              <a
-                href="mailto:contato@judhagsan.com?subject=LGPD%20-%20Solicita%C3%A7%C3%A3o"
-                className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
-              >
-                <MailIcon size={14} />
-                contato@judhagsan.com
-              </a>{" "}
-              com o assunto{" "}
-              <span className="text-white/90">
-                &quot;LGPD - Solicitação&quot;
-              </span>
-              , identificando-se com o email cadastrado e descrevendo seu
-              pedido. Responderemos em até 15 dias.
-            </p>
-          </Section>
-
-          <Section title="13. Menores de idade">
-            <p>
-              Este serviço não é direcionado a pessoas com menos de 18 anos. Não
-              coletamos intencionalmente dados de menores. Caso identifique o
-              cadastro de um menor, entre em contato pelo email acima para que
-              seja eliminado.
-            </p>
-          </Section>
-
-          <Section title="14. Alterações nesta política">
+          <Section title="12. Alterações nesta política">
             <p>
               Eventuais alterações serão publicadas nesta página com a
               respectiva data de atualização. Recomendamos consultas periódicas.
             </p>
           </Section>
 
-          <Section title="15. Encarregado de Tratamento (DPO)">
+          <Section title="13. Encarregado de Tratamento (DPO)">
             <p>
-              Contato do Encarregado pelo Tratamento de Dados Pessoais:{" "}
+              Identidade do Encarregado pelo Tratamento de Dados Pessoais:{" "}
+              <span className="text-white/90">
+                JUDHA GUILHERME DE OLIVEIRA SANTOS
+              </span>{" "}
+              — CNPJ 35.266.920/0001-30.
+            </p>
+            <p>
+              Contato:{" "}
               <a
                 href="mailto:contato@judhagsan.com"
                 className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"

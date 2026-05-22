@@ -1,16 +1,46 @@
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import {
-  PersonFillIcon,
-  DownloadIcon,
-  TrashIcon,
-  AlertFillIcon,
-} from "@primer/octicons-react";
+import useSWR from "swr";
+import { DownloadIcon, InfoIcon } from "@primer/octicons-react";
+
+const versionFetcher = (url) =>
+  fetch(url).then((r) => (r.ok ? r.json() : null));
+
+function getStageLabel(version) {
+  if (!version) return null;
+  const parts = version.split(".").map(Number);
+  if (parts.length < 3 || parts.some((p) => Number.isNaN(p))) return null;
+  const [major, minor] = parts;
+
+  if (major === 0) {
+    if (minor === 0) return "Pre-Alpha";
+    if (minor === 9) return "Beta";
+    return "Alpha";
+  }
+  return "Stable";
+}
 
 const PLATFORMS = {
-  windows: { label: "Windows" },
-  macos: { label: "macOS" },
-  linux: { label: "Linux" },
+  windows: {
+    label: "Windows",
+    available: false,
+    classes:
+      "bg-blue-500/10 hover:bg-blue-500/30 border-blue-500/30 hover:border-blue-500/60 text-blue-200 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]",
+    iconHover: "group-hover:text-blue-400",
+  },
+  macos: {
+    label: "Mac ARM",
+    available: false,
+    classes:
+      "bg-zinc-300/10 hover:bg-zinc-300/30 border-zinc-300/30 hover:border-zinc-300/60 text-zinc-200 hover:shadow-[0_0_20px_rgba(212,212,216,0.3)]",
+    iconHover: "group-hover:text-zinc-100",
+  },
+  linux: {
+    label: "Linux",
+    available: true,
+    classes:
+      "bg-orange-500/10 hover:bg-orange-500/30 border-orange-500/30 hover:border-orange-500/60 text-orange-200 hover:shadow-[0_0_20px_rgba(249,115,22,0.3)]",
+    iconHover: "group-hover:text-orange-400",
+  },
 };
 
 function detectPlatform() {
@@ -22,155 +52,105 @@ function detectPlatform() {
   return null;
 }
 
-export default function CardSessao({ user }) {
-  const router = useRouter();
+function PlatformButton({ platformKey, primary }) {
+  const info = PLATFORMS[platformKey];
+  const available = info.available;
+  const href = available ? `/api/v1/download/${platformKey}` : "#";
+
+  const sizeClasses = primary
+    ? "px-8 py-3 text-base gap-3 font-semibold"
+    : "px-4 py-2 text-xs gap-2 font-medium";
+
+  const colorClasses = available
+    ? `${info.classes} cursor-pointer hover:scale-105 active:scale-95`
+    : `${info.classes} opacity-40 cursor-not-allowed pointer-events-none`;
+
+  return (
+    <a
+      href={href}
+      aria-disabled={!available}
+      onClick={(e) => {
+        if (!available) e.preventDefault();
+      }}
+      className={`inline-flex items-center border rounded-xl transition-all duration-300 group ${sizeClasses} ${colorClasses}`}
+    >
+      <DownloadIcon
+        size={primary ? 20 : 14}
+        className={
+          available ? `${info.iconHover} transition-colors` : undefined
+        }
+      />
+      <span>{info.label}</span>
+    </a>
+  );
+}
+
+export default function CardSessao() {
   const [platform, setPlatform] = useState(null);
-  const [isConfirming, setIsConfirming] = useState(false);
-  const [confirmationInput, setConfirmationInput] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const { data: versionData } = useSWR("/api/v1/version", versionFetcher, {
+    revalidateOnFocus: false,
+  });
 
   useEffect(() => {
     setPlatform(detectPlatform());
   }, []);
 
-  const detected = platform && PLATFORMS[platform];
-  const downloadHref = detected ? `/api/v1/download/${platform}` : null;
-  const downloadLabel = detected
-    ? `Download Pindorama ${detected.label}`
-    : "Download indisponível";
-
-  const confirmationMatches = confirmationInput === user?.username;
-
-  async function handleDelete(event) {
-    event.preventDefault();
-    if (!confirmationMatches || isDeleting) return;
-
-    setIsDeleting(true);
-    setErrorMessage("");
-
-    try {
-      const response = await fetch(`/api/v1/users/${user.username}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-
-      if (!response.ok && response.status !== 204) {
-        const body = await response.json();
-        setErrorMessage(body.message || "Não foi possível excluir a conta.");
-        setIsDeleting(false);
-        return;
-      }
-
-      router.replace("/");
-    } catch {
-      setErrorMessage("Erro de conexão. Tente novamente.");
-      setIsDeleting(false);
-    }
-  }
+  const stage = getStageLabel(versionData?.version);
+  const versionLabel =
+    stage && versionData?.version ? `${stage} ${versionData.version}` : null;
 
   return (
     <div className="w-full h-full">
-      <div className="glass-card rounded-[35px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
+      <div className="glass-card rounded-[35px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-full">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10"></div>
 
-        {isConfirming ? (
-          <form
-            onSubmit={handleDelete}
-            className="flex flex-col items-center justify-center text-center gap-4 text-white/70 font-mono text-sm relative z-10 flex-1 h-full animate-[fadeIn_0.18s_ease-out]"
-          >
-            <div className="w-14 h-14 rounded-full bg-red-500/20 border border-red-400/40 flex items-center justify-center text-red-200">
-              <AlertFillIcon size={28} />
-            </div>
-            <p className="text-lg text-white font-semibold">Excluir conta</p>
-            <p className="text-xs leading-relaxed max-w-xs">
-              Esta ação é{" "}
-              <span className="text-red-300 font-semibold">irreversível</span>.
-              Seus dados, sessões e tokens serão eliminados.
-            </p>
-            <label className="flex flex-col gap-1 w-full max-w-xs">
-              <span className="text-xs uppercase tracking-widest text-white/50">
-                Digite{" "}
-                <span className="normal-case tracking-normal text-cyan-300">
-                  {user?.username}
-                </span>{" "}
-                para confirmar
-              </span>
-              <input
-                type="text"
-                value={confirmationInput}
-                onChange={(e) => setConfirmationInput(e.target.value)}
-                autoComplete="off"
-                className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-red-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-center"
-                placeholder={user?.username}
-              />
-            </label>
-
-            {errorMessage && (
-              <p className="text-red-300 text-xs">{errorMessage}</p>
-            )}
-
-            <div className="flex gap-3 mt-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsConfirming(false);
-                  setConfirmationInput("");
-                  setErrorMessage("");
-                }}
-                disabled={isDeleting}
-                className="cursor-pointer px-6 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white/70 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                disabled={!confirmationMatches || isDeleting}
-                className="cursor-pointer px-6 py-2 bg-red-500/10 hover:bg-red-500/30 border border-red-500/30 hover:border-red-500/60 text-red-200 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm inline-flex items-center gap-2"
-              >
-                <TrashIcon size={14} />
-                {isDeleting ? "Excluindo..." : "Excluir"}
-              </button>
-            </div>
-          </form>
-        ) : (
-          <div className="flex flex-col items-center justify-center text-center gap-4 text-white/70 font-mono text-sm relative z-10 flex-1 h-full animate-[fadeIn_0.4s_ease-out]">
-            <div className="w-14 h-14 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-200">
-              <PersonFillIcon size={28} />
-            </div>
-            <p className="text-2xl text-white font-semibold">
-              Bem vindo, <span className="text-cyan-300">{user?.username}</span>
-            </p>
-
-            <a
-              href={downloadHref || "#"}
-              aria-disabled={!downloadHref}
-              onClick={(e) => {
-                if (!downloadHref) e.preventDefault();
-              }}
-              className={`mt-4 inline-flex items-center gap-3 px-8 py-3 bg-cyan-500/10 border border-cyan-500/30 text-cyan-200 rounded-xl transition-all duration-300 group ${
-                downloadHref
-                  ? "cursor-pointer hover:bg-cyan-500/30 hover:border-cyan-500/60 hover:scale-105 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95"
-                  : "opacity-50 cursor-not-allowed"
-              }`}
-            >
-              <DownloadIcon
-                size={20}
-                className="group-hover:text-cyan-400 transition-colors"
-              />
-              <span className="font-semibold text-base">{downloadLabel}</span>
-            </a>
-
-            <button
-              type="button"
-              onClick={() => setIsConfirming(true)}
-              className="cursor-pointer mt-2 inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-red-300 transition-colors"
-            >
-              <TrashIcon size={12} />
-              Excluir conta
-            </button>
+        {/* Header */}
+        <div className="flex items-center gap-4 w-full">
+          <div className="w-12 h-12 rounded-full bg-yellow-500 flex items-center justify-center shadow-lg shadow-yellow-500/30 border border-white/5 shrink-0">
+            <img
+              src="/PinLogo.svg"
+              alt="PinLogo"
+              className="w-full h-full object-cover rounded-full"
+            />
           </div>
-        )}
+          <div className="flex items-baseline gap-3">
+            <h2 className="text-2xl font-bold tracking-tight text-white">
+              Pindorama
+            </h2>
+            {versionLabel && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-xs uppercase tracking-wider text-white/50 font-mono">
+                {versionLabel}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 flex flex-col items-center justify-center text-center mt-6 mb-2">
+          <p className="text-zinc-300 mb-6 max-w-2xl leading-relaxed text-lg font-medium">
+            Desenvolvido de animador para animador. Combine a arte do
+            frame-a-frame com a eficiência da animação 2D vetorial. Uma engine
+            poderosa para mixed media, otimizada para entregar máxima
+            performance respeitando o seu hardware.
+          </p>
+
+          {platform && !PLATFORMS[platform].available && (
+            <div className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-sm animate-[fadeIn_0.3s_ease-out]">
+              <InfoIcon size={14} />
+              Versão para {PLATFORMS[platform].label} em breve.
+            </div>
+          )}
+
+          <div className="flex items-center gap-3">
+            {Object.keys(PLATFORMS).map((key) => (
+              <PlatformButton
+                key={key}
+                platformKey={key}
+                primary={key === platform}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

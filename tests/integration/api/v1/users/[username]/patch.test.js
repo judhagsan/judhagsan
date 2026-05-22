@@ -142,11 +142,11 @@ describe("PATCH /api/v1/users/[username]", () => {
 
     test("With duplicated `email`", async () => {
       await orchestrator.createUser({
-        email: "email1@curso.dev",
+        email: "email1@judhagsan.com",
       });
 
       const createdUser2 = await orchestrator.createUser({
-        email: "email2@curso.dev",
+        email: "email2@judhagsan.com",
       });
 
       const activatedUser2 = await orchestrator.activateUser(createdUser2);
@@ -161,7 +161,7 @@ describe("PATCH /api/v1/users/[username]", () => {
             Cookie: `session_id=${sessionObject2.token}`,
           },
           body: JSON.stringify({
-            email: "email1@curso.dev",
+            email: "email1@judhagsan.com",
           }),
         },
       );
@@ -204,7 +204,12 @@ describe("PATCH /api/v1/users/[username]", () => {
       expect(responseBody).toEqual({
         id: responseBody.id,
         username: "uniqueUser2",
-        features: ["create:session", "read:session", "update:user"],
+        features: [
+          "create:session",
+          "read:session",
+          "update:user",
+          "delete:user",
+        ],
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -231,7 +236,7 @@ describe("PATCH /api/v1/users/[username]", () => {
             Cookie: `session_id=${sessionObject.token}`,
           },
           body: JSON.stringify({
-            email: "uniqueEmail2@curso.dev",
+            email: "uniqueEmail2@judhagsan.com",
           }),
         },
       );
@@ -243,7 +248,12 @@ describe("PATCH /api/v1/users/[username]", () => {
       expect(responseBody).toEqual({
         id: responseBody.id,
         username: createdUser.username,
-        features: ["create:session", "read:session", "update:user"],
+        features: [
+          "create:session",
+          "read:session",
+          "update:user",
+          "delete:user",
+        ],
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -255,7 +265,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       expect(responseBody.updated_at > responseBody.created_at).toBe(true);
 
       const userInDatabase = await user.findOneByUsername(createdUser.username);
-      expect(userInDatabase.email).toBe("uniqueEmail2@curso.dev");
+      expect(userInDatabase.email).toBe("uniqueEmail2@judhagsan.com");
     });
 
     test("With new `password`", async () => {
@@ -286,7 +296,12 @@ describe("PATCH /api/v1/users/[username]", () => {
       expect(responseBody).toEqual({
         id: responseBody.id,
         username: createdUser.username,
-        features: ["create:session", "read:session", "update:user"],
+        features: [
+          "create:session",
+          "read:session",
+          "update:user",
+          "delete:user",
+        ],
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });

@@ -20,7 +20,7 @@ describe("POST /api/v1/users", () => {
         },
         body: JSON.stringify({
           username: "filipedeschamps",
-          email: "contato@curso.dev",
+          email: "contato@judhagsan.com",
           password: "senha123",
           privacy_accepted: true,
         }),
@@ -65,7 +65,7 @@ describe("POST /api/v1/users", () => {
         },
         body: JSON.stringify({
           username: "emailduplicado1",
-          email: "duplicado@curso.dev",
+          email: "duplicado@judhagsan.com",
           password: "senha123",
           privacy_accepted: true,
         }),
@@ -80,7 +80,7 @@ describe("POST /api/v1/users", () => {
         },
         body: JSON.stringify({
           username: "emailduplicado2",
-          email: "Duplicado@curso.dev",
+          email: "Duplicado@judhagsan.com",
           password: "senha123",
           privacy_accepted: true,
         }),
@@ -106,7 +106,7 @@ describe("POST /api/v1/users", () => {
         },
         body: JSON.stringify({
           username: "semaceite",
-          email: "semaceite@curso.dev",
+          email: "semaceite@judhagsan.com",
           password: "senha123",
         }),
       });
@@ -132,7 +132,7 @@ describe("POST /api/v1/users", () => {
         },
         body: JSON.stringify({
           username: "usernameduplicado",
-          email: "usernameduplicado1@curso.dev",
+          email: "usernameduplicado1@judhagsan.com",
           password: "senha123",
           privacy_accepted: true,
         }),
@@ -147,7 +147,7 @@ describe("POST /api/v1/users", () => {
         },
         body: JSON.stringify({
           username: "UsernameDuplicado",
-          email: "usernameduplicado2@curso.dev",
+          email: "usernameduplicado2@judhagsan.com",
           password: "senha123",
           privacy_accepted: true,
         }),
@@ -180,7 +180,7 @@ describe("POST /api/v1/users", () => {
         },
         body: JSON.stringify({
           username: "usuariologado",
-          email: "usuariologado@curso.dev",
+          email: "usuariologado@judhagsan.com",
           password: "senha123",
           privacy_accepted: true,
         }),

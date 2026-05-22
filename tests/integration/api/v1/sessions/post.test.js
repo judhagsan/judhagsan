@@ -23,7 +23,7 @@ describe("POST /api/v1/sessions", () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: "email.errado@curso.dev",
+          email: "email.errado@judhagsan.com",
           password: "senha-correta",
         }),
       });
@@ -42,7 +42,7 @@ describe("POST /api/v1/sessions", () => {
 
     test("With correct `email` but incorrect `password`", async () => {
       await orchestrator.createUser({
-        email: "email.correto@curso.dev",
+        email: "email.correto@judhagsan.com",
       });
 
       const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
@@ -51,7 +51,7 @@ describe("POST /api/v1/sessions", () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: "email.correto@curso.dev",
+          email: "email.correto@judhagsan.com",
           password: "senha-incorreta",
         }),
       });
@@ -77,7 +77,7 @@ describe("POST /api/v1/sessions", () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: "email.incorreto@curso.dev",
+          email: "email.incorreto@judhagsan.com",
           password: "senha-incorreta",
         }),
       });
@@ -96,7 +96,7 @@ describe("POST /api/v1/sessions", () => {
 
     test("With correct `email` and correct `password`", async () => {
       const createdUser = await orchestrator.createUser({
-        email: "tudo.correto@curso.dev",
+        email: "tudo.correto@judhagsan.com",
         password: "tudocorreto",
       });
 
@@ -108,7 +108,7 @@ describe("POST /api/v1/sessions", () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: "tudo.correto@curso.dev",
+          email: "tudo.correto@judhagsan.com",
           password: "tudocorreto",
         }),
       });

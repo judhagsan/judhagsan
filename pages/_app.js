@@ -1,13 +1,13 @@
 import "../globals.css";
 import { ActiveCardProvider } from "hooks/useActiveCard";
-import { PrivacyPanelProvider } from "hooks/usePrivacyPanel";
+import { SidePanelProvider } from "hooks/useSidePanel";
 
 function MyApp({ Component, pageProps }) {
   return (
     <ActiveCardProvider>
-      <PrivacyPanelProvider>
+      <SidePanelProvider>
         <Component {...pageProps} />
-      </PrivacyPanelProvider>
+      </SidePanelProvider>
     </ActiveCardProvider>
   );
 }
