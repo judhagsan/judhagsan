@@ -2,14 +2,29 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import PerspectiveGrid from "./PerspectiveGrid";
 import useUser from "hooks/useUser";
+import useSidePanel from "hooks/useSidePanel";
+import useActiveCard from "hooks/useActiveCard";
+
+const PAGES_WITH_SIDE_PANEL = ["/", "/cadastro", "/sessao"];
 
 export default function MainFrame({ children }) {
   const router = useRouter();
   const { isLoading, isLoggedIn, logout } = useUser();
+  const { setActivePanel } = useSidePanel();
+  const { setActiveCard, reset: resetActiveCard } = useActiveCard();
+  const hasSidePanel = PAGES_WITH_SIDE_PANEL.includes(router.pathname);
 
   async function handleLogout() {
     await logout();
+    resetActiveCard();
     router.push("/");
+  }
+
+  async function handleAuthCardClick(card) {
+    setActiveCard(card);
+    if (router.pathname !== "/") {
+      await router.push("/");
+    }
   }
 
   return (
@@ -28,9 +43,46 @@ export default function MainFrame({ children }) {
         <div className="absolute inset-0 border-[1px] border-white/10 pointer-events-none"></div>
       </div>
 
+      {/* Top-left Links - Privacidade + Contato */}
+      <div className="absolute top-2 left-[3%] z-50 flex items-center gap-6 h-6 leading-none">
+        {hasSidePanel ? (
+          <button
+            type="button"
+            onClick={() => setActivePanel("privacy")}
+            className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+          >
+            Termos de Uso
+          </button>
+        ) : (
+          <Link
+            href="/privacidade"
+            className="inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+          >
+            Termos de Uso
+          </Link>
+        )}
+        {hasSidePanel ? (
+          <button
+            type="button"
+            onClick={() => setActivePanel("contact")}
+            className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+          >
+            Contato
+          </button>
+        ) : (
+          <Link
+            href="/contato"
+            className="inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+          >
+            Contato
+          </Link>
+        )}
+      </div>
+
       {/* External Logo */}
       <Link
         href={isLoggedIn ? "/sessao" : "/"}
+        onClick={resetActiveCard}
         className="absolute top-2 left-1/2 -translate-x-1/2 z-50 cursor-pointer"
       >
         <img
@@ -53,18 +105,20 @@ export default function MainFrame({ children }) {
             </button>
           ) : (
             <>
-              <Link
-                href="/login"
-                className="inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+              <button
+                type="button"
+                onClick={() => handleAuthCardClick("login")}
+                className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
               >
                 Login
-              </Link>
-              <Link
-                href="/cadastro"
-                className="inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAuthCardClick("cadastro")}
+                className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
               >
                 Cadastrar
-              </Link>
+              </button>
             </>
           ))}
       </div>

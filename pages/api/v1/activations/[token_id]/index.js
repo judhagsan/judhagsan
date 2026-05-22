@@ -2,6 +2,7 @@ import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
 import activation from "models/activation.js";
 import authorization from "models/authorization.js";
+import auditLog from "models/auditLog.js";
 
 export default createRouter()
   .use(controller.injectAnonymousOrUser)
@@ -20,11 +21,22 @@ async function patchHandler(request, response) {
   const usedActivationToken =
     await activation.markTokenAsUsed(activationTokenId);
 
+  await auditLog.record({
+    action: "user.activated",
+    actorUserId: validActivationToken.user_id,
+    targetUserId: validActivationToken.user_id,
+    ip: controller.getClientIp(request),
+  });
+
   const secureOutputValues = authorization.filterOutput(
     userTryingToPatch,
     "read:activation_token",
     usedActivationToken,
   );
 
+  response.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, max-age=0, must-revalidate",
+  );
   return response.status(200).json(secureOutputValues);
 }

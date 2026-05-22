@@ -7,6 +7,8 @@ const availableFeatures = [
   "read:user:self",
   "update:user",
   "update:user:others",
+  "delete:user",
+  "delete:user:others",
 
   // SESSION
   "create:session",
@@ -22,6 +24,9 @@ const availableFeatures = [
   // STATUS
   "read:status",
   "read:status:all",
+
+  // DEVICES (telemetria de hardware do Pindorama)
+  "manage:device",
 ];
 
 function can(user, feature, resource) {
@@ -38,6 +43,14 @@ function can(user, feature, resource) {
     authorized = false;
 
     if (user.id === resource.id || can(user, "update:user:others")) {
+      authorized = true;
+    }
+  }
+
+  if (feature === "delete:user" && resource) {
+    authorized = false;
+
+    if (user.id === resource.id || can(user, "delete:user:others")) {
       authorized = true;
     }
   }

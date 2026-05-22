@@ -1,4 +1,3 @@
-import { version as uuidVersion } from "uuid";
 import orchestrator from "tests/orchestrator.js";
 import user from "models/user.js";
 import password from "models/password.js";
@@ -19,31 +18,24 @@ describe("POST /api/v1/users", () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: "filipedeschamps",
-          email: "contato@curso.dev",
-          password: "senha123",
+          username: "judhagsanuser",
+          email: "contato@judhagsan.com",
+          password: "senha12345",
+          privacy_accepted: true,
         }),
       });
 
       expect(response.status).toBe(201);
 
       const responseBody = await response.json();
+      expect(responseBody.message).toContain("link de ativação");
 
-      expect(responseBody).toEqual({
-        id: responseBody.id,
-        username: "filipedeschamps",
-        features: ["read:activation_token"],
-        created_at: responseBody.created_at,
-        updated_at: responseBody.updated_at,
-      });
+      const userInDatabase = await user.findOneByUsername("judhagsanuser");
+      expect(userInDatabase.email).toBe("contato@judhagsan.com");
+      expect(userInDatabase.features).toEqual(["read:activation_token"]);
 
-      expect(uuidVersion(responseBody.id)).toBe(4);
-      expect(Date.parse(responseBody.created_at)).not.toBeNaN();
-      expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
-
-      const userInDatabase = await user.findOneByUsername("filipedeschamps");
       const correctPasswordMatch = await password.compare(
-        "senha123",
+        "senha12345",
         userInDatabase.password,
       );
 
@@ -56,7 +48,7 @@ describe("POST /api/v1/users", () => {
       expect(incorrectPasswordMatch).toBe(false);
     });
 
-    test("With duplicated `email`", async () => {
+    test("With duplicated `email` (anti-enumeration)", async () => {
       const response1 = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
@@ -64,8 +56,9 @@ describe("POST /api/v1/users", () => {
         },
         body: JSON.stringify({
           username: "emailduplicado1",
-          email: "duplicado@curso.dev",
-          password: "senha123",
+          email: "duplicado@judhagsan.com",
+          password: "senha12345",
+          privacy_accepted: true,
         }),
       });
 
@@ -78,19 +71,74 @@ describe("POST /api/v1/users", () => {
         },
         body: JSON.stringify({
           username: "emailduplicado2",
-          email: "Duplicado@curso.dev",
-          password: "senha123",
+          email: "Duplicado@judhagsan.com",
+          password: "outrasenha",
+          privacy_accepted: true,
         }),
       });
 
-      expect(response2.status).toBe(400);
-
+      // Resposta idêntica à de sucesso para não revelar enumeração
+      expect(response2.status).toBe(201);
       const response2Body = await response2.json();
+      expect(response2Body.message).toContain("link de ativação");
 
-      expect(response2Body).toEqual({
+      // Garante que nenhum usuário duplicado foi criado e o original foi preservado
+      const userInDatabase = await user.findOneByEmail(
+        "duplicado@judhagsan.com",
+      );
+      expect(userInDatabase.username).toBe("emailduplicado1");
+      const originalPasswordIntact = await password.compare(
+        "senha12345",
+        userInDatabase.password,
+      );
+      expect(originalPasswordIntact).toBe(true);
+    });
+
+    test("With password shorter than 8 characters", async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/users`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "senhacurta",
+          email: "senhacurta@judhagsan.com",
+          password: "abc123",
+          privacy_accepted: true,
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+      expect(responseBody).toEqual({
         name: "ValidationError",
-        message: "O email informado já está sendo utilizado.",
-        action: "Utilize outro email para realizar esta operação.",
+        message: "A senha deve ter no mínimo 8 caracteres.",
+        action: "Escolha uma senha com pelo menos 8 caracteres.",
+        status_code: 400,
+      });
+    });
+
+    test("Without privacy acceptance", async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "semaceite",
+          email: "semaceite@judhagsan.com",
+          password: "senha12345",
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message:
+          "É necessário aceitar a Política de Privacidade para se cadastrar.",
+        action: "Marque a opção de aceite e tente novamente.",
         status_code: 400,
       });
     });
@@ -103,8 +151,9 @@ describe("POST /api/v1/users", () => {
         },
         body: JSON.stringify({
           username: "usernameduplicado",
-          email: "usernameduplicado1@curso.dev",
-          password: "senha123",
+          email: "usernameduplicado1@judhagsan.com",
+          password: "senha12345",
+          privacy_accepted: true,
         }),
       });
 
@@ -117,8 +166,9 @@ describe("POST /api/v1/users", () => {
         },
         body: JSON.stringify({
           username: "UsernameDuplicado",
-          email: "usernameduplicado2@curso.dev",
-          password: "senha123",
+          email: "usernameduplicado2@judhagsan.com",
+          password: "senha12345",
+          privacy_accepted: true,
         }),
       });
 
@@ -149,8 +199,9 @@ describe("POST /api/v1/users", () => {
         },
         body: JSON.stringify({
           username: "usuariologado",
-          email: "usuariologado@curso.dev",
-          password: "senha123",
+          email: "usuariologado@judhagsan.com",
+          password: "senha12345",
+          privacy_accepted: true,
         }),
       });
 
