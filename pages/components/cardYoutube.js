@@ -51,7 +51,7 @@ export default function CardYoutube() {
 
   return (
     <div className="w-full">
-      <div className="glass-card rounded-[35px] p-6 shadow-2xl relative overflow-hidden flex flex-col gap-4">
+      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col gap-4">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10"></div>
 
         {/* Header */}

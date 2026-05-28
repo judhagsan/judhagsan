@@ -49,7 +49,8 @@ async function getHandler(request, response) {
   const devicesResult = await database.query({
     text: `
       SELECT
-        os, cpu, ram_bytes, gpu, pindorama_version,
+        hardware_uuid, os, cpu, ram_bytes, gpu, pindorama_version,
+        tablet, monitor,
         upload_paused, first_seen_at, last_seen_at
       FROM
         user_devices

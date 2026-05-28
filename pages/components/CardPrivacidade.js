@@ -19,7 +19,7 @@ function Section({ title, children }) {
 export default function CardPrivacidade({ onClose }) {
   return (
     <div className="w-full h-full">
-      <div className="glass-card rounded-[35px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
         <div className="shrink-0 mb-5 flex items-center justify-between gap-4 relative z-10">
@@ -30,7 +30,7 @@ export default function CardPrivacidade({ onClose }) {
           <div className="flex items-center gap-4">
             <p className="text-xs uppercase tracking-widest text-white/40 flex items-center gap-2">
               <CalendarIcon size={12} className="relative -top-px" />
-              Última atualização: 21 de maio de 2026
+              Última atualização: 28 de maio de 2026
             </p>
             {onClose && (
               <button
@@ -105,9 +105,13 @@ export default function CardPrivacidade({ onClose }) {
                 <span className="text-white/90">
                   Especificações do dispositivo (telemetria do Pindorama):
                 </span>{" "}
-                ao fazer login no Software, registramos sistema operacional,
-                processador (CPU), memória RAM, placa gráfica (GPU) e versão do
-                Pindorama. Essa informação é usada exclusivamente para
+                ao fazer login no Software, registramos identificador único do
+                hardware (UUID estável da placa-mãe, usado apenas para
+                deduplicar o mesmo computador entre sessões), sistema
+                operacional, processador (CPU), memória RAM, placa gráfica
+                (GPU), monitores conectados (resolução e taxa de atualização),
+                mesa digitalizadora (fabricante e modelo, quando conectada) e
+                versão do Pindorama. Essa informação é usada exclusivamente para
                 diagnóstico de bugs, suporte e desenvolvimento da
                 compatibilidade do Software com diferentes hardwares. Você pode
                 visualizar, pausar a atualização ou excluir essas informações a
