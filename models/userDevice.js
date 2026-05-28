@@ -5,7 +5,8 @@ async function findAllByUserId(userId) {
   const results = await database.query({
     text: `
       SELECT
-        id, os, cpu, ram_bytes, gpu, pindorama_version,
+        id, hardware_uuid, os, cpu, ram_bytes, gpu, pindorama_version,
+        tablet, monitor,
         upload_paused, first_seen_at, last_seen_at
       FROM
         user_devices
@@ -33,27 +34,80 @@ async function findOneById(deviceId) {
   return results.rows[0];
 }
 
-async function upsert({ userId, os, cpu, ramBytes, gpu, pindoramaVersion }) {
-  // Se existir uma linha com upload_paused=true para o mesmo fingerprint,
-  // apenas tocamos last_seen_at (não atualizamos os campos técnicos).
-  // Caso contrário, inserimos ou atualizamos normalmente.
+async function upsert({
+  userId,
+  hardwareUuid,
+  os,
+  cpu,
+  ramBytes,
+  gpu,
+  pindoramaVersion,
+  tablet,
+  monitor,
+}) {
+  // Fingerprint estável agora é (user_id, hardware_uuid) — o mesmo Mac
+  // sempre cai na mesma linha, independente de upgrade de SO/RAM/GPU. Os
+  // demais campos passam a ser apenas dados do estado atual: quando
+  // upload_paused está true, mantemos os valores antigos (o usuário pediu
+  // pra parar de subir telemetria); caso contrário, atualizamos com o que
+  // chegou no body.
   const results = await database.query({
     text: `
       INSERT INTO user_devices
-        (user_id, os, cpu, ram_bytes, gpu, pindorama_version)
+        (user_id, hardware_uuid, os, cpu, ram_bytes, gpu, pindorama_version, tablet, monitor)
       VALUES
-        ($1, $2, $3, $4, $5, $6)
-      ON CONFLICT (user_id, os, cpu, gpu, ram_bytes) DO UPDATE
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      ON CONFLICT (user_id, hardware_uuid) DO UPDATE
       SET
+        os = CASE
+          WHEN user_devices.upload_paused
+          THEN user_devices.os
+          ELSE EXCLUDED.os
+        END,
+        cpu = CASE
+          WHEN user_devices.upload_paused
+          THEN user_devices.cpu
+          ELSE EXCLUDED.cpu
+        END,
+        ram_bytes = CASE
+          WHEN user_devices.upload_paused
+          THEN user_devices.ram_bytes
+          ELSE EXCLUDED.ram_bytes
+        END,
+        gpu = CASE
+          WHEN user_devices.upload_paused
+          THEN user_devices.gpu
+          ELSE EXCLUDED.gpu
+        END,
         pindorama_version = CASE
           WHEN user_devices.upload_paused
           THEN user_devices.pindorama_version
           ELSE EXCLUDED.pindorama_version
         END,
+        tablet = CASE
+          WHEN user_devices.upload_paused
+          THEN user_devices.tablet
+          ELSE EXCLUDED.tablet
+        END,
+        monitor = CASE
+          WHEN user_devices.upload_paused
+          THEN user_devices.monitor
+          ELSE EXCLUDED.monitor
+        END,
         last_seen_at = NOW()
       RETURNING *
     ;`,
-    values: [userId, os, cpu, ramBytes, gpu, pindoramaVersion],
+    values: [
+      userId,
+      hardwareUuid,
+      os,
+      cpu,
+      ramBytes,
+      gpu,
+      pindoramaVersion,
+      tablet,
+      monitor,
+    ],
   });
   return results.rows[0];
 }
