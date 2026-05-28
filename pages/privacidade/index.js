@@ -12,7 +12,7 @@ export default function PrivacidadePage() {
       </Head>
 
       {/* Main Container (The "Clear" Window) */}
-      <div className="relative z-10 w-full h-full rounded-[35px] overflow-hidden border border-white/5 shadow-[inset_0px_0px_50px_rgba(0,0,0,0.9)] flex">
+      <div className="relative z-10 w-full h-full rounded-[20px] overflow-hidden border border-white/5 shadow-[inset_0px_0px_50px_rgba(0,0,0,0.9)] flex">
         {/* Main Content Area */}
         <div className="relative z-10 flex-1 flex flex-col p-10">
           {/* Center Section - Privacidade Card */}

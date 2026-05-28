@@ -39,6 +39,7 @@ describe("POST /api/v1/devices", () => {
     const session = await orchestrator.createSession(userObj);
 
     const payload = {
+      hardware_uuid: "11111111-1111-1111-1111-111111111111",
       os: "macOS 14.6",
       cpu: "Apple M2 Pro",
       gpu: "Apple M2 Pro GPU",
@@ -61,7 +62,7 @@ describe("POST /api/v1/devices", () => {
     expect(Number(device1.ram_bytes)).toBe(16000000000);
     expect(device1.upload_paused).toBe(false);
 
-    // Second upsert with same fingerprint must dedupe (same id, updated last_seen_at)
+    // Second upsert with same hardware_uuid must dedupe (same id, updated last_seen_at)
     const r2 = await authenticatedFetch(
       "/api/v1/devices",
       {
@@ -114,6 +115,7 @@ describe("PATCH /api/v1/devices/[id]", () => {
     const session = await orchestrator.createSession(userObj);
 
     const payload = {
+      hardware_uuid: "22222222-2222-2222-2222-222222222222",
       os: "Linux 6.5",
       cpu: "AMD Ryzen 9",
       gpu: "NVIDIA RTX 4090",
@@ -175,6 +177,7 @@ describe("PATCH /api/v1/devices/[id]", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          hardware_uuid: "33333333-3333-3333-3333-333333333333",
           os: "macOS",
           cpu: "M1",
           gpu: "M1",
@@ -215,6 +218,7 @@ describe("DELETE /api/v1/devices/[id]", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          hardware_uuid: "44444444-4444-4444-4444-444444444444",
           os: "Windows 11",
           cpu: "Intel i9",
           gpu: "RTX 3080",

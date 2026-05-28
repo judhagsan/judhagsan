@@ -23,7 +23,7 @@ function Section({ icon: Icon, title, children }) {
 export default function CardContato({ onClose }) {
   return (
     <div className="w-full h-full">
-      <div className="glass-card rounded-[35px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
         <div className="shrink-0 mb-5 flex items-center justify-between gap-4 relative z-10">

@@ -39,7 +39,10 @@ function formatRelative(iso) {
 
 function osLabel(os) {
   if (!os) return "Dispositivo";
-  return os;
+  // O `sw_vers` no macOS devolve "macOS 26.5" com inicial minúscula
+  // (branding oficial da Apple). Capitalizamos pra deixar consistente com o
+  // restante das linhas, que começam com a label do componente em maiúscula.
+  return os.charAt(0).toUpperCase() + os.slice(1);
 }
 
 export default function CardDispositivos() {
@@ -82,7 +85,7 @@ export default function CardDispositivos() {
 
   return (
     <div className="w-full">
-      <div className="glass-card rounded-[35px] p-6 shadow-2xl relative overflow-hidden flex flex-col group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+      <div className="glass-card rounded-[20px] p-3 shadow-2xl relative overflow-hidden flex flex-col group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
         <h3 className="text-xl font-semibold text-white/90 mb-4 flex items-center gap-2 relative z-10">
@@ -111,7 +114,7 @@ export default function CardDispositivos() {
           {data?.map((device) => (
             <div
               key={device.id}
-              className={`rounded-xl bg-white/5 border border-white/10 p-4 flex flex-col gap-3 transition-opacity ${
+              className={`rounded-xl bg-white/5 border border-white/10 p-2 flex flex-col gap-3 transition-opacity ${
                 device.upload_paused ? "opacity-60" : ""
               }`}
             >
@@ -121,15 +124,29 @@ export default function CardDispositivos() {
                   className="text-cyan-300 mt-0.5 shrink-0"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-white/90 font-semibold text-base truncate">
-                    {osLabel(device.os)}
-                  </p>
-                  <p className="text-white/60 text-sm leading-relaxed mt-1 break-all">
-                    {[device.cpu, formatRam(device.ram_bytes), device.gpu]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </p>
-                  <p className="text-white/40 text-xs mt-1">
+                  {/* Specs: uma linha por campo, todas com mesma cor, peso
+                      e tamanho — inclui o SO como mais um item da lista.
+                      A versão do Pindorama + relative time fica numa fonte
+                      mais discreta pra agir como rodapé. */}
+                  <div className="flex flex-col gap-0.5 text-white text-sm leading-relaxed">
+                    <p className="break-all">SO: {osLabel(device.os)}</p>
+                    {device.cpu && (
+                      <p className="break-all">CPU: {device.cpu}</p>
+                    )}
+                    {device.ram_bytes != null && (
+                      <p>RAM: {formatRam(device.ram_bytes)}</p>
+                    )}
+                    {device.gpu && (
+                      <p className="break-all">GPU: {device.gpu}</p>
+                    )}
+                    {device.monitor && (
+                      <p className="break-all">Monitor: {device.monitor}</p>
+                    )}
+                    {device.tablet && (
+                      <p className="break-all">Mesa: {device.tablet}</p>
+                    )}
+                  </div>
+                  <p className="text-white/40 text-xs mt-2">
                     Pindorama v{device.pindorama_version || "?"} ·{" "}
                     {formatRelative(device.last_seen_at)}
                     {device.upload_paused && (
