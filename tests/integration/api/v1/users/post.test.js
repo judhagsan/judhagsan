@@ -136,8 +136,7 @@ describe("POST /api/v1/users", () => {
 
       expect(responseBody).toEqual({
         name: "ValidationError",
-        message:
-          "É necessário aceitar a Política de Privacidade para se cadastrar.",
+        message: "É necessário aceitar os Termos de Uso para se cadastrar.",
         action: "Marque a opção de aceite e tente novamente.",
         status_code: 400,
       });

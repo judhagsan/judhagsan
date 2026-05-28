@@ -30,7 +30,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick }) {
 
     if (!privacyAccepted) {
       setErrorMessage(
-        "É necessário aceitar a Política de Privacidade para se cadastrar.",
+        "É necessário aceitar os Termos de Uso para se cadastrar.",
       );
       return;
     }
@@ -72,7 +72,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick }) {
 
   return (
     <div className="w-full h-full">
-      <div className="glass-card rounded-[35px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
         <h2 className="text-xl font-semibold text-white/90 mb-6 flex items-center gap-2 relative z-10">
@@ -189,14 +189,14 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick }) {
                 className="mt-0.5 w-4 h-4 accent-cyan-400 cursor-pointer shrink-0"
               />
               <span className="text-xs text-white/60 leading-relaxed">
-                Li e aceito a{" "}
+                Li e aceito os{" "}
                 {onPrivacyClick ? (
                   <button
                     type="button"
                     onClick={onPrivacyClick}
                     className="cursor-pointer text-cyan-300 hover:text-cyan-200 transition-colors"
                   >
-                    Política de Privacidade
+                    Termos de Uso
                   </button>
                 ) : (
                   <Link
@@ -204,7 +204,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick }) {
                     target="_blank"
                     className="text-cyan-300 hover:text-cyan-200 transition-colors"
                   >
-                    Política de Privacidade
+                    Termos de Uso
                   </Link>
                 )}
                 .

@@ -140,8 +140,7 @@ async function create(userInputValues) {
 function validatePrivacyAcceptance(userInputValues) {
   if (userInputValues.privacy_accepted !== true) {
     throw new ValidationError({
-      message:
-        "É necessário aceitar a Política de Privacidade para se cadastrar.",
+      message: "É necessário aceitar os Termos de Uso para se cadastrar.",
       action: "Marque a opção de aceite e tente novamente.",
     });
   }
