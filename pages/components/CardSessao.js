@@ -22,7 +22,7 @@ function getStageLabel(version) {
 const PLATFORMS = {
   windows: {
     label: "Windows",
-    available: false,
+    available: true,
     classes:
       "bg-blue-500/10 hover:bg-blue-500/30 border-blue-500/30 hover:border-blue-500/60 text-blue-200 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]",
     iconHover: "group-hover:text-blue-400",
