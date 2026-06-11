@@ -49,7 +49,17 @@ export default function CardDispositivos() {
   const { data, error, isLoading, mutate } = useSWR(
     "/api/v1/devices",
     fetcher,
-    { revalidateOnFocus: false },
+    {
+      revalidateOnFocus: false,
+      // 4xx é determinístico (sessão expirada ou conta sem a feature) —
+      // re-tentar só martela o servidor e polui o console. Erros de rede
+      // e 5xx mantêm retry com backoff, limitado a 3 tentativas.
+      onErrorRetry: (err, _key, _config, revalidate, { retryCount }) => {
+        if (err?.status >= 400 && err?.status < 500) return;
+        if (retryCount >= 3) return;
+        setTimeout(() => revalidate({ retryCount }), 5000 * (retryCount + 1));
+      },
+    },
   );
   const [busyId, setBusyId] = useState(null);
 
