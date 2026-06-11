@@ -5,27 +5,25 @@ export default function CardYoutube() {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // API Configuration
-  const API_KEY = "AIzaSyDgmq-MS8a0vzMaDhaM91htD-taz-2lY1A";
   const CHANNEL_ID = "UCVqzru2hZO3pX7IjjkSGDyQ"; // Channel: @Judhagsan
 
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const response = await fetch(
-          `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=3&type=video`,
-        );
+        // Server-side proxy do feed RSS do canal (sem chave de API, sem
+        // quota, com cache CDN) — ver pages/api/v1/youtube.
+        const response = await fetch("/api/v1/youtube");
 
         if (!response.ok) throw new Error("API call failed");
 
         const data = await response.json();
 
-        const formattedVideos = data.items.map((item) => ({
-          id: item.id.videoId,
-          title: item.snippet.title, // NOTE: Titles might have HTML entities
-          thumbnail: item.snippet.thumbnails.medium.url,
-          views: "Watch Now", // Search API doesn't allow fetching views in the same request easily without extra quota
-          date: new Date(item.snippet.publishedAt).toLocaleDateString(),
+        const formattedVideos = data.map((item) => ({
+          id: item.id,
+          title: item.title,
+          thumbnail: item.thumbnail,
+          views: "Assistir",
+          date: new Date(item.publishedAt).toLocaleDateString("pt-BR"),
         }));
 
         setVideos(formattedVideos);
@@ -36,10 +34,10 @@ export default function CardYoutube() {
         setVideos([
           {
             id: 1,
-            title: "API Error or Quota Exceeded - Mock Data",
+            title: "Não foi possível carregar os vídeos",
             thumbnail: "https://img.youtube.com/vi/5qap5aO4i9A/mqdefault.jpg",
-            views: "0 views",
-            date: "Today",
+            views: "—",
+            date: "Hoje",
           },
         ]);
         setLoading(false);
@@ -61,7 +59,7 @@ export default function CardYoutube() {
               <PlayIcon size={16} />
             </div>
             <h2 className="text-xl font-bold tracking-tight text-white">
-              Latest Videos
+              Últimos vídeos
             </h2>
           </div>
           <a
@@ -70,7 +68,7 @@ export default function CardYoutube() {
             rel="noopener noreferrer"
             className="text-xs font-semibold text-white/50 hover:text-white transition-colors uppercase tracking-wider bg-white/5 px-3 py-1 rounded-full cursor-pointer decoration-transparent"
           >
-            View All
+            Ver todos
           </a>
         </div>
 
