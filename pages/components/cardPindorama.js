@@ -16,21 +16,21 @@ export default function CardPindorama({ onDownloadClick }) {
               className="w-full h-full object-cover rounded-full"
             />
           </div>
-          <h2 className="text-2xl font-bold tracking-tight text-white">
+          <h2 className="text-xl lg:text-2xl font-bold tracking-tight text-white">
             Pindorama
           </h2>
         </div>
 
         {/* Content - Centered in remaining space */}
         <div className="flex-1 flex flex-col items-center justify-center text-center mt-6 mb-2">
-          <p className="text-zinc-300 mb-10 max-w-2xl leading-relaxed text-lg font-medium">
+          <p className="text-zinc-300 mb-6 lg:mb-10 max-w-2xl leading-relaxed text-base lg:text-lg font-medium">
             Desenvolvido de animador para animador. Combine a arte do
             frame-a-frame com a eficiência da animação 2D vetorial. Uma engine
             poderosa para mixed media, otimizada para entregar máxima
             performance respeitando o seu hardware.
           </p>
 
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-3 lg:gap-4 justify-center">
             {/* Download (opens login card) */}
             {onDownloadClick ? (
               <button

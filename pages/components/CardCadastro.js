@@ -118,7 +118,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick }) {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 autoComplete="username"
-                className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors"
+                className="px-3 py-3 lg:py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-base lg:text-sm"
                 placeholder="seu_usuario"
               />
             </label>
@@ -133,12 +133,12 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick }) {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
-                className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors"
+                className="px-3 py-3 lg:py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-base lg:text-sm"
                 placeholder="voce@exemplo.com"
               />
             </label>
 
-            <div className="flex gap-3">
+            <div className="flex flex-col lg:flex-row gap-3">
               <label className="flex flex-col gap-1 flex-1">
                 <span className="text-xs uppercase tracking-widest text-white/50">
                   Senha
@@ -150,7 +150,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick }) {
                   required
                   autoComplete="new-password"
                   minLength={8}
-                  className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors"
+                  className="px-3 py-3 lg:py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-base lg:text-sm"
                   placeholder="mín. 8 caracteres"
                 />
               </label>
@@ -165,7 +165,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick }) {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   autoComplete="new-password"
-                  className={`px-3 py-2 rounded-xl bg-white/5 border outline-none text-white placeholder-white/30 transition-colors focus:bg-white/10 ${
+                  className={`px-3 py-3 lg:py-2 rounded-xl bg-white/5 border outline-none text-white placeholder-white/30 transition-colors focus:bg-white/10 text-base lg:text-sm ${
                     passwordsMismatch
                       ? "border-red-400/60 focus:border-red-400"
                       : "border-white/10 focus:border-cyan-400/60"
@@ -218,7 +218,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick }) {
             <button
               type="submit"
               disabled={isSubmitting || passwordsMismatch || !privacyAccepted}
-              className="cursor-pointer mt-2 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-semibold text-base"
+              className="cursor-pointer mt-2 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-semibold text-base w-full lg:w-auto"
             >
               {isSubmitting ? "Cadastrando..." : "Cadastrar"}
             </button>
