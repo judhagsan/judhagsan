@@ -150,7 +150,7 @@ export default function CardUsuario({ user }) {
               <PersonFillIcon size={28} />
             </div>
             <div className="flex flex-col items-center gap-1">
-              <p className="text-2xl text-white font-semibold">
+              <p className="text-xl lg:text-2xl text-white font-semibold">
                 Bem vindo,{" "}
                 <span className="text-cyan-300">{user?.username}</span>
               </p>

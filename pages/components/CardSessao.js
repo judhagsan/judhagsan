@@ -114,7 +114,7 @@ export default function CardSessao() {
             />
           </div>
           <div className="flex items-baseline gap-3">
-            <h2 className="text-2xl font-bold tracking-tight text-white">
+            <h2 className="text-xl lg:text-2xl font-bold tracking-tight text-white">
               Pindorama
             </h2>
             {versionLabel && (
@@ -127,7 +127,7 @@ export default function CardSessao() {
 
         {/* Content */}
         <div className="flex-1 flex flex-col items-center justify-center text-center mt-6 mb-2">
-          <p className="text-zinc-300 mb-6 max-w-2xl leading-relaxed text-lg font-medium">
+          <p className="text-zinc-300 mb-6 max-w-2xl leading-relaxed text-base lg:text-lg font-medium">
             Desenvolvido de animador para animador. Combine a arte do
             frame-a-frame com a eficiência da animação 2D vetorial. Uma engine
             poderosa para mixed media, otimizada para entregar máxima
@@ -141,7 +141,7 @@ export default function CardSessao() {
             </div>
           )}
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-3">
             {Object.keys(PLATFORMS).map((key) => (
               <PlatformButton
                 key={key}

@@ -60,7 +60,7 @@ export default function CardLogin({ onCadastroClick }) {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors"
+              className="px-3 py-3 lg:py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-base lg:text-sm"
               placeholder="voce@exemplo.com"
             />
           </label>
@@ -75,7 +75,7 @@ export default function CardLogin({ onCadastroClick }) {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
-              className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors"
+              className="px-3 py-3 lg:py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-base lg:text-sm"
               placeholder="••••••••"
             />
           </label>
@@ -90,7 +90,7 @@ export default function CardLogin({ onCadastroClick }) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="cursor-pointer mt-2 inline-flex items-center justify-center gap-2 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-semibold text-base"
+            className="cursor-pointer mt-2 inline-flex items-center justify-center gap-2 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-semibold text-base w-full lg:w-auto"
           >
             <SignInIcon size={18} />
             {isSubmitting ? "Entrando..." : "Entrar"}

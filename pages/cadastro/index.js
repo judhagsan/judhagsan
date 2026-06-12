@@ -19,17 +19,29 @@ export default function CadastroPage() {
       {/* Main Container (The "Clear" Window) */}
       <div className="relative z-10 w-full h-full rounded-[20px] overflow-hidden border border-white/5 shadow-[inset_0px_0px_50px_rgba(0,0,0,0.9)] flex">
         {/* Main Content Area */}
-        <div className="relative z-10 flex-1 flex flex-col p-10">
+        <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-10 gap-6 lg:gap-0 overflow-y-auto lg:overflow-hidden">
           {/* Center Section - Cadastro + Privacidade panel */}
-          <div className="flex-1 flex items-center justify-center min-h-0 gap-6 -mt-8">
-            <div className="w-1/3 shrink-0">
+          <div className="lg:flex-1 flex flex-col lg:flex-row items-stretch lg:items-center justify-start lg:justify-center min-h-0 gap-4 lg:gap-6 lg:-mt-8">
+            <div className="w-full max-w-md lg:w-1/3 shrink-0">
               <CardCadastro onPrivacyClick={() => setActivePanel("privacy")} />
             </div>
 
+            {/* Side panel — full-screen overlay on mobile */}
+            {activePanel && (
+              <div
+                className="fixed inset-0 z-[52] bg-black/70 backdrop-blur-sm lg:hidden"
+                onClick={closeSidePanel}
+              />
+            )}
             <div
-              className={`transition-all duration-500 ease-out overflow-hidden h-[90%] ${
-                activePanel ? "w-3/5 opacity-100" : "w-0 opacity-0"
-              }`}
+              className={`
+                ${
+                  activePanel
+                    ? "fixed inset-2 top-14 z-[53] lg:relative lg:inset-auto lg:top-auto lg:z-auto lg:w-3/5 lg:opacity-100"
+                    : "hidden lg:block lg:w-0 lg:opacity-0"
+                }
+                transition-all duration-500 ease-out overflow-hidden lg:h-[90%]
+              `}
             >
               {activePanel === "privacy" && (
                 <CardPrivacidade onClose={closeSidePanel} />
@@ -40,7 +52,7 @@ export default function CadastroPage() {
             </div>
           </div>
 
-          <div className="mt-auto flex items-end w-full -mb-8">
+          <div className="mt-auto flex items-end w-full lg:-mb-8">
             {/* Bottom Section - YouTube Card */}
             <CardYoutube />
           </div>
