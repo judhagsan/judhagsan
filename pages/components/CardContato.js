@@ -27,7 +27,7 @@ export default function CardContato({ onClose }) {
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
         <div className="shrink-0 mb-5 flex items-center justify-between gap-4 relative z-10">
-          <h2 className="text-xl font-semibold text-white/90 flex items-center gap-2">
+          <h2 className="text-lg lg:text-xl font-semibold text-white/90 flex items-center gap-2">
             <CommentDiscussionIcon size={20} className="text-cyan-300" />
             Contato
           </h2>
