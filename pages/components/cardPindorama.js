@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { DownloadIcon } from "@primer/octicons-react";
+import useLanguage from "hooks/useLanguage";
 
 export default function CardPindorama({ onDownloadClick }) {
+  const { t } = useLanguage();
   return (
     <div className="w-full h-auto lg:h-auto">
       <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-auto">
@@ -24,10 +26,7 @@ export default function CardPindorama({ onDownloadClick }) {
         {/* Content - Centered in remaining space */}
         <div className="flex-1 flex flex-col items-center justify-center text-center mt-4 mb-2">
           <p className="text-zinc-300 mb-6 lg:mb-10 max-w-2xl leading-relaxed text-base lg:text-lg font-medium">
-            Desenvolvido de animador para animador. Combine a arte do
-            frame-a-frame com a eficiência da animação 2D vetorial. Uma engine
-            poderosa para mixed media, otimizada para entregar máxima
-            performance respeitando o seu hardware.
+            {t("pindorama_desc")}
           </p>
 
           <div className="flex flex-col items-center gap-4">
@@ -43,7 +42,9 @@ export default function CardPindorama({ onDownloadClick }) {
                     size={20}
                     className="group-hover:text-cyan-400 transition-colors"
                   />
-                  <span className="font-semibold text-base">Download</span>
+                  <span className="font-semibold text-base">
+                    {t("Download")}
+                  </span>
                 </button>
               ) : (
                 <Link
@@ -54,13 +55,15 @@ export default function CardPindorama({ onDownloadClick }) {
                     size={20}
                     className="group-hover:text-cyan-400 transition-colors"
                   />
-                  <span className="font-semibold text-base">Download</span>
+                  <span className="font-semibold text-base">
+                    {t("Download")}
+                  </span>
                 </Link>
               )}
             </div>
 
             <p className="text-xs text-zinc-400 tracking-wide select-none">
-              * É necessário fazer cadastro/login para efetuar o download.
+              {t("pindorama_footer")}
             </p>
           </div>
         </div>

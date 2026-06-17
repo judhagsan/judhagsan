@@ -6,8 +6,10 @@ import {
   AlertFillIcon,
   ArrowLeftIcon,
 } from "@primer/octicons-react";
+import useLanguage from "hooks/useLanguage";
 
 export default function CardLogin({ onCadastroClick, onBack }) {
+  const { t } = useLanguage();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,13 +31,13 @@ export default function CardLogin({ onCadastroClick, onBack }) {
       const responseBody = await response.json();
 
       if (!response.ok) {
-        setErrorMessage(responseBody.message || "Não foi possível entrar.");
+        setErrorMessage(responseBody.message || t("Login falhou"));
         return;
       }
 
       router.push("/sessao");
     } catch {
-      setErrorMessage("Erro de conexão. Tente novamente.");
+      setErrorMessage(t("Erro de conexao"));
     } finally {
       setIsSubmitting(false);
     }
@@ -61,7 +63,7 @@ export default function CardLogin({ onCadastroClick, onBack }) {
             <SignInIcon size={20} />
           </div>
           <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
-            Login
+            {t("Login")}
           </h2>
         </div>
 
@@ -71,7 +73,7 @@ export default function CardLogin({ onCadastroClick, onBack }) {
         >
           <label className="flex flex-col gap-1">
             <span className="text-xs uppercase tracking-widest text-white/50">
-              Email
+              {t("Email")}
             </span>
             <input
               type="email"
@@ -86,7 +88,7 @@ export default function CardLogin({ onCadastroClick, onBack }) {
 
           <label className="flex flex-col gap-1">
             <span className="text-xs uppercase tracking-widest text-white/50">
-              Senha
+              {t("Senha")}
             </span>
             <input
               type="password"
@@ -112,25 +114,25 @@ export default function CardLogin({ onCadastroClick, onBack }) {
             className="cursor-pointer mt-2 inline-flex items-center justify-center gap-2 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-semibold text-base w-full lg:w-auto"
           >
             <SignInIcon size={18} />
-            {isSubmitting ? "Entrando..." : "Entrar"}
+            {isSubmitting ? t("Entrando...") : t("Entrar")}
           </button>
 
           <p className="text-xs text-white/50 text-center mt-2">
-            Não tem conta?{" "}
+            {t("Nao tem conta?")}{" "}
             {onCadastroClick ? (
               <button
                 type="button"
                 onClick={onCadastroClick}
                 className="cursor-pointer text-cyan-300 hover:text-cyan-200 transition-colors"
               >
-                Cadastrar
+                {t("Cadastrar")}
               </button>
             ) : (
               <Link
                 href="/cadastro"
                 className="text-cyan-300 hover:text-cyan-200 transition-colors"
               >
-                Cadastrar
+                {t("Cadastrar")}
               </Link>
             )}
           </p>

@@ -7,15 +7,17 @@ import CardPrivacidade from "../components/CardPrivacidade";
 import CardContato from "../components/CardContato";
 import MainFrame from "../components/MainFrame";
 import useSidePanel from "hooks/useSidePanel";
+import useLanguage from "hooks/useLanguage";
 
 export default function CadastroPage() {
   const router = useRouter();
   const { activePanel, setActivePanel, close: closeSidePanel } = useSidePanel();
+  const { t } = useLanguage();
 
   return (
     <MainFrame>
       <Head>
-        <title>Cadastro · JUDHAGSAN</title>
+        <title>{t("Cadastro")} · JUDHAGSAN</title>
         <link rel="icon" href="/favicon.png" />
       </Head>
 

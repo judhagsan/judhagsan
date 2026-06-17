@@ -2,12 +2,15 @@ import Head from "next/head";
 import CardYoutube from "../components/cardYoutube";
 import CardPrivacidade from "../components/CardPrivacidade";
 import MainFrame from "../components/MainFrame";
+import useLanguage from "hooks/useLanguage";
 
 export default function PrivacidadePage() {
+  const { t } = useLanguage();
+
   return (
     <MainFrame>
       <Head>
-        <title>Termos de Uso · JUDHAGSAN</title>
+        <title>{t("Termos de Uso")} · JUDHAGSAN</title>
         <link rel="icon" href="/favicon.png" />
       </Head>
 

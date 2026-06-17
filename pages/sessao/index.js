@@ -10,11 +10,13 @@ import CardContato from "../components/CardContato";
 import MainFrame from "../components/MainFrame";
 import useUser from "hooks/useUser";
 import useSidePanel from "hooks/useSidePanel";
+import useLanguage from "hooks/useLanguage";
 
 export default function SessaoPage() {
   const router = useRouter();
   const { user, isLoading, isLoggedIn } = useUser();
   const { activePanel, close: closeSidePanel } = useSidePanel();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!isLoading && !isLoggedIn) {
@@ -25,7 +27,7 @@ export default function SessaoPage() {
   return (
     <MainFrame>
       <Head>
-        <title>Sessão · JUDHAGSAN</title>
+        <title>{t("Sessao")} · JUDHAGSAN</title>
         <link rel="icon" href="/favicon.png" />
       </Head>
 

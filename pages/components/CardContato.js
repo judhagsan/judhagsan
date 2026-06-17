@@ -9,6 +9,7 @@ import {
   CheckCircleFillIcon,
   AlertFillIcon,
 } from "@primer/octicons-react";
+import useLanguage from "hooks/useLanguage";
 
 function Section({ icon: Icon, title, children }) {
   return (
@@ -25,6 +26,7 @@ function Section({ icon: Icon, title, children }) {
 }
 
 export default function CardContato({ onClose }) {
+  const { language, t } = useLanguage();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -48,9 +50,7 @@ export default function CardContato({ onClose }) {
       const data = await response.json();
 
       if (!response.ok) {
-        setErrorMessage(
-          data.message || "Ocorreu um erro ao enviar a mensagem.",
-        );
+        setErrorMessage(data.message || t("Erro ao enviar mensagem"));
         setStatus("error");
         return;
       }
@@ -60,9 +60,7 @@ export default function CardContato({ onClose }) {
       setEmail("");
       setMessage("");
     } catch {
-      setErrorMessage(
-        "Erro de conexão. Verifique se você está online e tente novamente.",
-      );
+      setErrorMessage(t("Erro conexao contato"));
       setStatus("error");
     }
   }
@@ -88,7 +86,7 @@ export default function CardContato({ onClose }) {
             <CommentDiscussionIcon size={20} />
           </div>
           <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
-            Contato
+            {t("Contato")}
           </h2>
         </div>
 
@@ -103,18 +101,17 @@ export default function CardContato({ onClose }) {
                     <CheckCircleFillIcon size={24} />
                   </div>
                   <p className="text-base text-white/90 font-semibold">
-                    Mensagem enviada!
+                    {t("Mensagem enviada!")}
                   </p>
                   <p className="text-xs leading-relaxed max-w-xs">
-                    Sua mensagem foi entregue com sucesso. Responderemos o mais
-                    breve possível.
+                    {t("Sucesso ao enviar mensagem")}
                   </p>
                   <button
                     type="button"
                     onClick={() => setStatus("idle")}
                     className="cursor-pointer mt-4 inline-flex items-center gap-2 px-6 py-2.5 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 active:scale-95 font-semibold text-sm"
                   >
-                    Enviar outra mensagem
+                    {t("Enviar outra mensagem")}
                   </button>
                 </div>
               ) : (
@@ -125,7 +122,7 @@ export default function CardContato({ onClose }) {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <label className="flex flex-col gap-1.5">
                       <span className="text-xs uppercase tracking-widest text-white/50">
-                        Nome
+                        {t("Nome")}
                       </span>
                       <input
                         type="text"
@@ -134,13 +131,13 @@ export default function CardContato({ onClose }) {
                         required
                         disabled={status === "loading"}
                         className="px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-sm"
-                        placeholder="Seu nome"
+                        placeholder={t("Seu nome")}
                       />
                     </label>
 
                     <label className="flex flex-col gap-1.5">
                       <span className="text-xs uppercase tracking-widest text-white/50">
-                        Email
+                        {t("Email")}
                       </span>
                       <input
                         type="email"
@@ -156,7 +153,7 @@ export default function CardContato({ onClose }) {
 
                   <label className="flex flex-col gap-1.5">
                     <span className="text-xs uppercase tracking-widest text-white/50">
-                      Mensagem
+                      {t("Mensagem")}
                     </span>
                     <textarea
                       value={message}
@@ -165,7 +162,7 @@ export default function CardContato({ onClose }) {
                       rows={8}
                       disabled={status === "loading"}
                       className="px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-sm resize-none"
-                      placeholder="Escreva sua mensagem aqui..."
+                      placeholder={t("Escreva sua mensagem aqui...")}
                     />
                   </label>
 
@@ -184,12 +181,12 @@ export default function CardContato({ onClose }) {
                     {status === "loading" ? (
                       <>
                         <SyncIcon size={16} className="animate-spin" />
-                        Enviando...
+                        {t("Enviando...")}
                       </>
                     ) : (
                       <>
                         <MailIcon size={16} />
-                        Enviar mensagem
+                        {t("Enviar mensagem")}
                       </>
                     )}
                   </button>
@@ -199,49 +196,104 @@ export default function CardContato({ onClose }) {
 
             {/* Right Column: Info (1/3 width on desktop) */}
             <div className="flex flex-col gap-6 lg:border-l lg:border-white/10 lg:pl-6">
-              <Section icon={QuestionIcon} title="Dúvidas gerais">
-                <p>
-                  Para perguntas sobre o site, o software{" "}
-                  <span className="text-cyan-300">Pindorama</span> ou parcerias,
-                  envie o email pelo formulário ou diretamente para o email{" "}
-                  <a
-                    href="mailto:contato@judhagsan.com"
-                    className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
-                  >
-                    <MailIcon size={14} />
-                    contato@judhagsan.com
-                  </a>
-                  .
-                </p>
-                <p>Responderemos em até 5 dias úteis.</p>
-              </Section>
+              {language === "en" ? (
+                <>
+                  <Section icon={QuestionIcon} title="General questions">
+                    <p>
+                      For questions regarding the website, the{" "}
+                      <span className="text-cyan-300">Pindorama</span> software,
+                      or partnerships, send an email through the form or
+                      directly to{" "}
+                      <a
+                        href="mailto:contato@judhagsan.com"
+                        className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
+                      >
+                        <MailIcon size={14} />
+                        contato@judhagsan.com
+                      </a>
+                      .
+                    </p>
+                    <p>We will respond within 5 business days.</p>
+                  </Section>
 
-              <Section icon={ShieldIcon} title="Vulnerabilidades de segurança">
-                <p>
-                  Se você encontrou uma vulnerabilidade de segurança no site ou
-                  no Pindorama, por favor reporte de forma{" "}
-                  <span className="text-white/90">privada</span> para{" "}
-                  <a
-                    href="mailto:contato@judhagsan.com?subject=Security%20-%20Vulnerabilidade"
-                    className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
+                  <Section icon={ShieldIcon} title="Security vulnerabilities">
+                    <p>
+                      If you found a security vulnerability in the website or in
+                      Pindorama, please report it{" "}
+                      <span className="text-white/90">privately</span> to{" "}
+                      <a
+                        href="mailto:contato@judhagsan.com?subject=Security%20-%20Vulnerability"
+                        className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
+                      >
+                        <MailIcon size={14} />
+                        contato@judhagsan.com
+                      </a>{" "}
+                      with the subject{" "}
+                      <span className="text-white/90">
+                        &quot;Security - Vulnerability&quot;
+                      </span>
+                      .
+                    </p>
+                    <p>
+                      We ask you{" "}
+                      <span className="text-white/90">
+                        not to disclose publicly
+                      </span>{" "}
+                      before we have a chance to patch it.
+                    </p>
+                  </Section>
+                </>
+              ) : (
+                <>
+                  <Section icon={QuestionIcon} title="Dúvidas gerais">
+                    <p>
+                      Para perguntas sobre o site, o software{" "}
+                      <span className="text-cyan-300">Pindorama</span> ou
+                      parcerias, envie o email pelo formulário ou diretamente
+                      para o email{" "}
+                      <a
+                        href="mailto:contato@judhagsan.com"
+                        className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
+                      >
+                        <MailIcon size={14} />
+                        contato@judhagsan.com
+                      </a>
+                      .
+                    </p>
+                    <p>Responderemos em até 5 dias úteis.</p>
+                  </Section>
+
+                  <Section
+                    icon={ShieldIcon}
+                    title="Vulnerabilidades de segurança"
                   >
-                    <MailIcon size={14} />
-                    contato@judhagsan.com
-                  </a>{" "}
-                  com o assunto{" "}
-                  <span className="text-white/90">
-                    &quot;Security - Vulnerabilidade&quot;
-                  </span>
-                  .
-                </p>
-                <p>
-                  Pedimos para{" "}
-                  <span className="text-white/90">
-                    não divulgar publicamente
-                  </span>{" "}
-                  antes de termos chance de corrigir.
-                </p>
-              </Section>
+                    <p>
+                      Se você encontrou uma vulnerabilidade de segurança no site
+                      ou no Pindorama, por favor reporte de forma{" "}
+                      <span className="text-white/90">privada</span> para{" "}
+                      <a
+                        href="mailto:contato@judhagsan.com?subject=Security%20-%20Vulnerabilidade"
+                        className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
+                      >
+                        <MailIcon size={14} />
+                        contato@judhagsan.com
+                      </a>{" "}
+                      com o assunto{" "}
+                      <span className="text-white/90">
+                        &quot;Security - Vulnerabilidade&quot;
+                      </span>
+                      .
+                    </p>
+                    <p>
+                      Pedimos para{" "}
+                      <span className="text-white/90">
+                        não divulgar publicamente
+                      </span>{" "}
+                      antes de termos chance de corrigir.
+                    </p>
+                  </Section>
+                </>
+              )}
             </div>
           </div>
         </div>

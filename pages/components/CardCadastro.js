@@ -6,8 +6,10 @@ import {
   ArrowLeftIcon,
   PersonFillIcon,
 } from "@primer/octicons-react";
+import useLanguage from "hooks/useLanguage";
 
 export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
+  const { t } = useLanguage();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,19 +26,17 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
     event.preventDefault();
 
     if (password.length < 8) {
-      setErrorMessage("A senha deve ter no mínimo 8 caracteres.");
+      setErrorMessage(t("A senha deve ter no minimo 8 caracteres"));
       return;
     }
 
     if (password !== confirmPassword) {
-      setErrorMessage("As senhas não conferem.");
+      setErrorMessage(t("As senhas nao conferem"));
       return;
     }
 
     if (!privacyAccepted) {
-      setErrorMessage(
-        "É necessário aceitar os Termos de Uso para se cadastrar.",
-      );
+      setErrorMessage(t("Aceitar termos obrigadorio"));
       return;
     }
 
@@ -58,7 +58,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
       const responseBody = await response.json();
 
       if (!response.ok) {
-        setErrorMessage(responseBody.message || "Não foi possível cadastrar.");
+        setErrorMessage(responseBody.message || t("Cadastro falhou"));
         return;
       }
 
@@ -69,7 +69,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
       setConfirmPassword("");
       setPrivacyAccepted(false);
     } catch {
-      setErrorMessage("Erro de conexão. Tente novamente.");
+      setErrorMessage(t("Erro de conexao"));
     } finally {
       setIsSubmitting(false);
     }
@@ -95,7 +95,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
             <PersonFillIcon size={20} />
           </div>
           <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
-            Cadastro
+            {t("Cadastro")}
           </h2>
         </div>
 
@@ -105,14 +105,12 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
               <CheckCircleFillIcon size={24} />
             </div>
             <p className="text-base text-white/90 font-semibold">
-              Verifique seu email
+              {t("Verifique seu email")}
             </p>
             <p className="text-xs leading-relaxed max-w-xs flex items-start gap-2 justify-center">
               <MailIcon size={14} className="mt-0.5 text-cyan-300 shrink-0" />
               <span>
-                Se <span className="text-cyan-300">{registeredEmail}</span>{" "}
-                ainda não estava cadastrado, enviamos um link de ativação. Caso
-                contrário, você receberá uma notificação sobre a tentativa.
+                {t("Email de ativacao enviado", { email: registeredEmail })}
               </span>
             </p>
             <button
@@ -120,7 +118,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
               onClick={() => setRegisteredEmail("")}
               className="cursor-pointer mt-2 text-xs uppercase tracking-widest text-white/50 hover:text-white transition-colors"
             >
-              Cadastrar outra conta
+              {t("Cadastrar outra conta")}
             </button>
           </div>
         ) : (
@@ -130,7 +128,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
           >
             <label className="flex flex-col gap-1">
               <span className="text-xs uppercase tracking-widest text-white/50">
-                Username
+                {t("Username")}
               </span>
               <input
                 type="text"
@@ -139,13 +137,13 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
                 required
                 autoComplete="username"
                 className="px-3 py-3 lg:py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-base lg:text-sm"
-                placeholder="seu_usuario"
+                placeholder={t("seu_usuario")}
               />
             </label>
 
             <label className="flex flex-col gap-1">
               <span className="text-xs uppercase tracking-widest text-white/50">
-                Email
+                {t("Email")}
               </span>
               <input
                 type="email"
@@ -161,7 +159,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
             <div className="flex flex-col lg:flex-row gap-3">
               <label className="flex flex-col gap-1 flex-1">
                 <span className="text-xs uppercase tracking-widest text-white/50">
-                  Senha
+                  {t("Senha")}
                 </span>
                 <input
                   type="password"
@@ -171,13 +169,13 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
                   autoComplete="new-password"
                   minLength={8}
                   className="px-3 py-3 lg:py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-base lg:text-sm"
-                  placeholder="mín. 8 caracteres"
+                  placeholder={t("min_char")}
                 />
               </label>
 
               <label className="flex flex-col gap-1 flex-1">
                 <span className="text-xs uppercase tracking-widest text-white/50">
-                  Confirmar
+                  {t("Confirmar")}
                 </span>
                 <input
                   type="password"
@@ -197,7 +195,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
 
             {passwordsMismatch && (
               <p className="text-red-300 text-xs -mt-2">
-                As senhas não conferem.
+                {t("As senhas nao conferem")}
               </p>
             )}
 
@@ -209,14 +207,14 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
                 className="mt-0.5 w-4 h-4 accent-cyan-400 cursor-pointer shrink-0"
               />
               <span className="text-xs text-white/60 leading-relaxed">
-                Li e aceito os{" "}
+                {t("Li e aceito os")}{" "}
                 {onPrivacyClick ? (
                   <button
                     type="button"
                     onClick={onPrivacyClick}
                     className="cursor-pointer text-cyan-300 hover:text-cyan-200 transition-colors"
                   >
-                    Termos de Uso
+                    {t("Termos de Uso")}
                   </button>
                 ) : (
                   <Link
@@ -224,7 +222,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
                     target="_blank"
                     className="text-cyan-300 hover:text-cyan-200 transition-colors"
                   >
-                    Termos de Uso
+                    {t("Termos de Uso")}
                   </Link>
                 )}
                 .
@@ -240,25 +238,25 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
               disabled={isSubmitting || passwordsMismatch || !privacyAccepted}
               className="cursor-pointer mt-2 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-semibold text-base w-full lg:w-auto"
             >
-              {isSubmitting ? "Cadastrando..." : "Cadastrar"}
+              {isSubmitting ? t("Cadastrando...") : t("Cadastrar")}
             </button>
 
             <p className="text-xs text-white/50 text-center mt-2">
-              Já tem conta?{" "}
+              {t("Ja tem conta?")}{" "}
               {onLoginClick ? (
                 <button
                   type="button"
                   onClick={onLoginClick}
                   className="cursor-pointer text-cyan-300 hover:text-cyan-200 transition-colors"
                 >
-                  Entrar
+                  {t("Entrar")}
                 </button>
               ) : (
                 <Link
                   href="/login"
                   className="text-cyan-300 hover:text-cyan-200 transition-colors"
                 >
-                  Entrar
+                  {t("Entrar")}
                 </Link>
               )}
             </p>

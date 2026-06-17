@@ -2,12 +2,15 @@ import Head from "next/head";
 import CardYoutube from "../components/cardYoutube";
 import CardContato from "../components/CardContato";
 import MainFrame from "../components/MainFrame";
+import useLanguage from "hooks/useLanguage";
 
 export default function ContatoPage() {
+  const { t } = useLanguage();
+
   return (
     <MainFrame>
       <Head>
-        <title>Contato · JUDHAGSAN</title>
+        <title>{t("Contato")} · JUDHAGSAN</title>
         <link rel="icon" href="/favicon.png" />
       </Head>
 

@@ -3,15 +3,17 @@ import { useRouter } from "next/router";
 import CardYoutube from "../../components/cardYoutube";
 import CardAtivacao from "../../components/CardAtivacao";
 import MainFrame from "../../components/MainFrame";
+import useLanguage from "hooks/useLanguage";
 
 export default function AtivarPage() {
   const router = useRouter();
   const { token_id: tokenId } = router.query;
+  const { t } = useLanguage();
 
   return (
     <MainFrame>
       <Head>
-        <title>Ativar cadastro · JUDHAGSAN</title>
+        <title>{t("Ativar_cadastro")} · JUDHAGSAN</title>
         <link rel="icon" href="/favicon.png" />
       </Head>
 
