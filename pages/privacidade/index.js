@@ -16,13 +16,13 @@ export default function PrivacidadePage() {
         {/* Main Content Area */}
         <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-10 gap-6 lg:gap-0">
           {/* Center Section - Privacidade Card */}
-          <div className="lg:flex-1 flex items-start lg:items-center justify-center min-h-0 lg:-mt-8">
+          <div className="lg:flex-1 flex items-start lg:items-center justify-center min-h-0 lg:-mt-8 shrink-0">
             <div className="w-full lg:w-[90%] lg:max-w-6xl h-full lg:h-[95%]">
               <CardPrivacidade />
             </div>
           </div>
 
-          <div className="mt-auto flex items-end w-full lg:-mb-8">
+          <div className="lg:mt-auto flex items-end w-full lg:-mb-8 shrink-0">
             {/* Bottom Section - YouTube Card */}
             <CardYoutube />
           </div>

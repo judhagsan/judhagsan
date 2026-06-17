@@ -4,7 +4,7 @@ import {
   CommentDiscussionIcon,
   QuestionIcon,
   ShieldIcon,
-  XIcon,
+  ArrowLeftIcon,
   SyncIcon,
   CheckCircleFillIcon,
   AlertFillIcon,
@@ -68,26 +68,26 @@ export default function CardContato({ onClose }) {
   }
 
   return (
-    <div className="w-full h-full">
-      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+    <div className="w-full h-auto lg:h-full">
+      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
         {/* Header */}
-        <div className="shrink-0 mb-5 flex items-center justify-between gap-4 relative z-10">
-          <h2 className="text-lg lg:text-xl font-semibold text-white/90 flex items-center gap-2">
-            <CommentDiscussionIcon size={20} className="text-cyan-300" />
-            Contato
-          </h2>
+        <div className="shrink-0 mb-5 flex items-center gap-3 relative z-10">
           {onClose && (
             <button
               type="button"
               onClick={onClose}
-              aria-label="Fechar"
-              className="cursor-pointer text-red-400 hover:text-red-300 transition-colors shrink-0"
+              aria-label="Voltar"
+              className="cursor-pointer text-white/50 hover:text-white transition-colors flex items-center justify-center -ml-1 pr-1"
             >
-              <XIcon size={16} />
+              <ArrowLeftIcon size={18} />
             </button>
           )}
+          <h2 className="text-lg lg:text-xl font-semibold text-white/90 flex items-center gap-2">
+            <CommentDiscussionIcon size={20} className="text-cyan-300" />
+            Contato
+          </h2>
         </div>
 
         {/* Main Content Area */}

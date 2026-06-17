@@ -7,7 +7,7 @@ import useSidePanel from "hooks/useSidePanel";
 import useActiveCard from "hooks/useActiveCard";
 import { ThreeBarsIcon, XIcon } from "@primer/octicons-react";
 
-const PAGES_WITH_SIDE_PANEL = ["/", "/cadastro", "/sessao"];
+const PAGES_WITH_SIDE_PANEL = ["/", "/login", "/cadastro", "/sessao"];
 
 export default function MainFrame({ children }) {
   const router = useRouter();

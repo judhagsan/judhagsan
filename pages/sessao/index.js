@@ -74,7 +74,7 @@ export default function SessaoPage() {
             </div>
           </div>
 
-          <div className="mt-auto flex items-end w-full lg:-mb-8">
+          <div className="lg:mt-auto flex items-end w-full lg:-mb-8 shrink-0">
             {/* Bottom Section - YouTube Card */}
             <CardYoutube />
           </div>

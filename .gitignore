@@ -1,3 +1,4 @@
 .next
 node_modules
 packge-lock.json
+.DS_store
