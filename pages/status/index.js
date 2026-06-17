@@ -19,7 +19,7 @@ export default function StatusPage() {
 
       {/* Main Container */}
       <div className="relative z-10 w-full h-full rounded-[20px] overflow-hidden border border-white/5 shadow-[inset_0px_0px_50px_rgba(0,0,0,0.9)] flex">
-        <div className="relative z-10 flex-1 flex flex-col p-10 overflow-y-auto w-full items-center">
+        <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-10 overflow-y-auto w-full items-center">
           <div className="w-full max-w-4xl flex flex-col items-center mt-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-10">
               <span className="relative flex h-2 w-2">
@@ -31,7 +31,7 @@ export default function StatusPage() {
               </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
               <UpdatedAt />
               <DatabaseStatus />
             </div>
