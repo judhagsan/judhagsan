@@ -57,18 +57,18 @@ export default function SamuraiDashboard() {
       {/* Main Container (The "Clear" Window) */}
       <div className="relative z-10 w-full h-full rounded-[20px] overflow-hidden border border-white/5 shadow-[inset_0px_0px_50px_rgba(0,0,0,0.9)] flex flex-col">
         {/* Main Content Area */}
-        <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-10 gap-6 lg:gap-0 overflow-y-auto lg:overflow-hidden">
+        <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-6 gap-6 overflow-y-auto lg:overflow-hidden">
           {/* Center Section - Active card + Privacidade panel */}
-          <div className="lg:flex-1 flex flex-col lg:flex-row items-stretch lg:items-center justify-start lg:justify-center min-h-0 gap-4 lg:gap-6 lg:-mt-8 shrink-0">
+          <div className="lg:flex-1 flex flex-col lg:flex-row items-stretch justify-start lg:justify-center min-h-0 gap-4 lg:gap-6 shrink-0">
             <div
               key={activeCard}
-              className="w-full lg:w-1/3 shrink-0 animate-[fadeIn_0.12s_ease-out]"
+              className="w-full lg:w-1/3 lg:h-auto lg:self-center shrink-0 animate-[fadeIn_0.12s_ease-out]"
             >
               {centerCard}
             </div>
 
             {!activePanel && (
-              <div className="w-full lg:w-[64%] lg:h-[95%] shrink-0 animate-[fadeIn_0.12s_ease-out]">
+              <div className="w-full lg:flex-1 lg:h-full lg:w-auto shrink-0 animate-[fadeIn_0.12s_ease-out]">
                 <CardReel />
               </div>
             )}
@@ -85,7 +85,7 @@ export default function SamuraiDashboard() {
               className={`
                 ${
                   activePanel
-                    ? "fixed inset-2 top-14 z-[53] lg:relative lg:inset-auto lg:top-auto lg:z-auto lg:w-[64%] lg:h-[95%] lg:shrink-0 lg:opacity-100 animate-[fadeIn_0.12s_ease-out]"
+                    ? "fixed inset-2 top-14 z-[53] lg:relative lg:inset-auto lg:top-auto lg:z-auto lg:flex-1 lg:h-full lg:w-auto lg:shrink-0 lg:opacity-100 animate-[fadeIn_0.12s_ease-out]"
                     : "hidden"
                 }
                 transition-all duration-500 ease-out lg:transition-none overflow-hidden
@@ -100,7 +100,7 @@ export default function SamuraiDashboard() {
             </div>
           </div>
 
-          <div className="lg:mt-auto flex items-end w-full lg:-mb-8 shrink-0">
+          <div className="lg:mt-auto flex items-end w-full shrink-0">
             {/* Bottom Section - YouTube Card */}
             <CardYoutube />
           </div>

@@ -2,6 +2,7 @@ import useSWR from "swr";
 import Head from "next/head";
 import MainFrame from "../components/MainFrame";
 import CardNormal from "../components/CardNormal";
+import { PulseIcon, DatabaseIcon } from "@primer/octicons-react";
 
 async function fetchAPI(key) {
   const response = await fetch(key);
@@ -19,7 +20,7 @@ export default function StatusPage() {
 
       {/* Main Container */}
       <div className="relative z-10 w-full h-full rounded-[20px] overflow-hidden border border-white/5 shadow-[inset_0px_0px_50px_rgba(0,0,0,0.9)] flex">
-        <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-10 overflow-y-auto w-full items-center">
+        <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-6 overflow-y-auto w-full items-center">
           <div className="w-full max-w-4xl flex flex-col items-center mt-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-10">
               <span className="relative flex h-2 w-2">
@@ -54,7 +55,7 @@ function UpdatedAt() {
   }
 
   return (
-    <CardNormal title="Visão Geral">
+    <CardNormal title="Visão Geral" icon={PulseIcon}>
       <div className="flex flex-col gap-1.5 bg-black/20 p-4 rounded-xl border border-white/5 h-full justify-center">
         <span className="text-white/40 uppercase text-[10px] font-sans tracking-wider">
           Última Atualização
@@ -106,7 +107,7 @@ function DatabaseStatus() {
   });
 
   return (
-    <CardNormal title="Banco de Dados">
+    <CardNormal title="Banco de Dados" icon={DatabaseIcon}>
       {isLoading || !data ? (
         <div className="flex items-center justify-center h-full min-h-[140px] text-white/30 bg-black/20 rounded-xl border border-white/5">
           <span className="animate-pulse font-sans text-sm">
