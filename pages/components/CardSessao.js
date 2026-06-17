@@ -100,8 +100,8 @@ export default function CardSessao() {
     stage && versionData?.version ? `${stage} ${versionData.version}` : null;
 
   return (
-    <div className="w-full h-full">
-      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-full">
+    <div className="w-full h-auto lg:h-full">
+      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-full">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10"></div>
 
         {/* Header */}

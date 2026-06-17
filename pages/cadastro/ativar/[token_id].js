@@ -20,13 +20,13 @@ export default function AtivarPage() {
         {/* Main Content Area */}
         <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-10 gap-6 lg:gap-0 overflow-y-auto lg:overflow-hidden">
           {/* Center Section - Ativação Card */}
-          <div className="lg:flex-1 flex items-start lg:items-center justify-center pt-2 lg:pt-0">
+          <div className="lg:flex-1 flex items-start lg:items-center justify-center pt-2 lg:pt-0 shrink-0">
             <div className="w-full max-w-md lg:w-1/3">
               <CardAtivacao tokenId={tokenId} />
             </div>
           </div>
 
-          <div className="mt-auto flex items-end w-full lg:-mb-8">
+          <div className="lg:mt-auto flex items-end w-full lg:-mb-8 shrink-0">
             {/* Bottom Section - YouTube Card */}
             <CardYoutube />
           </div>
