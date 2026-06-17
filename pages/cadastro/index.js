@@ -5,6 +5,7 @@ import CardCadastro from "../components/CardCadastro";
 import CardReel from "../components/CardReel";
 import CardPrivacidade from "../components/CardPrivacidade";
 import CardContato from "../components/CardContato";
+import CardSobre from "../components/CardSobre";
 import MainFrame from "../components/MainFrame";
 import useSidePanel from "hooks/useSidePanel";
 import useLanguage from "hooks/useLanguage";
@@ -64,6 +65,9 @@ export default function CadastroPage() {
               )}
               {activePanel === "contact" && (
                 <CardContato onClose={closeSidePanel} />
+              )}
+              {activePanel === "about" && (
+                <CardSobre onClose={closeSidePanel} />
               )}
             </div>
           </div>

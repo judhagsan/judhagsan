@@ -7,6 +7,7 @@ import CardDispositivos from "../components/CardDispositivos";
 import CardSessao from "../components/CardSessao";
 import CardPrivacidade from "../components/CardPrivacidade";
 import CardContato from "../components/CardContato";
+import CardSobre from "../components/CardSobre";
 import MainFrame from "../components/MainFrame";
 import useUser from "hooks/useUser";
 import useSidePanel from "hooks/useSidePanel";
@@ -71,6 +72,9 @@ export default function SessaoPage() {
                 )}
                 {activePanel === "contact" && (
                   <CardContato onClose={closeSidePanel} />
+                )}
+                {activePanel === "about" && (
+                  <CardSobre onClose={closeSidePanel} />
                 )}
               </div>
             </div>
