@@ -58,19 +58,19 @@ export default function MainFrame({ children }) {
       {/* ======= DESKTOP NAVBAR ======= */}
 
       {/* Top-left Links - Privacidade + Contato (desktop only) */}
-      <div className="absolute top-2 left-[3%] z-50 hidden lg:flex items-center gap-6 h-6 leading-none">
+      <div className="absolute top-2 left-[3%] z-50 hidden lg:flex items-end gap-6 h-6 leading-none">
         {hasSidePanel ? (
           <button
             type="button"
             onClick={() => setActivePanel("privacy")}
-            className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+            className="cursor-pointer inline-flex items-end text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px] p-0 border-0 bg-transparent outline-none"
           >
             {t("Termos de Uso")}
           </button>
         ) : (
           <Link
             href="/privacidade"
-            className="inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+            className="inline-flex items-end text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px]"
           >
             {t("Termos de Uso")}
           </Link>
@@ -79,32 +79,65 @@ export default function MainFrame({ children }) {
           <button
             type="button"
             onClick={() => setActivePanel("contact")}
-            className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+            className="cursor-pointer inline-flex items-end text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px] p-0 border-0 bg-transparent outline-none"
           >
             {t("Contato")}
           </button>
         ) : (
           <Link
             href="/contato"
-            className="inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+            className="inline-flex items-end text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px]"
           >
             {t("Contato")}
           </Link>
         )}
       </div>
 
-      {/* External Logo (always visible) */}
-      <Link
-        href={isLoggedIn ? "/sessao" : "/"}
-        onClick={resetActiveCard}
-        className="absolute top-2 left-1/2 -translate-x-1/2 z-50 cursor-pointer"
-      >
-        <img
-          src="/Logo.png"
-          alt="Pindorama"
-          className="h-5 lg:h-6 w-auto opacity-90 hover:opacity-100 transition-opacity"
-        />
-      </Link>
+      {/* External Logo + Sobre link + Portfolio link (always visible, perfectly centered logo) */}
+      <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 flex items-end justify-between w-[300px] lg:w-[340px] h-6 leading-none">
+        {/* Left: Sobre Link */}
+        <div className="flex-1 flex items-end justify-end">
+          {hasSidePanel ? (
+            <button
+              type="button"
+              onClick={() => setActivePanel("about")}
+              className="cursor-pointer inline-flex items-end text-xs lg:text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none p-0 border-0 bg-transparent outline-none translate-y-[-2px]"
+            >
+              {t("Sobre")}
+            </button>
+          ) : (
+            <Link
+              href="/sobre"
+              className="inline-flex items-end text-xs lg:text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px]"
+            >
+              {t("Sobre")}
+            </Link>
+          )}
+        </div>
+
+        {/* Center: Logo */}
+        <Link
+          href={isLoggedIn ? "/sessao" : "/"}
+          onClick={resetActiveCard}
+          className="cursor-pointer shrink-0 mx-4 lg:mx-6 flex items-end justify-center"
+        >
+          <img
+            src="/Logo.png"
+            alt="Pindorama"
+            className="h-5 lg:h-6 w-auto opacity-90 hover:opacity-100 transition-opacity"
+          />
+        </Link>
+
+        {/* Right: Portfolio Link */}
+        <div className="flex-1 flex items-end justify-start">
+          <Link
+            href="/portfolio"
+            className="inline-flex items-end text-xs lg:text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px]"
+          >
+            {t("Portfolio")}
+          </Link>
+        </div>
+      </div>
 
       {/* Auth Actions (desktop only) */}
       <div className="absolute top-2 right-[3%] z-50 hidden lg:flex items-center gap-6 h-6 leading-none">
@@ -138,7 +171,7 @@ export default function MainFrame({ children }) {
             <button
               type="button"
               onClick={handleLogout}
-              className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+              className="cursor-pointer inline-flex items-end self-end text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px] p-0 border-0 bg-transparent outline-none"
             >
               {t("Sair")}
             </button>
@@ -147,14 +180,14 @@ export default function MainFrame({ children }) {
               <button
                 type="button"
                 onClick={() => handleAuthCardClick("login")}
-                className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+                className="cursor-pointer inline-flex items-end self-end text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px] p-0 border-0 bg-transparent outline-none"
               >
                 {t("Login")}
               </button>
               <button
                 type="button"
                 onClick={() => handleAuthCardClick("cadastro")}
-                className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
+                className="cursor-pointer inline-flex items-end self-end text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px] p-0 border-0 bg-transparent outline-none"
               >
                 {t("Cadastrar")}
               </button>
@@ -186,6 +219,32 @@ export default function MainFrame({ children }) {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Navigation Links */}
+            {hasSidePanel ? (
+              <button
+                type="button"
+                onClick={() => handleSidePanelClick("about")}
+                className="cursor-pointer text-left py-3 text-base font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors border-b border-white/5"
+              >
+                {t("Sobre")}
+              </button>
+            ) : (
+              <Link
+                href="/sobre"
+                onClick={() => setMenuOpen(false)}
+                className="py-3 text-base font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors border-b border-white/5"
+              >
+                {t("Sobre")}
+              </Link>
+            )}
+
+            <Link
+              href="/portfolio"
+              onClick={() => setMenuOpen(false)}
+              className="py-3 text-base font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors border-b border-white/5"
+            >
+              {t("Portfolio")}
+            </Link>
+
             {hasSidePanel ? (
               <button
                 type="button"
