@@ -5,7 +5,8 @@ export default createRouter().get(getHandler).handler(controller.errorHandlers);
 
 // Canal @Judhagsan
 const CHANNEL_ID = "UCVqzru2hZO3pX7IjjkSGDyQ";
-const FEED_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
+const PLAYLIST_ID = CHANNEL_ID.replace(/^UC/, "UULF");
+const FEED_URL = `https://www.youtube.com/feeds/videos.xml?playlist_id=${PLAYLIST_ID}`;
 
 // O card da home lista os vídeos mais recentes do canal. Em vez da YouTube
 // Data API (exige chave — a anterior vivia no bundle do cliente e foi
