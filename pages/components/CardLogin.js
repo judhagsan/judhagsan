@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { SignInIcon, AlertFillIcon } from "@primer/octicons-react";
+import {
+  SignInIcon,
+  AlertFillIcon,
+  ArrowLeftIcon,
+} from "@primer/octicons-react";
 
-export default function CardLogin({ onCadastroClick }) {
+export default function CardLogin({ onCadastroClick, onBack }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,9 +46,19 @@ export default function CardLogin({ onCadastroClick }) {
       <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
-        <h2 className="text-xl font-semibold text-white/90 mb-6 flex items-center gap-2 relative z-10">
-          Login
-        </h2>
+        <div className="flex items-center gap-3 mb-6 relative z-10">
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              aria-label="Voltar"
+              className="cursor-pointer text-white/50 hover:text-white transition-colors flex items-center justify-center -ml-1 pr-1"
+            >
+              <ArrowLeftIcon size={18} />
+            </button>
+          )}
+          <h2 className="text-xl font-semibold text-white/90">Login</h2>
+        </div>
 
         <form
           onSubmit={handleSubmit}

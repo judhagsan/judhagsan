@@ -27,13 +27,17 @@ export default function SamuraiDashboard() {
   let centerCard;
   if (activeCard === "login") {
     centerCard = (
-      <CardLogin onCadastroClick={() => setActiveCard("cadastro")} />
+      <CardLogin
+        onCadastroClick={() => setActiveCard("cadastro")}
+        onBack={() => setActiveCard("pindorama")}
+      />
     );
   } else if (activeCard === "cadastro") {
     centerCard = (
       <CardCadastro
         onPrivacyClick={() => setActivePanel("privacy")}
         onLoginClick={() => setActiveCard("login")}
+        onBack={() => setActiveCard("login")}
       />
     );
   } else {
