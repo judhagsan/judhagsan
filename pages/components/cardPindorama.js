@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DownloadIcon, BookIcon } from "@primer/octicons-react";
+import { DownloadIcon } from "@primer/octicons-react";
 
 export default function CardPindorama({ onDownloadClick }) {
   return (
@@ -30,41 +30,38 @@ export default function CardPindorama({ onDownloadClick }) {
             performance respeitando o seu hardware.
           </p>
 
-          <div className="flex flex-wrap gap-3 lg:gap-4 justify-center">
-            {/* Download (opens login card) */}
-            {onDownloadClick ? (
-              <button
-                type="button"
-                onClick={onDownloadClick}
-                className="cursor-pointer flex items-center gap-3 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 group"
-              >
-                <DownloadIcon
-                  size={20}
-                  className="group-hover:text-cyan-400 transition-colors"
-                />
-                <span className="font-semibold text-base">Download</span>
-              </button>
-            ) : (
-              <Link
-                href="/login"
-                className="cursor-pointer flex items-center gap-3 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 group"
-              >
-                <DownloadIcon
-                  size={20}
-                  className="group-hover:text-cyan-400 transition-colors"
-                />
-                <span className="font-semibold text-base">Download</span>
-              </Link>
-            )}
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-wrap gap-3 lg:gap-4 justify-center">
+              {/* Download (opens login card) */}
+              {onDownloadClick ? (
+                <button
+                  type="button"
+                  onClick={onDownloadClick}
+                  className="cursor-pointer flex items-center gap-3 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 group"
+                >
+                  <DownloadIcon
+                    size={20}
+                    className="group-hover:text-cyan-400 transition-colors"
+                  />
+                  <span className="font-semibold text-base">Download</span>
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="cursor-pointer flex items-center gap-3 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 group"
+                >
+                  <DownloadIcon
+                    size={20}
+                    className="group-hover:text-cyan-400 transition-colors"
+                  />
+                  <span className="font-semibold text-base">Download</span>
+                </Link>
+              )}
+            </div>
 
-            {/* Documentation Button */}
-            <button className="cursor-pointer flex items-center gap-3 px-8 py-3 bg-purple-500/10 hover:bg-purple-500/30 border border-purple-500/30 hover:border-purple-500/60 text-purple-200 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] active:scale-95 group">
-              <BookIcon
-                size={20}
-                className="group-hover:text-purple-400 transition-colors"
-              />
-              <span className="font-semibold text-base">Docs</span>
-            </button>
+            <p className="text-xs text-zinc-400 tracking-wide select-none">
+              * É necessário fazer cadastro/login para efetuar o download.
+            </p>
           </div>
         </div>
       </div>

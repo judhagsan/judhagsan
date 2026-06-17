@@ -1,8 +1,12 @@
 import { useState } from "react";
 import Link from "next/link";
-import { CheckCircleFillIcon, MailIcon } from "@primer/octicons-react";
+import {
+  CheckCircleFillIcon,
+  MailIcon,
+  ArrowLeftIcon,
+} from "@primer/octicons-react";
 
-export default function CardCadastro({ onPrivacyClick, onLoginClick }) {
+export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -75,9 +79,19 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick }) {
       <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
-        <h2 className="text-xl font-semibold text-white/90 mb-6 flex items-center gap-2 relative z-10">
-          Cadastro
-        </h2>
+        <div className="flex items-center gap-3 mb-6 relative z-10">
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              aria-label="Voltar"
+              className="cursor-pointer text-white/50 hover:text-white transition-colors flex items-center justify-center -ml-1 pr-1"
+            >
+              <ArrowLeftIcon size={18} />
+            </button>
+          )}
+          <h2 className="text-xl font-semibold text-white/90">Cadastro</h2>
+        </div>
 
         {registeredEmail ? (
           <div className="flex flex-col items-center justify-center text-center gap-3 text-white/70 font-mono text-sm relative z-10 flex-1 h-full">
