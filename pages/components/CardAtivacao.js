@@ -53,9 +53,15 @@ export default function CardAtivacao({ tokenId }) {
       <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
-        <h2 className="text-xl font-semibold text-white/90 mb-6 flex items-center gap-2 relative z-10">
-          Ativação
-        </h2>
+        {/* Header */}
+        <div className="shrink-0 mb-4 flex items-center gap-3 relative z-10">
+          <div className="w-10 h-10 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
+            <CheckCircleFillIcon size={20} />
+          </div>
+          <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
+            Ativação
+          </h2>
+        </div>
 
         <div className="flex flex-col items-center justify-center text-center gap-3 text-white/70 font-mono text-sm relative z-10 flex-1 h-full">
           {status === "loading" && (

@@ -73,7 +73,7 @@ export default function CardContato({ onClose }) {
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
         {/* Header */}
-        <div className="shrink-0 mb-5 flex items-center gap-3 relative z-10">
+        <div className="shrink-0 mb-4 flex items-center gap-3 relative z-10">
           {onClose && (
             <button
               type="button"
@@ -84,8 +84,10 @@ export default function CardContato({ onClose }) {
               <ArrowLeftIcon size={18} />
             </button>
           )}
-          <h2 className="text-lg lg:text-xl font-semibold text-white/90 flex items-center gap-2">
-            <CommentDiscussionIcon size={20} className="text-cyan-300" />
+          <div className="w-10 h-10 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
+            <CommentDiscussionIcon size={20} />
+          </div>
+          <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
             Contato
           </h2>
         </div>

@@ -32,7 +32,7 @@ export default function SessaoPage() {
       {/* Main Container (The "Clear" Window) */}
       <div className="relative z-10 w-full h-full rounded-[20px] overflow-hidden border border-white/5 shadow-[inset_0px_0px_50px_rgba(0,0,0,0.9)] flex">
         {/* Main Content Area */}
-        <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-10 gap-6 lg:gap-0 overflow-y-auto lg:overflow-hidden">
+        <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-6 gap-6 overflow-y-auto lg:overflow-hidden">
           {/* Center Section — stacked on mobile, complex layout on desktop */}
           <div className="lg:flex-1 lg:min-h-0 lg:-mt-8 relative flex flex-col lg:block gap-4 lg:gap-0 overflow-visible lg:overflow-visible shrink-0">
             {/* User + Dispositivos column — full-width on mobile, sidebar on desktop */}
@@ -58,7 +58,7 @@ export default function SessaoPage() {
                 className={`
                   ${
                     activePanel
-                      ? "fixed inset-2 top-14 z-[53] lg:relative lg:inset-auto lg:top-auto lg:z-auto lg:w-3/5 lg:opacity-100"
+                      ? "fixed inset-2 top-14 z-[53] lg:relative lg:inset-auto lg:top-auto lg:z-auto lg:flex-1 lg:w-auto lg:opacity-100"
                       : "hidden lg:block lg:w-0 lg:opacity-0"
                   }
                   transition-all duration-500 ease-out overflow-hidden lg:h-[90%]
@@ -74,7 +74,7 @@ export default function SessaoPage() {
             </div>
           </div>
 
-          <div className="lg:mt-auto flex items-end w-full lg:-mb-8 shrink-0">
+          <div className="lg:mt-auto flex items-end w-full shrink-0">
             {/* Bottom Section - YouTube Card */}
             <CardYoutube />
           </div>

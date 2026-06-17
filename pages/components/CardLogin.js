@@ -42,11 +42,11 @@ export default function CardLogin({ onCadastroClick, onBack }) {
   }
 
   return (
-    <div className="w-full h-auto lg:h-full">
-      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+    <div className="w-full h-auto lg:h-auto">
+      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-auto group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
-        <div className="flex items-center gap-3 mb-6 relative z-10">
+        <div className="shrink-0 mb-4 flex items-center gap-3 relative z-10">
           {onBack && (
             <button
               type="button"
@@ -57,12 +57,17 @@ export default function CardLogin({ onCadastroClick, onBack }) {
               <ArrowLeftIcon size={18} />
             </button>
           )}
-          <h2 className="text-xl font-semibold text-white/90">Login</h2>
+          <div className="w-10 h-10 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
+            <SignInIcon size={20} />
+          </div>
+          <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
+            Login
+          </h2>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-4 text-white/70 font-mono text-sm relative z-10 flex-1 h-full"
+          className="flex flex-col gap-4 text-white/70 font-mono text-sm relative z-10 flex-1"
         >
           <label className="flex flex-col gap-1">
             <span className="text-xs uppercase tracking-widest text-white/50">
