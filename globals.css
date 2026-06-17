@@ -12,6 +12,15 @@
   body {
     @apply bg-[#0a0a0a] text-white antialiased font-outfit;
   }
+
+  /* Ocultar barra de rolagem globalmente para visual de app */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  * {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
 }
 
 @layer utilities {

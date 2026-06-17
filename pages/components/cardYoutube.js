@@ -49,7 +49,7 @@ export default function CardYoutube() {
 
   return (
     <div className="w-full">
-      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col gap-4">
+      <div className="glass-card rounded-[20px] p-4 lg:p-6 shadow-2xl relative overflow-hidden flex flex-col gap-4">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10"></div>
 
         {/* Header */}
@@ -58,7 +58,7 @@ export default function CardYoutube() {
             <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white shadow-lg shadow-red-500/30">
               <PlayIcon size={16} />
             </div>
-            <h2 className="text-xl font-bold tracking-tight text-white">
+            <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white">
               Últimos vídeos
             </h2>
           </div>
@@ -72,32 +72,32 @@ export default function CardYoutube() {
           </a>
         </div>
 
-        {/* Video List - Horizontal Grid */}
-        <div className="grid grid-cols-3 gap-6">
+        {/* Video List - Responsive Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
           {loading
             ? // Skeleton Loading
               [1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="flex gap-4 p-2 rounded-xl bg-white/5 animate-pulse"
+                  className={`flex gap-4 p-2 rounded-xl bg-white/5 animate-pulse ${i > 1 ? "hidden lg:flex" : "flex"}`}
                 >
-                  <div className="w-48 h-28 rounded-lg bg-white/10 shrink-0"></div>
+                  <div className="w-28 h-20 lg:w-48 lg:h-28 rounded-lg bg-white/10 shrink-0"></div>
                   <div className="flex-1 space-y-2 py-2 min-w-0">
                     <div className="h-4 bg-white/10 rounded w-3/4"></div>
                     <div className="h-4 bg-white/5 rounded w-1/2"></div>
                   </div>
                 </div>
               ))
-            : videos.slice(0, 3).map((video) => (
+            : videos.slice(0, 3).map((video, index) => (
                 <a
                   key={video.id}
                   href={`https://www.youtube.com/watch?v=${video.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex gap-4 p-3 rounded-2xl hover:bg-white/10 transition-all cursor-pointer border border-transparent hover:border-white/5 block deco"
+                  className={`group gap-3 lg:gap-4 p-2 lg:p-3 rounded-2xl hover:bg-white/10 transition-all cursor-pointer border border-transparent hover:border-white/5 deco ${index > 0 ? "hidden lg:flex" : "flex"}`}
                 >
                   {/* Thumbnail */}
-                  <div className="relative w-48 h-28 flex-shrink-0 rounded-xl overflow-hidden shadow-lg border border-white/5">
+                  <div className="relative w-28 h-20 lg:w-48 lg:h-28 flex-shrink-0 rounded-xl overflow-hidden shadow-lg border border-white/5">
                     <img
                       src={video.thumbnail}
                       alt={video.title}
@@ -114,10 +114,10 @@ export default function CardYoutube() {
 
                   {/* Info */}
                   <div className="flex flex-col justify-center min-w-0 py-1">
-                    <h3 className="text-base font-bold text-white line-clamp-2 leading-snug group-hover:text-cyan-400 transition-colors">
+                    <h3 className="text-sm lg:text-base font-bold text-white line-clamp-2 leading-snug group-hover:text-cyan-400 transition-colors">
                       {video.title}
                     </h3>
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="flex items-center gap-2 mt-1 lg:mt-2">
                       <span className="text-xs text-zinc-400 font-medium bg-black/30 px-2 py-0.5 rounded-md">
                         {video.views}
                       </span>
