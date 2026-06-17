@@ -6,8 +6,10 @@ import {
   AlertFillIcon,
   SignInIcon,
 } from "@primer/octicons-react";
+import useLanguage from "hooks/useLanguage";
 
 export default function CardAtivacao({ tokenId }) {
+  const { t } = useLanguage();
   const [status, setStatus] = useState("loading");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -26,9 +28,7 @@ export default function CardAtivacao({ tokenId }) {
         if (cancelled) return;
 
         if (!response.ok) {
-          setErrorMessage(
-            responseBody.message || "Não foi possível ativar a conta.",
-          );
+          setErrorMessage(responseBody.message || t("Ativacao falhou"));
           setStatus("error");
           return;
         }
@@ -36,7 +36,7 @@ export default function CardAtivacao({ tokenId }) {
         setStatus("success");
       } catch {
         if (cancelled) return;
-        setErrorMessage("Erro de conexão. Tente novamente.");
+        setErrorMessage(t("Erro de conexao"));
         setStatus("error");
       }
     }
@@ -59,7 +59,7 @@ export default function CardAtivacao({ tokenId }) {
             <CheckCircleFillIcon size={20} />
           </div>
           <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
-            Ativação
+            {t("Ativacao")}
           </h2>
         </div>
 
@@ -70,7 +70,7 @@ export default function CardAtivacao({ tokenId }) {
                 <SyncIcon size={24} />
               </div>
               <p className="text-base text-white/90 font-semibold">
-                Ativando sua conta...
+                {t("Ativando sua conta...")}
               </p>
             </>
           )}
@@ -81,17 +81,17 @@ export default function CardAtivacao({ tokenId }) {
                 <CheckCircleFillIcon size={24} />
               </div>
               <p className="text-base text-white/90 font-semibold">
-                Conta ativada!
+                {t("Conta ativada!")}
               </p>
               <p className="text-xs leading-relaxed max-w-xs">
-                Sua conta foi ativada com sucesso. Agora você já pode entrar.
+                {t("Sucesso ativacao")}
               </p>
               <Link
                 href="/login"
                 className="cursor-pointer mt-2 inline-flex items-center gap-2 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 font-semibold text-base"
               >
                 <SignInIcon size={18} />
-                Entrar
+                {t("Entrar")}
               </Link>
             </>
           )}
@@ -102,7 +102,7 @@ export default function CardAtivacao({ tokenId }) {
                 <AlertFillIcon size={24} />
               </div>
               <p className="text-base text-white/90 font-semibold">
-                Ativação falhou
+                {t("Ativacao falhou")}
               </p>
               <p className="text-xs leading-relaxed max-w-xs text-red-300">
                 {errorMessage}
@@ -111,7 +111,7 @@ export default function CardAtivacao({ tokenId }) {
                 href="/cadastro"
                 className="cursor-pointer mt-2 text-xs uppercase tracking-widest text-white/50 hover:text-white transition-colors"
               >
-                Voltar ao cadastro
+                {t("Voltar ao cadastro")}
               </Link>
             </>
           )}

@@ -12,12 +12,14 @@ import MainFrame from "./components/MainFrame";
 import useUser from "hooks/useUser";
 import useSidePanel from "hooks/useSidePanel";
 import useActiveCard from "hooks/useActiveCard";
+import useLanguage from "hooks/useLanguage";
 
 export default function SamuraiDashboard() {
   const router = useRouter();
   const { isLoading, isLoggedIn } = useUser();
   const { activeCard, setActiveCard } = useActiveCard();
   const { activePanel, setActivePanel, close: closeSidePanel } = useSidePanel();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!isLoading && isLoggedIn) {
@@ -50,7 +52,7 @@ export default function SamuraiDashboard() {
   return (
     <MainFrame>
       <Head>
-        <title>JUDHAGSAN</title>
+        <title>{t("JUDHAGSAN")}</title>
         <link rel="icon" href="/favicon.png" />
       </Head>
 

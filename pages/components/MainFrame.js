@@ -6,6 +6,7 @@ import useUser from "hooks/useUser";
 import useSidePanel from "hooks/useSidePanel";
 import useActiveCard from "hooks/useActiveCard";
 import { ThreeBarsIcon, XIcon } from "@primer/octicons-react";
+import useLanguage from "hooks/useLanguage";
 
 const PAGES_WITH_SIDE_PANEL = ["/", "/login", "/cadastro", "/sessao"];
 
@@ -14,6 +15,7 @@ export default function MainFrame({ children }) {
   const { isLoading, isLoggedIn, logout } = useUser();
   const { setActivePanel } = useSidePanel();
   const { setActiveCard, reset: resetActiveCard } = useActiveCard();
+  const { language, setLanguage, t } = useLanguage();
   const hasSidePanel = PAGES_WITH_SIDE_PANEL.includes(router.pathname);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -63,14 +65,14 @@ export default function MainFrame({ children }) {
             onClick={() => setActivePanel("privacy")}
             className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
           >
-            Termos de Uso
+            {t("Termos de Uso")}
           </button>
         ) : (
           <Link
             href="/privacidade"
             className="inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
           >
-            Termos de Uso
+            {t("Termos de Uso")}
           </Link>
         )}
         {hasSidePanel ? (
@@ -79,14 +81,14 @@ export default function MainFrame({ children }) {
             onClick={() => setActivePanel("contact")}
             className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
           >
-            Contato
+            {t("Contato")}
           </button>
         ) : (
           <Link
             href="/contato"
             className="inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
           >
-            Contato
+            {t("Contato")}
           </Link>
         )}
       </div>
@@ -106,6 +108,31 @@ export default function MainFrame({ children }) {
 
       {/* Auth Actions (desktop only) */}
       <div className="absolute top-2 right-[3%] z-50 hidden lg:flex items-center gap-6 h-6 leading-none">
+        <div className="flex items-center gap-1.5 font-bold text-xs tracking-widest uppercase bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/10 select-none mr-2">
+          <button
+            type="button"
+            onClick={() => setLanguage("pt")}
+            className={`cursor-pointer transition-colors ${
+              language === "pt"
+                ? "text-cyan-300"
+                : "text-white/40 hover:text-white"
+            }`}
+          >
+            PT-BR
+          </button>
+          <span className="text-white/20">|</span>
+          <button
+            type="button"
+            onClick={() => setLanguage("en")}
+            className={`cursor-pointer transition-colors ${
+              language === "en"
+                ? "text-cyan-300"
+                : "text-white/40 hover:text-white"
+            }`}
+          >
+            ENG
+          </button>
+        </div>
         {!isLoading &&
           (isLoggedIn ? (
             <button
@@ -113,7 +140,7 @@ export default function MainFrame({ children }) {
               onClick={handleLogout}
               className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
             >
-              Sair
+              {t("Sair")}
             </button>
           ) : (
             <>
@@ -122,14 +149,14 @@ export default function MainFrame({ children }) {
                 onClick={() => handleAuthCardClick("login")}
                 className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
               >
-                Login
+                {t("Login")}
               </button>
               <button
                 type="button"
                 onClick={() => handleAuthCardClick("cadastro")}
                 className="cursor-pointer inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none"
               >
-                Cadastrar
+                {t("Cadastrar")}
               </button>
             </>
           ))}
@@ -165,7 +192,7 @@ export default function MainFrame({ children }) {
                 onClick={() => handleSidePanelClick("privacy")}
                 className="cursor-pointer text-left py-3 text-base font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors border-b border-white/5"
               >
-                Termos de Uso
+                {t("Termos de Uso")}
               </button>
             ) : (
               <Link
@@ -173,7 +200,7 @@ export default function MainFrame({ children }) {
                 onClick={() => setMenuOpen(false)}
                 className="py-3 text-base font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors border-b border-white/5"
               >
-                Termos de Uso
+                {t("Termos de Uso")}
               </Link>
             )}
 
@@ -183,7 +210,7 @@ export default function MainFrame({ children }) {
                 onClick={() => handleSidePanelClick("contact")}
                 className="cursor-pointer text-left py-3 text-base font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors border-b border-white/5"
               >
-                Contato
+                {t("Contato")}
               </button>
             ) : (
               <Link
@@ -191,7 +218,7 @@ export default function MainFrame({ children }) {
                 onClick={() => setMenuOpen(false)}
                 className="py-3 text-base font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors border-b border-white/5"
               >
-                Contato
+                {t("Contato")}
               </Link>
             )}
 
@@ -204,7 +231,7 @@ export default function MainFrame({ children }) {
                     onClick={handleLogout}
                     className="cursor-pointer text-left py-3 text-base font-bold tracking-widest uppercase text-red-400/80 hover:text-red-300 transition-colors"
                   >
-                    Sair
+                    {t("Sair")}
                   </button>
                 ) : (
                   <>
@@ -213,19 +240,52 @@ export default function MainFrame({ children }) {
                       onClick={() => handleAuthCardClick("login")}
                       className="cursor-pointer text-left py-3 text-base font-bold tracking-widest uppercase text-cyan-400/80 hover:text-cyan-300 transition-colors border-b border-white/5"
                     >
-                      Login
+                      {t("Login")}
                     </button>
                     <button
                       type="button"
                       onClick={() => handleAuthCardClick("cadastro")}
                       className="cursor-pointer text-left py-3 text-base font-bold tracking-widest uppercase text-cyan-400/80 hover:text-cyan-300 transition-colors"
                     >
-                      Cadastrar
+                      {t("Cadastrar")}
                     </button>
                   </>
                 )}
               </div>
             )}
+
+            {/* Mobile Language Switcher */}
+            <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-white/5 font-bold text-sm tracking-widest uppercase select-none">
+              <button
+                type="button"
+                onClick={() => {
+                  setLanguage("pt");
+                  setMenuOpen(false);
+                }}
+                className={`cursor-pointer transition-colors ${
+                  language === "pt"
+                    ? "text-cyan-300"
+                    : "text-white/40 hover:text-white"
+                }`}
+              >
+                PT-BR
+              </button>
+              <span className="text-white/20">|</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setLanguage("en");
+                  setMenuOpen(false);
+                }}
+                className={`cursor-pointer transition-colors ${
+                  language === "en"
+                    ? "text-cyan-300"
+                    : "text-white/40 hover:text-white"
+                }`}
+              >
+                ENG
+              </button>
+            </div>
           </nav>
         </div>
       )}
