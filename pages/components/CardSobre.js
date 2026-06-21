@@ -2,8 +2,9 @@ import {
   InfoIcon,
   ArrowLeftIcon,
   PersonIcon,
-  GearIcon,
+  CodeIcon,
   HeartIcon,
+  VideoIcon,
 } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
 
@@ -38,196 +39,149 @@ export default function CardSobre({ onClose }) {
         {/* Main Content Area */}
         <div className="flex-1 min-h-0 overflow-y-auto pr-3 relative z-10">
           {language === "en" ? (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Left Column: Project Overview */}
-              <div className="lg:col-span-2 flex flex-col gap-6">
-                <section className="flex flex-col gap-2">
-                  <h3 className="text-base font-semibold text-white/90 flex items-center gap-2">
-                    <HeartIcon size={16} className="text-cyan-300" />
-                    The Project
-                  </h3>
-                  <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
-                    <p>
-                      <span className="text-cyan-300 font-semibold">
-                        judhagsan.com
-                      </span>{" "}
-                      is the digital ecosystem created to host the development
-                      of{" "}
-                      <span className="text-white font-medium">Pindorama</span>,
-                      a next-generation animation and mixed media engine. Our
-                      main focus is on high performance and integrating
-                      traditional 2D vector workflows.
-                    </p>
-                  </div>
-                </section>
-
-                <section className="flex flex-col gap-2">
-                  <h3 className="text-base font-semibold text-white/90 flex items-center gap-2">
-                    <PersonIcon size={16} className="text-cyan-300" />
-                    Philosophy
-                  </h3>
-                  <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
-                    <p>
-                      We strive to build lightweight, highly focused, and
-                      efficient tools — built &quot;by animators, for
-                      animators.&quot; We believe design and creation software
-                      should serve human creativity, without forcing technical
-                      barriers, complex setups, or requiring high-end hardware.
-                    </p>
-                  </div>
-                </section>
-
-                <section className="flex flex-col gap-2">
-                  <h3 className="text-base font-semibold text-white/90 flex items-center gap-2">
-                    <GearIcon size={16} className="text-cyan-300" />
-                    Open & Transparent
-                  </h3>
-                  <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
-                    <p>
-                      Our system is designed with total respect for user
-                      privacy. We maintain full transparency regarding system
-                      telemetry, operations metrics, and user logs — keeping the
-                      platform secure and completely free of invasive tracking
-                      or third-party advertising services.
-                    </p>
-                  </div>
-                </section>
-              </div>
-
-              {/* Right Column: Tech Specs */}
-              <div className="flex flex-col gap-4 bg-black/20 p-4 rounded-xl border border-white/5 h-fit lg:sticky lg:top-0">
-                <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider">
-                  Technical Details
+            <div className="flex flex-col gap-6">
+              <section className="flex flex-col gap-2">
+                <h3 className="text-base font-semibold text-white/90 flex items-center gap-2">
+                  <PersonIcon size={16} className="text-cyan-300" />
+                  About & The Studio
                 </h3>
-                <div className="flex flex-col gap-3 font-mono text-xs text-white/80">
-                  <div className="flex flex-col border-b border-white/5 pb-2">
-                    <span className="text-white/40 text-[10px] uppercase">
-                      Creator
-                    </span>
-                    <span className="text-cyan-300 text-sm font-medium">
+                <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
+                  <p>
+                    I created{" "}
+                    <span className="text-cyan-300 font-semibold">
                       Judhagsan
+                    </span>{" "}
+                    as my personal studio and portfolio. My name is{" "}
+                    <span className="text-white font-medium">
+                      Judhá Guilherme Santos
                     </span>
-                  </div>
-                  <div className="flex flex-col border-b border-white/5 pb-2">
-                    <span className="text-white/40 text-[10px] uppercase">
-                      Core Software
-                    </span>
-                    <span className="text-white text-sm font-medium">
-                      Pindorama Engine
-                    </span>
-                  </div>
-                  <div className="flex flex-col border-b border-white/5 pb-2">
-                    <span className="text-white/40 text-[10px] uppercase">
-                      Tech Stack
-                    </span>
-                    <span className="text-white">
-                      Next.js, PostgreSQL, Tailwind, Node.js, Docker
-                    </span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-white/40 text-[10px] uppercase">
-                      License
-                    </span>
-                    <span className="text-white">MIT License</span>
-                  </div>
+                    , and working as a freelancer since 2019, I am a computer
+                    engineer and animator, merging art and technology to develop
+                    interactive solutions and expressive animations.
+                  </p>
                 </div>
-              </div>
+              </section>
+
+              <section className="flex flex-col gap-2">
+                <h3 className="text-base font-semibold text-white/90 flex items-center gap-2">
+                  <VideoIcon size={16} className="text-cyan-300" />
+                  Animation & Motion Design
+                </h3>
+                <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
+                  <p>
+                    Production of 2D, 3D, and mixed media animations. Over the
+                    years, I have created animation projects and assets for
+                    prominent national and global brands, as well as visual
+                    content and animations for games across various genres.
+                  </p>
+                </div>
+              </section>
+
+              <section className="flex flex-col gap-2">
+                <h3 className="text-base font-semibold text-white/90 flex items-center gap-2">
+                  <CodeIcon size={16} className="text-cyan-300" />
+                  Technology & Development
+                </h3>
+                <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
+                  <p>
+                    Beyond animation, I develop software projects and web
+                    interactions. The primary example of this work is{" "}
+                    <span className="text-cyan-300 font-semibold">
+                      Pindorama
+                    </span>
+                    , a vector and mixed media animation engine available here
+                    on the site.
+                  </p>
+                </div>
+              </section>
+
+              <section className="flex flex-col gap-2">
+                <h3 className="text-base font-semibold text-white/90 flex items-center gap-2">
+                  <HeartIcon size={16} className="text-cyan-300" />
+                  Purpose
+                </h3>
+                <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
+                  <p>
+                    My main aspiration is to merge engineering and art, using
+                    animation and design as essential links to translate complex
+                    concepts into fluid, intuitive, and beautiful interactive
+                    experiences.
+                  </p>
+                </div>
+              </section>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Coluna Esquerda: Visão Geral */}
-              <div className="lg:col-span-2 flex flex-col gap-6">
-                <section className="flex flex-col gap-2">
-                  <h3 className="text-base font-semibold text-white/90 flex items-center gap-2">
-                    <HeartIcon size={16} className="text-cyan-300" />O Projeto
-                  </h3>
-                  <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
-                    <p>
-                      O{" "}
-                      <span className="text-cyan-300 font-semibold">
-                        judhagsan.com
-                      </span>{" "}
-                      é o ecossistema digital criado para hospedar o
-                      desenvolvimento do{" "}
-                      <span className="text-white font-medium">Pindorama</span>,
-                      uma engine de animação e mixed media de próxima geração
-                      focada em alta performance e integração de fluxos
-                      tradicionais vetoriais 2D.
-                    </p>
-                  </div>
-                </section>
-
-                <section className="flex flex-col gap-2">
-                  <h3 className="text-base font-semibold text-white/90 flex items-center gap-2">
-                    <PersonIcon size={16} className="text-cyan-300" />
-                    Filosofia
-                  </h3>
-                  <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
-                    <p>
-                      Buscamos desenvolver ferramentas leves, focadas e
-                      eficientes, feitas &quot;de animador para animador&quot;.
-                      Acreditamos que o software deve servir à criatividade sem
-                      impor barreiras técnicas, configurações complexas ou
-                      exigir hardware topo de linha para projetos densos.
-                    </p>
-                  </div>
-                </section>
-
-                <section className="flex flex-col gap-2">
-                  <h3 className="text-base font-semibold text-white/90 flex items-center gap-2">
-                    <GearIcon size={16} className="text-cyan-300" />
-                    Aberto & Transparente
-                  </h3>
-                  <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
-                    <p>
-                      Nosso sistema foi projetado respeitando a privacidade dos
-                      usuários. Mantemos total transparência sobre a telemetria
-                      do sistema, métricas de funcionamento e logs de ações —
-                      sendo a plataforma segura e livre de rastreamento invasivo
-                      ou anúncios.
-                    </p>
-                  </div>
-                </section>
-              </div>
-
-              {/* Coluna Direita: Ficha Técnica */}
-              <div className="flex flex-col gap-4 bg-black/20 p-4 rounded-xl border border-white/5 h-fit lg:sticky lg:top-0">
-                <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider">
-                  Ficha Técnica
+            <div className="flex flex-col gap-6">
+              <section className="flex flex-col gap-2">
+                <h3 className="text-base font-semibold text-white/90 flex items-center gap-2">
+                  <PersonIcon size={16} className="text-cyan-300" />
+                  Quem Sou & O Estúdio
                 </h3>
-                <div className="flex flex-col gap-3 font-mono text-xs text-white/80">
-                  <div className="flex flex-col border-b border-white/5 pb-2">
-                    <span className="text-white/40 text-[10px] uppercase">
-                      Criador
-                    </span>
-                    <span className="text-cyan-300 text-sm font-medium">
+                <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
+                  <p>
+                    Criei o{" "}
+                    <span className="text-cyan-300 font-semibold">
                       Judhagsan
+                    </span>{" "}
+                    como meu estúdio e portfólio pessoal. Meu nome é{" "}
+                    <span className="text-white font-medium">
+                      Judhá Guilherme Santos
                     </span>
-                  </div>
-                  <div className="flex flex-col border-b border-white/5 pb-2">
-                    <span className="text-white/40 text-[10px] uppercase">
-                      Software Principal
-                    </span>
-                    <span className="text-white text-sm font-medium">
-                      Pindorama Engine
-                    </span>
-                  </div>
-                  <div className="flex flex-col border-b border-white/5 pb-2">
-                    <span className="text-white/40 text-[10px] uppercase">
-                      Tecnologias
-                    </span>
-                    <span className="text-white">
-                      Next.js, PostgreSQL, Tailwind, Node.js, Docker
-                    </span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-white/40 text-[10px] uppercase">
-                      Licença
-                    </span>
-                    <span className="text-white">Licença MIT</span>
-                  </div>
+                    , e atuando como freelancer desde 2019, sou engenheiro da
+                    computação e animador, unindo arte e tecnologia para
+                    desenvolver soluções interativas e animações expressivas.
+                  </p>
                 </div>
-              </div>
+              </section>
+
+              <section className="flex flex-col gap-2">
+                <h3 className="text-base font-semibold text-white/90 flex items-center gap-2">
+                  <VideoIcon size={16} className="text-cyan-300" />
+                  Animação & Motion Design
+                </h3>
+                <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
+                  <p>
+                    Produção de animações 2D, 3D e mixed media. Ao longo dos
+                    anos, realizei projetos e materiais de animação para grandes
+                    marcas nacionais e globais, além de produzir conteúdo visual
+                    e animações para jogos de diversos gêneros.
+                  </p>
+                </div>
+              </section>
+
+              <section className="flex flex-col gap-2">
+                <h3 className="text-base font-semibold text-white/90 flex items-center gap-2">
+                  <CodeIcon size={16} className="text-cyan-300" />
+                  Tecnologia & Desenvolvimento
+                </h3>
+                <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
+                  <p>
+                    Além de animação, desenvolvo projetos de software e
+                    interações para a web. O principal exemplo desse trabalho é
+                    o próprio{" "}
+                    <span className="text-cyan-300 font-semibold">
+                      Pindorama
+                    </span>
+                    , uma engine de animação vetorial e mixed media disponível
+                    aqui no site.
+                  </p>
+                </div>
+              </section>
+
+              <section className="flex flex-col gap-2">
+                <h3 className="text-base font-semibold text-white/90 flex items-center gap-2">
+                  <HeartIcon size={16} className="text-cyan-300" />
+                  Propósito
+                </h3>
+                <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
+                  <p>
+                    Minha principal intenção é unir a engenharia e a arte,
+                    utilizando a animação e o design como elos fundamentais para
+                    traduzir conceitos complexos em experiências interativas
+                    fluidas, intuitivas e belas.
+                  </p>
+                </div>
+              </section>
             </div>
           )}
         </div>
