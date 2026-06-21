@@ -6,6 +6,12 @@
 
 @theme {
   --font-outfit: "Outfit", sans-serif;
+  --font-size-xs: 0.8rem;
+  --font-size-sm: 0.95rem;
+  --font-size-base: 1.075rem;
+  --font-size-lg: 1.225rem;
+  --font-size-xl: 1.375rem;
+  --font-size-2xl: 1.625rem;
 }
 
 @layer base {
