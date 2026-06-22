@@ -1,9 +1,15 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { SignInIcon, AlertFillIcon } from "@primer/octicons-react";
+import {
+  SignInIcon,
+  AlertFillIcon,
+  ArrowLeftIcon,
+} from "@primer/octicons-react";
+import useLanguage from "hooks/useLanguage";
 
-export default function CardLogin({ onCadastroClick }) {
+export default function CardLogin({ onCadastroClick, onBack }) {
+  const { t } = useLanguage();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,34 +31,49 @@ export default function CardLogin({ onCadastroClick }) {
       const responseBody = await response.json();
 
       if (!response.ok) {
-        setErrorMessage(responseBody.message || "Não foi possível entrar.");
+        setErrorMessage(responseBody.message || t("Login falhou"));
         return;
       }
 
       router.push("/sessao");
     } catch {
-      setErrorMessage("Erro de conexão. Tente novamente.");
+      setErrorMessage(t("Erro de conexao"));
     } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <div className="w-full h-full">
-      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+    <div className="w-full h-auto lg:h-auto">
+      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-auto group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
-        <h2 className="text-xl font-semibold text-white/90 mb-6 flex items-center gap-2 relative z-10">
-          Login
-        </h2>
+        <div className="shrink-0 mb-4 flex items-center gap-3 relative z-10">
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              aria-label="Voltar"
+              className="cursor-pointer text-white/50 hover:text-white transition-colors flex items-center justify-center -ml-1 pr-1"
+            >
+              <ArrowLeftIcon size={18} />
+            </button>
+          )}
+          <div className="w-10 h-10 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
+            <SignInIcon size={20} />
+          </div>
+          <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
+            {t("Login")}
+          </h2>
+        </div>
 
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-4 text-white/70 font-mono text-sm relative z-10 flex-1 h-full"
+          className="flex flex-col gap-4 text-white/70 font-mono text-sm relative z-10 flex-1"
         >
           <label className="flex flex-col gap-1">
             <span className="text-xs uppercase tracking-widest text-white/50">
-              Email
+              {t("Email")}
             </span>
             <input
               type="email"
@@ -67,7 +88,7 @@ export default function CardLogin({ onCadastroClick }) {
 
           <label className="flex flex-col gap-1">
             <span className="text-xs uppercase tracking-widest text-white/50">
-              Senha
+              {t("Senha")}
             </span>
             <input
               type="password"
@@ -93,25 +114,25 @@ export default function CardLogin({ onCadastroClick }) {
             className="cursor-pointer mt-2 inline-flex items-center justify-center gap-2 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-semibold text-base w-full lg:w-auto"
           >
             <SignInIcon size={18} />
-            {isSubmitting ? "Entrando..." : "Entrar"}
+            {isSubmitting ? t("Entrando...") : t("Entrar")}
           </button>
 
           <p className="text-xs text-white/50 text-center mt-2">
-            Não tem conta?{" "}
+            {t("Nao tem conta?")}{" "}
             {onCadastroClick ? (
               <button
                 type="button"
                 onClick={onCadastroClick}
                 className="cursor-pointer text-cyan-300 hover:text-cyan-200 transition-colors"
               >
-                Cadastrar
+                {t("Cadastrar")}
               </button>
             ) : (
               <Link
                 href="/cadastro"
                 className="text-cyan-300 hover:text-cyan-200 transition-colors"
               >
-                Cadastrar
+                {t("Cadastrar")}
               </Link>
             )}
           </p>

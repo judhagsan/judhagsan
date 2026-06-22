@@ -2,6 +2,8 @@ import useSWR from "swr";
 import Head from "next/head";
 import MainFrame from "../components/MainFrame";
 import CardNormal from "../components/CardNormal";
+import { PulseIcon, DatabaseIcon } from "@primer/octicons-react";
+import useLanguage from "hooks/useLanguage";
 
 async function fetchAPI(key) {
   const response = await fetch(key);
@@ -10,16 +12,18 @@ async function fetchAPI(key) {
 }
 
 export default function StatusPage() {
+  const { t } = useLanguage();
+
   return (
     <MainFrame>
       <Head>
-        <title>Status do Sistema - JUDHAGSAN</title>
+        <title>{t("Status do Sistema")} - JUDHAGSAN</title>
         <link rel="icon" href="/favicon.png" />
       </Head>
 
       {/* Main Container */}
       <div className="relative z-10 w-full h-full rounded-[20px] overflow-hidden border border-white/5 shadow-[inset_0px_0px_50px_rgba(0,0,0,0.9)] flex">
-        <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-10 overflow-y-auto w-full items-center">
+        <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-6 overflow-y-auto w-full items-center">
           <div className="w-full max-w-4xl flex flex-col items-center mt-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-10">
               <span className="relative flex h-2 w-2">
@@ -27,7 +31,7 @@ export default function StatusPage() {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
               <span className="text-xs font-medium text-emerald-400/90 tracking-wide uppercase">
-                System Status
+                {t("Status do Sistema")}
               </span>
             </div>
 
@@ -46,18 +50,21 @@ function UpdatedAt() {
   const { isLoading, data } = useSWR("/api/v1/status", fetchAPI, {
     refreshInterval: 2000,
   });
+  const { t, language } = useLanguage();
 
-  let updatedAtText = "Carregando...";
+  let updatedAtText = t("Carregando...");
 
   if (!isLoading && data) {
-    updatedAtText = new Date(data.updated_at).toLocaleString("pt-BR");
+    updatedAtText = new Date(data.updated_at).toLocaleString(
+      language === "pt" ? "pt-BR" : "en-US",
+    );
   }
 
   return (
-    <CardNormal title="Visão Geral">
+    <CardNormal title={t("Visao Geral")} icon={PulseIcon}>
       <div className="flex flex-col gap-1.5 bg-black/20 p-4 rounded-xl border border-white/5 h-full justify-center">
         <span className="text-white/40 uppercase text-[10px] font-sans tracking-wider">
-          Última Atualização
+          {t("Ultima Atualizacao")}
         </span>
         <span className="text-lg text-cyan-400 font-medium">
           {updatedAtText}
@@ -66,7 +73,7 @@ function UpdatedAt() {
         <div className="h-[1px] w-full bg-white/5 my-2"></div>
 
         <span className="text-white/40 uppercase text-[10px] font-sans tracking-wider mt-1">
-          Status Report
+          {t("Status Report")}
         </span>
         <div className="flex items-center gap-2 mt-1">
           <span className="relative flex h-2.5 w-2.5">
@@ -92,7 +99,9 @@ function UpdatedAt() {
                 : "text-emerald-400 font-sans text-sm"
             }
           >
-            {isLoading ? "Buscando telemetria..." : "Sistemas Operacionais"}
+            {isLoading
+              ? t("Buscando telemetria...")
+              : t("Sistemas Operacionais")}
           </span>
         </div>
       </div>
@@ -104,20 +113,21 @@ function DatabaseStatus() {
   const { isLoading, data } = useSWR("/api/v1/status", fetchAPI, {
     refreshInterval: 2000,
   });
+  const { t } = useLanguage();
 
   return (
-    <CardNormal title="Banco de Dados">
+    <CardNormal title={t("Banco de Dados")} icon={DatabaseIcon}>
       {isLoading || !data ? (
         <div className="flex items-center justify-center h-full min-h-[140px] text-white/30 bg-black/20 rounded-xl border border-white/5">
           <span className="animate-pulse font-sans text-sm">
-            Carregando métricas...
+            {t("Carregando metricas...")}
           </span>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3 h-full">
           <div className="flex flex-col gap-1 bg-black/20 p-3 rounded-xl border border-white/5 justify-center">
             <span className="text-white/40 uppercase text-[10px] font-sans tracking-wider">
-              Versão (PostgreSQL)
+              {t("Versao (PostgreSQL)")}
             </span>
             <span
               className="text-base text-white/90 truncate"
@@ -129,7 +139,7 @@ function DatabaseStatus() {
 
           <div className="flex flex-col gap-1 bg-black/20 p-3 rounded-xl border border-white/5 justify-center">
             <span className="text-white/40 uppercase text-[10px] font-sans tracking-wider">
-              Max Conexões
+              {t("Max Conexoes")}
             </span>
             <span className="text-base text-white/90">
               {data?.dependencies?.database?.max_connections ?? "N/A"}
@@ -139,7 +149,7 @@ function DatabaseStatus() {
           <div className="flex flex-col gap-1 bg-black/20 p-4 rounded-xl border border-white/5 col-span-2">
             <div className="flex justify-between items-end mb-1">
               <span className="text-white/40 uppercase text-[10px] font-sans tracking-wider">
-                Conexões Ativas
+                {t("Conexoes Ativas")}
               </span>
               <span className="text-cyan-400 font-bold text-xl leading-none">
                 {data?.dependencies?.database?.opened_connections ?? "N/A"}
@@ -159,7 +169,7 @@ function DatabaseStatus() {
             <div className="flex justify-between mt-1.5">
               <span className="text-[9px] text-white/30">0%</span>
               <span className="text-[9px] text-white/30">
-                Uso:{" "}
+                {t("Uso")}:{" "}
                 {data?.dependencies?.database?.opened_connections !== undefined
                   ? Math.round(
                       ((data?.dependencies?.database?.opened_connections || 0) /

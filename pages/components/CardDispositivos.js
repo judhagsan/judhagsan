@@ -7,6 +7,7 @@ import {
   PlayIcon,
   TrashIcon,
 } from "@primer/octicons-react";
+import useLanguage from "hooks/useLanguage";
 
 const fetcher = (url) =>
   fetch(url, { credentials: "include" }).then((r) =>
@@ -21,20 +22,21 @@ function formatRam(bytes) {
   return `${gb.toFixed(1)} GB`;
 }
 
-function formatRelative(iso) {
+function formatRelative(iso, language) {
   if (!iso) return "—";
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "—";
   const diffMs = Date.now() - date.getTime();
   const seconds = Math.floor(diffMs / 1000);
-  if (seconds < 60) return "agora";
+  const isPt = language === "pt";
+  if (seconds < 60) return isPt ? "agora" : "just now";
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes} min atrás`;
+  if (minutes < 60) return isPt ? `${minutes} min atrás` : `${minutes} min ago`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h atrás`;
+  if (hours < 24) return isPt ? `${hours}h atrás` : `${hours}h ago`;
   const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d atrás`;
-  return date.toLocaleDateString("pt-BR");
+  if (days < 30) return isPt ? `${days}d atrás` : `${days}d ago`;
+  return date.toLocaleDateString(isPt ? "pt-BR" : "en-US");
 }
 
 function osLabel(os) {
@@ -46,6 +48,7 @@ function osLabel(os) {
 }
 
 export default function CardDispositivos() {
+  const { language, t } = useLanguage();
   const { data, error, isLoading, mutate } = useSWR(
     "/api/v1/devices",
     fetcher,
@@ -95,29 +98,35 @@ export default function CardDispositivos() {
 
   return (
     <div className="w-full">
-      <div className="glass-card rounded-[20px] p-3 shadow-2xl relative overflow-hidden flex flex-col group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
-        <h3 className="text-xl font-semibold text-white/90 mb-4 flex items-center gap-2 relative z-10">
-          <DevicesIcon size={20} className="text-cyan-300" />
-          Dispositivos
-        </h3>
+        {/* Header */}
+        <div className="shrink-0 mb-4 flex items-center gap-3 relative z-10">
+          <div className="w-10 h-10 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
+            <DevicesIcon size={20} />
+          </div>
+          <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
+            {t("Dispositivos")}
+          </h2>
+        </div>
 
         <div className="relative z-10 flex flex-col gap-3 text-white/70 font-mono text-sm">
           {isLoading && (
-            <p className="text-white/40 text-center py-2">Carregando...</p>
+            <p className="text-white/40 text-center py-2">
+              {t("Carregando...")}
+            </p>
           )}
 
           {error && (
             <p className="text-red-300 text-center py-2">
-              Erro ao carregar dispositivos.
+              {t("Erro ao carregar dispositivos")}
             </p>
           )}
 
           {!isLoading && !error && data?.length === 0 && (
             <p className="text-white/40 text-center py-4 leading-relaxed">
-              Nenhum dispositivo registrado. Faça login pelo Pindorama no seu
-              computador.
+              {t("Nenhum dispositivo registrado")}
             </p>
           )}
 
@@ -139,28 +148,42 @@ export default function CardDispositivos() {
                       A versão do Pindorama + relative time fica numa fonte
                       mais discreta pra agir como rodapé. */}
                   <div className="flex flex-col gap-0.5 text-white text-sm leading-relaxed">
-                    <p className="break-all">SO: {osLabel(device.os)}</p>
+                    <p className="break-all">
+                      {t("SO")}: {osLabel(device.os)}
+                    </p>
                     {device.cpu && (
-                      <p className="break-all">CPU: {device.cpu}</p>
+                      <p className="break-all">
+                        {t("CPU")}: {device.cpu}
+                      </p>
                     )}
                     {device.ram_bytes != null && (
-                      <p>RAM: {formatRam(device.ram_bytes)}</p>
+                      <p>
+                        {t("RAM")}: {formatRam(device.ram_bytes)}
+                      </p>
                     )}
                     {device.gpu && (
-                      <p className="break-all">GPU: {device.gpu}</p>
+                      <p className="break-all">
+                        {t("GPU")}: {device.gpu}
+                      </p>
                     )}
                     {device.monitor && (
-                      <p className="break-all">Monitor: {device.monitor}</p>
+                      <p className="break-all">
+                        {t("Monitor")}: {device.monitor}
+                      </p>
                     )}
                     {device.tablet && (
-                      <p className="break-all">Mesa: {device.tablet}</p>
+                      <p className="break-all">
+                        {t("Mesa")}: {device.tablet}
+                      </p>
                     )}
                   </div>
                   <p className="text-white/40 text-xs mt-2">
                     Pindorama v{device.pindorama_version || "?"} ·{" "}
-                    {formatRelative(device.last_seen_at)}
+                    {formatRelative(device.last_seen_at, language)}
                     {device.upload_paused && (
-                      <span className="text-amber-300 ml-1">(pausado)</span>
+                      <span className="text-amber-300 ml-1">
+                        ({t("pausado")})
+                      </span>
                     )}
                   </p>
                 </div>
@@ -176,12 +199,12 @@ export default function CardDispositivos() {
                   {device.upload_paused ? (
                     <>
                       <PlayIcon size={12} />
-                      Retomar
+                      {t("Retomar")}
                     </>
                   ) : (
                     <>
                       <PauseIcon size={12} />
-                      Pausar
+                      {t("Pausar")}
                     </>
                   )}
                 </button>
@@ -192,7 +215,7 @@ export default function CardDispositivos() {
                   className="cursor-pointer inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-red-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <TrashIcon size={12} />
-                  Excluir
+                  {t("Excluir")}
                 </button>
               </div>
             </div>
