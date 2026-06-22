@@ -18,10 +18,6 @@ const translations = {
     "Termos de Uso": "Termos de Uso",
     Contato: "Contato",
     Sobre: "Sobre",
-    Portfolio: "Portfolio",
-    "Em Breve": "Em Breve",
-    portfolio_desc:
-      "Um espaço dedicado a apresentar projetos, demonstrações técnicas e experimentações artísticas criadas com a Pindorama Engine.",
     Login: "Login",
     Cadastrar: "Cadastrar",
     Sair: "Sair",
@@ -158,10 +154,6 @@ const translations = {
     "Termos de Uso": "Terms of Use",
     Contato: "Contact",
     Sobre: "About",
-    Portfolio: "Portfolio",
-    "Em Breve": "Coming Soon",
-    portfolio_desc:
-      "A space dedicated to presenting projects, technical demonstrations, and artistic experiments created with the Pindorama Engine.",
     Login: "Login",
     Cadastrar: "Register",
     Sair: "Sign Out",
