@@ -128,15 +128,8 @@ export default function MainFrame({ children }) {
           />
         </Link>
 
-        {/* Right: Portfolio Link */}
-        <div className="flex-1 flex items-end justify-start">
-          <Link
-            href="/portfolio"
-            className="inline-flex items-end text-xs lg:text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px]"
-          >
-            {t("Portfolio")}
-          </Link>
-        </div>
+        {/* Right: Empty spacer to balance layout and keep logo centered */}
+        <div className="flex-1" />
       </div>
 
       {/* Auth Actions (desktop only) */}
@@ -236,14 +229,6 @@ export default function MainFrame({ children }) {
                 {t("Sobre")}
               </Link>
             )}
-
-            <Link
-              href="/portfolio"
-              onClick={() => setMenuOpen(false)}
-              className="py-3 text-base font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors border-b border-white/5"
-            >
-              {t("Portfolio")}
-            </Link>
 
             {hasSidePanel ? (
               <button
