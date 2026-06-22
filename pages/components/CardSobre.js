@@ -51,7 +51,7 @@ export default function CardSobre({ onClose }) {
                     <span className="text-cyan-300 font-semibold">
                       Judhagsan
                     </span>{" "}
-                    as my personal studio and portfolio. My name is{" "}
+                    as my studio and portfolio. My name is{" "}
                     <span className="text-white font-medium">
                       Judhá Guilherme Santos
                     </span>
@@ -123,7 +123,7 @@ export default function CardSobre({ onClose }) {
                     <span className="text-cyan-300 font-semibold">
                       Judhagsan
                     </span>{" "}
-                    como meu estúdio e portfólio pessoal. Meu nome é{" "}
+                    como meu estúdio e portfólio. Meu nome é{" "}
                     <span className="text-white font-medium">
                       Judhá Guilherme Santos
                     </span>
