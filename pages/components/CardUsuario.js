@@ -6,8 +6,10 @@ import {
   TrashIcon,
   AlertFillIcon,
 } from "@primer/octicons-react";
+import useLanguage from "hooks/useLanguage";
 
 export default function CardUsuario({ user }) {
+  const { t } = useLanguage();
   const router = useRouter();
   const [isConfirming, setIsConfirming] = useState(false);
   const [confirmationInput, setConfirmationInput] = useState("");
@@ -29,7 +31,7 @@ export default function CardUsuario({ user }) {
 
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
-        setExportError(body.message || "Não foi possível exportar.");
+        setExportError(body.message || t("Erro exportar"));
         return;
       }
 
@@ -47,7 +49,7 @@ export default function CardUsuario({ user }) {
       a.remove();
       URL.revokeObjectURL(url);
     } catch {
-      setExportError("Erro de conexão. Tente novamente.");
+      setExportError(t("Erro de conexao"));
     } finally {
       setIsExporting(false);
     }
@@ -68,21 +70,21 @@ export default function CardUsuario({ user }) {
 
       if (!response.ok && response.status !== 204) {
         const body = await response.json();
-        setErrorMessage(body.message || "Não foi possível excluir a conta.");
+        setErrorMessage(body.message || t("Erro excluir conta"));
         setIsDeleting(false);
         return;
       }
 
       router.replace("/");
     } catch {
-      setErrorMessage("Erro de conexão. Tente novamente.");
+      setErrorMessage(t("Erro de conexao"));
       setIsDeleting(false);
     }
   }
 
   return (
-    <div className="w-full h-full">
-      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+    <div className="w-full h-auto lg:h-full">
+      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
         {isConfirming ? (
@@ -93,19 +95,15 @@ export default function CardUsuario({ user }) {
             <div className="w-14 h-14 rounded-full bg-red-500/20 border border-red-400/40 flex items-center justify-center text-red-200">
               <AlertFillIcon size={28} />
             </div>
-            <p className="text-lg text-white font-semibold">Excluir conta</p>
+            <p className="text-lg text-white font-semibold">
+              {t("Excluir conta")}
+            </p>
             <p className="text-xs leading-relaxed max-w-xs">
-              Esta ação é{" "}
-              <span className="text-red-300 font-semibold">irreversível</span>.
-              Seus dados, sessões e tokens serão eliminados.
+              {t("Texto excluir conta aviso")}
             </p>
             <label className="flex flex-col gap-1 w-full max-w-xs">
               <span className="text-xs uppercase tracking-widest text-white/50">
-                Digite{" "}
-                <span className="normal-case tracking-normal text-cyan-300">
-                  {user?.username}
-                </span>{" "}
-                para confirmar
+                {t("Digite para confirmar", { username: user?.username })}
               </span>
               <input
                 type="text"
@@ -132,7 +130,7 @@ export default function CardUsuario({ user }) {
                 disabled={isDeleting}
                 className="cursor-pointer px-6 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white/70 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm"
               >
-                Cancelar
+                {t("Cancelar")}
               </button>
               <button
                 type="submit"
@@ -140,7 +138,7 @@ export default function CardUsuario({ user }) {
                 className="cursor-pointer px-6 py-2 bg-red-500/10 hover:bg-red-500/30 border border-red-500/30 hover:border-red-500/60 text-red-200 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm inline-flex items-center gap-2"
               >
                 <TrashIcon size={14} />
-                {isDeleting ? "Excluindo..." : "Excluir"}
+                {isDeleting ? t("Excluindo...") : t("Excluir")}
               </button>
             </div>
           </form>
@@ -151,8 +149,7 @@ export default function CardUsuario({ user }) {
             </div>
             <div className="flex flex-col items-center gap-1">
               <p className="text-xl lg:text-2xl text-white font-semibold">
-                Bem vindo,{" "}
-                <span className="text-cyan-300">{user?.username}</span>
+                {t("Bem vindo", { username: user?.username })}
               </p>
               <p className="text-xs text-white/50 break-all max-w-full">
                 {user?.email}
@@ -167,7 +164,7 @@ export default function CardUsuario({ user }) {
                 className="cursor-pointer inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-cyan-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <PackageIcon size={12} />
-                {isExporting ? "Exportando..." : "Exportar meus dados"}
+                {isExporting ? t("Exportando...") : t("Exportar meus dados")}
               </button>
 
               {exportError && (
@@ -180,7 +177,7 @@ export default function CardUsuario({ user }) {
                 className="cursor-pointer inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-red-300 transition-colors"
               >
                 <TrashIcon size={12} />
-                Excluir conta
+                {t("Excluir conta")}
               </button>
             </div>
           </div>

@@ -1,7 +1,9 @@
 import { PlayIcon } from "@primer/octicons-react";
 import { useState, useEffect } from "react";
+import useLanguage from "hooks/useLanguage";
 
 export default function CardYoutube() {
+  const { language, t } = useLanguage();
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,7 +25,9 @@ export default function CardYoutube() {
           title: item.title,
           thumbnail: item.thumbnail,
           views: "Assistir",
-          date: new Date(item.publishedAt).toLocaleDateString("pt-BR"),
+          date: new Date(item.publishedAt).toLocaleDateString(
+            language === "pt" ? "pt-BR" : "en-US",
+          ),
         }));
 
         setVideos(formattedVideos);
@@ -34,10 +38,10 @@ export default function CardYoutube() {
         setVideos([
           {
             id: 1,
-            title: "Não foi possível carregar os vídeos",
+            title: t("Nao foi possivel carregar os videos"),
             thumbnail: "https://img.youtube.com/vi/5qap5aO4i9A/mqdefault.jpg",
             views: "—",
-            date: "Hoje",
+            date: t("Hoje"),
           },
         ]);
         setLoading(false);
@@ -45,7 +49,7 @@ export default function CardYoutube() {
     };
 
     fetchVideos();
-  }, []);
+  }, [language, t]);
 
   return (
     <div className="w-full">
@@ -53,13 +57,13 @@ export default function CardYoutube() {
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10"></div>
 
         {/* Header */}
-        <div className="flex items-center justify-between pl-2">
+        <div className="shrink-0 mb-4 flex items-center justify-between pl-2 relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white shadow-lg shadow-red-500/30">
-              <PlayIcon size={16} />
+            <div className="w-10 h-10 rounded-full bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-300 shadow-lg shadow-red-500/15 shrink-0">
+              <PlayIcon size={20} />
             </div>
-            <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white">
-              Últimos vídeos
+            <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
+              {t("Ultimos videos")}
             </h2>
           </div>
           <a
@@ -68,7 +72,7 @@ export default function CardYoutube() {
             rel="noopener noreferrer"
             className="text-xs font-semibold text-white/50 hover:text-white transition-colors uppercase tracking-wider bg-white/5 px-3 py-1 rounded-full cursor-pointer decoration-transparent"
           >
-            Ver todos
+            {t("Ver todos")}
           </a>
         </div>
 
@@ -119,7 +123,7 @@ export default function CardYoutube() {
                     </h3>
                     <div className="flex items-center gap-2 mt-1 lg:mt-2">
                       <span className="text-xs text-zinc-400 font-medium bg-black/30 px-2 py-0.5 rounded-md">
-                        {video.views}
+                        {t(video.views)}
                       </span>
                       <span className="text-xs text-zinc-500">
                         {video.date}
