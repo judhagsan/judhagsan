@@ -9,10 +9,15 @@
   3. Cole no campo de assinatura:
        Gmail  -> Configuracoes > Ver todas as config. > Geral > Assinatura
        Apple Mail -> Mail > Configuracoes > Assinaturas (cole na area de edicao)
-  Obs: as imagens (foto e icones) sao hospedadas em judhagsan.com/assinatura/*.
+  Obs 1 (imagens): foto e icones sao hospedados em judhagsan.com/assinatura/*.
        Precisa que o site esteja no ar (deploy). NAO usar data URI base64:
        Gmail/Outlook e a maioria dos clientes bloqueiam imagens embutidas, e o
        destinatario ve a imagem quebrada. URLs HTTPS publicas resolvem isso.
+  Obs 2 (dark mode): o Apple Mail inverte agressivamente branco/preto PUROS
+       (#ffffff / #000000). Por isso o texto usa #fffffe e o card #0b0b0f
+       (quase-puros): o Mail respeita a cor e nao inverte -> o nome nao some.
+       Media query @media(prefers-color-scheme) NAO adianta: o editor de
+       assinatura remove o bloco <style> ao colar.
   ============================================================
 -->
 <html lang="pt-BR">
@@ -128,180 +133,118 @@
           cellpadding="0"
           cellspacing="0"
           border="0"
-          style="
-            border-collapse: separate;
-            color-scheme: dark;
-            font-family:
-              &quot;Outfit&quot;,
-              -apple-system,
-              BlinkMacSystemFont,
-              &quot;Segoe UI&quot;,
-              Roboto,
-              Helvetica,
-              Arial,
-              sans-serif;
-          "
+          style="border-collapse: collapse"
         >
           <tr>
-            <td
-              style="
-                color-scheme: dark;
-                background-color: #0b0b0f;
-                border: 1px solid rgba(255, 255, 255, 0.16);
-                border-radius: 18px;
-                box-shadow:
-                  0 10px 30px rgba(0, 0, 0, 0.4),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.18);
-                padding: 20px 24px;
-              "
-            >
+            <td valign="top" style="padding: 0; font-size: 0; line-height: 0">
+              <img
+                src="https://judhagsan.com/assinatura/card/left.png"
+                alt="Judhá Guilherme Santos"
+                width="181"
+                height="206"
+                style="display: block; border: 0; outline: none"
+              />
+            </td>
+            <td valign="top" style="padding: 0; font-size: 0; line-height: 0">
               <table
                 role="presentation"
                 cellpadding="0"
                 cellspacing="0"
                 border="0"
+                style="border-collapse: collapse"
               >
                 <tr>
-                  <td valign="top" style="padding-right: 18px">
+                  <td style="padding: 0; font-size: 0; line-height: 0">
                     <img
-                      src="https://judhagsan.com/assinatura/foto.jpg"
+                      src="https://judhagsan.com/assinatura/card/name.png"
                       alt="Judhá Guilherme Santos"
-                      width="104"
-                      height="134"
-                      style="
-                        display: block;
-                        outline: none;
-                        border-radius: 14px;
-                        border: 1px solid rgba(255, 255, 255, 0.16);
-                        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
-                      "
+                      width="248"
+                      height="65"
+                      style="display: block; border: 0; outline: none"
                     />
                   </td>
-                  <td
-                    valign="top"
-                    style="
-                      border-left: 1px solid rgba(255, 255, 255, 0.1);
-                      padding-left: 18px;
-                    "
-                  >
-                    <div
-                      style="
-                        font-size: 18px;
-                        font-weight: 700;
-                        color: #ffffff;
-                        line-height: 1.1;
-                        letter-spacing: 0.2px;
-                      "
-                    >
-                      Judhá Guilherme Santos
-                    </div>
-                    <div
-                      style="
-                        height: 1px;
-                        line-height: 1px;
-                        font-size: 0;
-                        margin: 14px 0 12px;
-                        background-color: rgba(255, 255, 255, 0.1);
-                        background-image: linear-gradient(
-                          90deg,
-                          rgba(34, 211, 238, 0.6),
-                          rgba(255, 255, 255, 0.06) 70%,
-                          rgba(255, 255, 255, 0)
-                        );
-                      "
-                    >
-                      &nbsp;
-                    </div>
+                </tr>
+                <tr>
+                  <td style="padding: 0; font-size: 0; line-height: 0">
+                    <img
+                      src="https://judhagsan.com/assinatura/card/divider.png"
+                      alt=""
+                      width="248"
+                      height="14"
+                      style="display: block; border: 0; outline: none"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 0; font-size: 0; line-height: 0">
+                    <a
+                      href="mailto:contato@judhagsan.com"
+                      style="text-decoration: none"
+                      ><img
+                        src="https://judhagsan.com/assinatura/card/email.png"
+                        alt="contato@judhagsan.com"
+                        width="248"
+                        height="31"
+                        style="display: block; border: 0; outline: none"
+                    /></a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 0; font-size: 0; line-height: 0">
+                    <a
+                      href="https://judhagsan.com"
+                      style="text-decoration: none"
+                      ><img
+                        src="https://judhagsan.com/assinatura/card/site.png"
+                        alt="judhagsan.com"
+                        width="248"
+                        height="25"
+                        style="display: block; border: 0; outline: none"
+                    /></a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 0; font-size: 0; line-height: 0">
                     <table
                       role="presentation"
                       cellpadding="0"
                       cellspacing="0"
                       border="0"
-                      style="font-size: 15px"
+                      style="border-collapse: collapse"
                     >
                       <tr>
-                        <td style="padding: 3px 0">
-                          <a
-                            href="mailto:contato@judhagsan.com"
-                            style="color: #ffffff; text-decoration: none"
-                            ><img
-                              src="https://judhagsan.com/assinatura/email.png"
-                              alt="Email"
-                              width="16"
-                              height="16"
-                              style="
-                                display: inline-block;
-                                vertical-align: -3px;
-                                border: 0;
-                                outline: none;
-                              "
-                            />&nbsp;&nbsp;<span style="color: #ffffff"
-                              >contato@judhagsan.com</span
-                            ></a
-                          >
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 3px 0">
-                          <a
-                            href="https://judhagsan.com"
-                            style="color: #ffffff; text-decoration: none"
-                            ><img
-                              src="https://judhagsan.com/assinatura/site.png"
-                              alt="Site"
-                              width="14"
-                              height="14"
-                              style="
-                                display: inline-block;
-                                vertical-align: -2px;
-                                border: 0;
-                                outline: none;
-                              "
-                            />&nbsp;&nbsp;<span style="color: #ffffff"
-                              >judhagsan.com</span
-                            ></a
-                          >
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 3px 0">
+                        <td style="padding: 0; font-size: 0; line-height: 0">
                           <a
                             href="https://www.youtube.com/@Judhagsan"
-                            style="color: #ffffff; text-decoration: none"
+                            style="text-decoration: none"
                             ><img
-                              src="https://judhagsan.com/assinatura/youtube.png"
+                              src="https://judhagsan.com/assinatura/card/youtube.png"
                               alt="YouTube"
-                              width="16"
-                              height="16"
-                              style="
-                                display: inline-block;
-                                vertical-align: -3px;
-                                border: 0;
-                                outline: none;
-                              "
-                            />&nbsp;&nbsp;<span style="color: #ffffff"
-                              >YouTube</span
-                            ></a
-                          ><span style="color: rgba(255, 255, 255, 0.25)"
-                            >&nbsp;&nbsp;·&nbsp;&nbsp;</span
-                          ><a
+                              width="84"
+                              height="71"
+                              style="display: block; border: 0; outline: none"
+                          /></a>
+                        </td>
+                        <td style="padding: 0; font-size: 0; line-height: 0">
+                          <img
+                            src="https://judhagsan.com/assinatura/card/sep.png"
+                            alt=""
+                            width="14"
+                            height="71"
+                            style="display: block; border: 0; outline: none"
+                          />
+                        </td>
+                        <td style="padding: 0; font-size: 0; line-height: 0">
+                          <a
                             href="https://instagram.com/judhagsan"
-                            style="color: #ffffff; text-decoration: none"
+                            style="text-decoration: none"
                             ><img
-                              src="https://judhagsan.com/assinatura/instagram.png"
+                              src="https://judhagsan.com/assinatura/card/instagram.png"
                               alt="Instagram"
-                              width="14"
-                              height="14"
-                              style="
-                                display: inline-block;
-                                vertical-align: -2px;
-                                border: 0;
-                                outline: none;
-                              "
-                            />&nbsp;&nbsp;<span style="color: #ffffff"
-                              >Instagram</span
-                            ></a
-                          >
+                              width="150"
+                              height="71"
+                              style="display: block; border: 0; outline: none"
+                          /></a>
                         </td>
                       </tr>
                     </table>
