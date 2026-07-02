@@ -39,7 +39,7 @@ export default function CardReel() {
         >
           <video
             ref={videoRef}
-            src="/Reel.mp4"
+            src="/reel.webm"
             loop
             playsInline
             className="w-full h-full object-cover group-hover/video:scale-[1.01] transition-transform duration-500"
