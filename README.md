@@ -1,324 +1,243 @@
-# Judhagsan
+<div align="center">
 
-Aplicação web full-stack construída com **Next.js** e **PostgreSQL**, com sistema completo de autenticação, autorização baseada em features, ativação de conta por e-mail e painel de status do sistema em tempo real.
+# Judhá Guilherme Santos
 
-> **Produção:** [https://judhagsan.com](https://judhagsan.com)
+### Artista 3D · Motion Designer · Engenheiro de Software
 
----
+Mais de uma década conectando **arte** e **código** — de animações para franquias de jogos
+a um software de animação escrito em Rust.
 
-## Índice
+<br/>
 
-- [Funcionalidades](#funcionalidades)
-- [Stack Tecnológica](#stack-tecnológica)
-- [Arquitetura do Projeto](#arquitetura-do-projeto)
-- [Pré-requisitos](#pré-requisitos)
-- [Instalação e Configuração](#instalação-e-configuração)
-- [Scripts Disponíveis](#scripts-disponíveis)
-- [API REST (v1)](#api-rest-v1)
-- [Sistema de Autenticação e Autorização](#sistema-de-autenticação-e-autorização)
-- [Migrações de Banco de Dados](#migrações-de-banco-de-dados)
-- [Testes](#testes)
-- [CI/CD](#cicd)
-- [Licença](#licença)
+[![Portfolio](https://img.shields.io/badge/🌐_Portfolio-judhagsan.com-0891b2?style=for-the-badge)](https://judhagsan.com)
+[![YouTube](https://img.shields.io/badge/YouTube-@Judhagsan-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@Judhagsan)
+[![Email](https://img.shields.io/badge/Email-contato@judhagsan.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:contato@judhagsan.com)
+
+</div>
 
 ---
 
-## Funcionalidades
+## 🧭 Sobre mim
 
-- 🔐 **Autenticação completa** — Cadastro, login e gerenciamento de sessões via cookies HTTP-only
-- 🛡️ **Autorização baseada em features** — Controle granular de permissões por funcionalidade
-- ✉️ **Ativação de conta por e-mail** — Fluxo com token de ativação enviado por e-mail (15 min de expiração)
-- 📊 **Painel de status em tempo real** — Monitoramento de saúde do banco de dados com polling automático via SWR
-- 🗄️ **Migrações de banco de dados** — Controle versionado de esquema via `node-pg-migrate`
-- 🧪 **Testes automatizados** — Testes de integração e unitários com Jest
-- 🚀 **CI/CD** — Pipelines de linting e testes automatizados via GitHub Actions
-- 🎨 **UI moderna** — Interface estilizada com Tailwind CSS v4 e DaisyUI
+Desde 2014 atuo com design gráfico, motion graphics, modelagem 3D, texturização, rigging,
+animação e desenvolvimento de software — de props de cenário e animações para franquias de
+jogos a apps de realidade aumentada, minigames interativos e aplicações web full-stack.
 
----
+Em 2019 fundei meu próprio estúdio, **Judhagsan**, para colaborar com estúdios ao redor do
+mundo, entregando animação 2D e 3D em uma ampla variedade de estilos, além de soluções de
+jogos programadas diretamente em engines como Unreal e Unity.
 
-## Stack Tecnológica
+Atualmente sou graduando em **Engenharia da Computação** (2022 – 2026), e minha principal
+intenção é unir a engenharia e a arte.
 
-| Camada         | Tecnologia                                |
-| -------------- | ----------------------------------------- |
-| Framework      | Next.js 14 (Pages Router)                 |
-| Runtime        | Node.js 24                                |
-| Banco de Dados | PostgreSQL 16 (Alpine)                    |
-| ORM / Queries  | pg (node-postgres) — queries SQL diretas  |
-| Autenticação   | bcryptjs + sessões com cookies HTTP-only  |
-| E-mail         | Nodemailer (MailCatcher em dev)           |
-| Estilização    | Tailwind CSS v4 + DaisyUI                 |
-| Data Fetching  | SWR                                       |
-| Testes         | Jest + Faker.js                           |
-| Linting        | ESLint + Prettier + Commitlint            |
-| CI/CD          | GitHub Actions                            |
-| Containers     | Docker Compose (PostgreSQL + MailCatcher) |
-| Deploy         | Vercel                                    |
+> 🌐 **[judhagsan.com](https://judhagsan.com)** é o meu portfolio: reel de animação, projetos
+> comerciais, contato e o download do Pindorama. Este repositório é o código-fonte do site —
+> a documentação técnica está em [`docs/README.md`](docs/README.md).
 
 ---
 
-## Arquitetura do Projeto
+## 🚀 Projetos em destaque
 
-```
-judhagsan/
-├── infra/                        # Infraestrutura
-│   ├── compose.yaml              # Docker Compose (Postgres + MailCatcher)
-│   ├── controller.js             # Middleware de autenticação, sessão e autorização
-│   ├── database.js               # Conexão e queries PostgreSQL
-│   ├── email.js                  # Transporte de e-mail (Nodemailer)
-│   ├── errors.js                 # Classes de erro customizadas (HTTP 4xx/5xx)
-│   ├── webserver.js              # Configuração de origem/URL do servidor
-│   ├── migrations/               # Arquivos de migração do banco
-│   └── scripts/                  # Scripts auxiliares (ex: wait-for-postgres)
-├── models/                       # Camada de domínio / regras de negócio
-│   ├── activation.js             # Tokens de ativação de conta
-│   ├── authentication.js         # Autenticação (email + senha)
-│   ├── authorization.js          # Autorização baseada em features
-│   ├── migrator.js               # Executor de migrações
-│   ├── password.js               # Hash e comparação de senhas (bcrypt)
-│   ├── session.js                # Gerenciamento de sessões
-│   └── user.js                   # CRUD de usuários
-├── pages/                        # Rotas Next.js (Pages Router)
-│   ├── _app.js                   # Wrapper da aplicação
-│   ├── index.js                  # Página principal (Dashboard)
-│   ├── status/index.js           # Página de status do sistema
-│   ├── components/               # Componentes React reutilizáveis
-│   └── api/v1/                   # API REST versionada
-│       ├── activations/          # Endpoints de ativação
-│       ├── migrations/           # Endpoints de migrações
-│       ├── sessions/             # Endpoints de sessões
-│       ├── status/               # Endpoint de status
-│       ├── user/                 # Endpoint do usuário logado
-│       └── users/                # Endpoints de usuários
-├── tests/                        # Testes automatizados
-│   ├── orchestrator.js           # Utilitários e helpers de teste
-│   ├── integration/              # Testes de integração (API + Use Cases)
-│   └── unit/                     # Testes unitários (Models)
-├── .github/workflows/            # Pipelines CI/CD
-│   ├── linting.yaml              # Prettier + ESLint + Commitlint
-│   └── tests.yaml                # Testes automatizados com Jest
-└── .env.development              # Variáveis de ambiente (desenvolvimento)
-```
+### 🖌️ Pindorama
+
+> _"Desenvolvido de animador para animador."_
+
+Software de animação com renderização acelerada por GPU, escrito em **Rust**. Combina a arte
+do frame-a-frame com a eficiência da animação 2D vetorial — uma engine para mixed media,
+otimizada para entregar máxima performance respeitando o seu hardware.
+
+- 🎨 Editor de stage com ferramentas de desenho vetorial e raster, texto animável e modificadores (Repeater)
+- ⏱️ Timeline com keyframes, graph editor e playback sincronizado com áudio
+- 🎞️ Composição de vídeo com decode acelerado por hardware (FFmpeg), proxies e exportação AV1
+- 🖥️ UI desenhada do zero via **Vulkan** — sem framework de GUI, cada pixel passa por pipelines GLSL/SPIR-V
+- 🔄 Auto-update integrado e autenticação via judhagsan.com
+
+**Download disponível em [judhagsan.com](https://judhagsan.com)** _(requer cadastro)_.
+
+### 🌐 judhagsan.com — este repositório
+
+Aplicação web full-stack construída com **Next.js** e **PostgreSQL**: portfolio, sistema
+completo de autenticação e autorização baseada em features, ativação de conta por e-mail,
+painel de status em tempo real e API REST versionada — com testes automatizados (Jest) e
+CI/CD via GitHub Actions. Também é o backend do Pindorama (login, dispositivos e
+auto-update).
+
+📚 Documentação técnica completa: [`docs/README.md`](docs/README.md)
+
+### ⚙️ Automações Wirestock
+
+Ferramentas de automação em **Rust** para empacotamento e envio de projetos de vetores e
+assets 3D, criadas para otimizar meu fluxo de trabalho como artista na Wirestock.
 
 ---
 
-## Pré-requisitos
+## 🎬 Portfolio de animação
 
-- **Node.js** 24 (veja `.nvmrc`)
-- **Docker** e **Docker Compose**
-- **npm**
+| Projeto                         | Sobre                                                                                                                    | Meu papel                                                       | Ferramentas                      |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | -------------------------------- |
+| **State of Survival**           | Animação promocional do jogo para redes sociais na Europa, adaptada às normas de conteúdo das plataformas                | Animação 3D completa                                            | Blender                          |
+| **Vivo — Black Friday & Natal** | Campanha com voice over de Ivete Sangalo, entregue em multiformato para TV, redes sociais, livestreams e influenciadores | Motion design e entrega multiformato                            | After Effects, Photoshop         |
+| **Little Unusual**              | Peças para o estúdio Little Unusual                                                                                      | Animação 3D, modelagem, renderização, texturização e iluminação | Blender, Premiere, After Effects |
+| **Beyond Skyrim**               | Projeto comunitário que expande o mapa de Skyrim para recriar o continente de Tamriel                                    | Modelagem e texturização de props de cenário                    | Maya, Photoshop                  |
 
----
-
-## Instalação e Configuração
-
-```bash
-# 1. Clone o repositório
-git clone https://github.com/judhagsan/judhagsan.git
-cd judhagsan
-
-# 2. Use a versão correta do Node
-nvm use
-
-# 3. Instale as dependências
-npm install
-
-# 4. Inicie o ambiente de desenvolvimento
-#    (sobe containers, aguarda o banco, roda migrações e inicia o Next.js)
-npm run dev
-```
-
-A aplicação estará disponível em `http://localhost:3000`.
-
-### Serviços Docker (Desenvolvimento)
-
-| Serviço     | Container         | Porta(s)                       |
-| ----------- | ----------------- | ------------------------------ |
-| PostgreSQL  | `postgres-dev`    | `5432`                         |
-| MailCatcher | `mailcatcher-dev` | `1025` (SMTP), `1080` (Web UI) |
-
-Acesse a interface web do MailCatcher em `http://localhost:1080` para visualizar e-mails enviados em desenvolvimento.
-
-### Variáveis de Ambiente
-
-As variáveis estão definidas em `.env.development`:
-
-| Variável            | Descrição           | Valor Padrão     |
-| ------------------- | ------------------- | ---------------- |
-| `POSTGRES_HOST`     | Host do PostgreSQL  | `localhost`      |
-| `POSTGRES_PORT`     | Porta do PostgreSQL | `5432`           |
-| `POSTGRES_USER`     | Usuário do banco    | `local_user`     |
-| `POSTGRES_DB`       | Nome do banco       | `local_db`       |
-| `POSTGRES_PASSWORD` | Senha do banco      | `local_password` |
-| `EMAIL_SMTP_HOST`   | Host SMTP           | `localhost`      |
-| `EMAIL_SMTP_PORT`   | Porta SMTP          | `1025`           |
+▶️ **Assista tudo em [judhagsan.com](https://judhagsan.com)**
 
 ---
 
-## Scripts Disponíveis
+## 🧰 Stack & Ferramentas
 
-| Comando                       | Descrição                                                |
-| ----------------------------- | -------------------------------------------------------- |
-| `npm run dev`                 | Sobe serviços, roda migrações e inicia o servidor de dev |
-| `npm test`                    | Executa todos os testes (sobe serviços automaticamente)  |
-| `npm run test:watch`          | Executa testes em modo watch                             |
-| `npm run services:up`         | Sobe containers Docker                                   |
-| `npm run services:stop`       | Para containers Docker                                   |
-| `npm run services:down`       | Remove containers Docker                                 |
-| `npm run migrations:create`   | Cria um novo arquivo de migração                         |
-| `npm run migrations:up`       | Executa migrações pendentes                              |
-| `npm run lint:prettier:check` | Verifica formatação com Prettier                         |
-| `npm run lint:prettier:fix`   | Corrige formatação com Prettier                          |
-| `npm run lint:eslint:check`   | Verifica linting com ESLint                              |
-| `npm run commit`              | Abre o Commitizen para commits padronizados              |
+### 💻 Engenharia
 
----
+![Rust](https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white)
+![Vulkan](https://img.shields.io/badge/Vulkan-A41E22?style=for-the-badge&logo=vulkan&logoColor=white)
+![FFmpeg](https://img.shields.io/badge/FFmpeg-007808?style=for-the-badge&logo=ffmpeg&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
-## API REST (v1)
+### 🕹️ Engines & Jogos
 
-Base URL: `/api/v1`
+![Unity](https://img.shields.io/badge/Unity-000000?style=for-the-badge&logo=unity&logoColor=white)
+![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-0E1128?style=for-the-badge&logo=unrealengine&logoColor=white)
+![C#](https://img.shields.io/badge/C%23-239120?style=for-the-badge)
+![ARCore](https://img.shields.io/badge/ARCore-4285F4?style=for-the-badge)
 
-### Status
+### 🎨 Arte & Animação
 
-| Método | Endpoint  | Descrição                                     |
-| ------ | --------- | --------------------------------------------- |
-| `GET`  | `/status` | Retorna status do sistema e métricas do banco |
+![Blender](https://img.shields.io/badge/Blender-E87D0D?style=for-the-badge&logo=blender&logoColor=white)
+![Maya](https://img.shields.io/badge/Maya-0696D7?style=for-the-badge&logo=autodeskmaya&logoColor=white)
+![ZBrush](https://img.shields.io/badge/ZBrush-B02E24?style=for-the-badge)
+![Substance Painter](https://img.shields.io/badge/Substance_3D_Painter-99424F?style=for-the-badge)
+![After Effects](https://img.shields.io/badge/After_Effects-393665?style=for-the-badge)
+![Premiere Pro](https://img.shields.io/badge/Premiere_Pro-9999FF?style=for-the-badge)
+![Photoshop](https://img.shields.io/badge/Photoshop-31A8FF?style=for-the-badge)
+![Illustrator](https://img.shields.io/badge/Illustrator-FF9A00?style=for-the-badge)
+![Animate](https://img.shields.io/badge/Animate-FF813F?style=for-the-badge)
+![CorelDRAW](https://img.shields.io/badge/CorelDRAW-47A248?style=for-the-badge)
 
-### Usuários
-
-| Método  | Endpoint           | Descrição                  |
-| ------- | ------------------ | -------------------------- |
-| `POST`  | `/users`           | Cria um novo usuário       |
-| `GET`   | `/users/:username` | Busca usuário por username |
-| `PATCH` | `/users/:username` | Atualiza dados do usuário  |
-
-### Sessões
-
-| Método   | Endpoint    | Descrição                    |
-| -------- | ----------- | ---------------------------- |
-| `POST`   | `/sessions` | Cria uma nova sessão (login) |
-| `DELETE` | `/sessions` | Encerra a sessão (logout)    |
-
-### Usuário Autenticado
-
-| Método | Endpoint | Descrição                       |
-| ------ | -------- | ------------------------------- |
-| `GET`  | `/user`  | Retorna dados do usuário logado |
-
-### Ativação de Conta
-
-| Método | Endpoint                | Descrição                                 |
-| ------ | ----------------------- | ----------------------------------------- |
-| `GET`  | `/activations/:tokenId` | Ativa conta com token recebido por e-mail |
-
-### Migrações
-
-| Método | Endpoint      | Descrição                   |
-| ------ | ------------- | --------------------------- |
-| `GET`  | `/migrations` | Lista migrações pendentes   |
-| `POST` | `/migrations` | Executa migrações pendentes |
+**Especialidades:** renderização 3D · texturização · rigging · animação 3D e 2D · animação
+quadro a quadro · motion graphics · pipeline PBR
 
 ---
 
-## Sistema de Autenticação e Autorização
+## 💼 Experiência
 
-### Fluxo de Cadastro e Ativação
+### 💻 Tecnologia
 
-1. Usuário se cadastra via `POST /api/v1/users`
-2. O sistema cria o usuário com a feature `read:activation_token`
-3. Um token de ativação é gerado e enviado por e-mail (expira em 15 minutos)
-4. Usuário clica no link de ativação (`/cadastro/ativar/:tokenId`)
-5. Após ativação, o usuário recebe as features: `create:session`, `read:session`, `update:user`
+**Engenheiro de Software** — JLMoldes · 2024 – 2026 · São Paulo, SP
 
-### Features Disponíveis
+Conduzi integralmente um sistema automatizado com tabelas estilo planilha que executam
+operações matemáticas e sincronizam resultados com banco de dados em tempo real, com login
+em múltiplos níveis de privilégio (administradores de franquias e operadores de máquinas).
+Também desenvolvi um sistema de sincronia com plotters para impressão de projetos, escrito
+em **Rust** para Windows, com atualização de status, erros e falhas em tempo real.
+Contribuí para **+50% na eficiência de comunicação** e **+70% no faturamento**.
 
-| Feature                 | Descrição                                     |
-| ----------------------- | --------------------------------------------- |
-| `create:user`           | Criar novos usuários                          |
-| `read:user`             | Visualizar dados públicos de usuários         |
-| `read:user:self`        | Visualizar dados próprios (inclui e-mail)     |
-| `update:user`           | Atualizar dados do próprio usuário            |
-| `update:user:others`    | Atualizar dados de outros usuários (admin)    |
-| `create:session`        | Criar sessão (login)                          |
-| `read:session`          | Visualizar dados da sessão                    |
-| `read:activation_token` | Utilizar tokens de ativação                   |
-| `create:migration`      | Criar/executar migrações                      |
-| `read:migration`        | Listar migrações                              |
-| `read:status`           | Visualizar status básico do sistema           |
-| `read:status:all`       | Visualizar status completo (inclui versão DB) |
+`Rust` `React` `Next.js` `Node` `PostgreSQL` `Tailwind` `Jest` `Migrations` `Vercel` `CI`
 
-### Sessões
+**Desenvolvedor Web Full Stack** — Nomads Digital · 2021 – 2023 · Budapeste, Hungria
 
-- Sessões são armazenadas no PostgreSQL
-- Token de sessão é um `crypto.randomBytes(48)` codificado em hex
-- Expiração: **30 dias**
-- Cookie `session_id` é `httpOnly` e `secure` em produção
+Conduzi integralmente a criação de minigames e sites interativos usados como funil para
+atrair novos usuários a um produto final, otimizando os processos de entrega em **+20%**.
 
----
+`HTML` `CSS` `PHP` `JavaScript` `MySQL` `WordPress`
 
-## Migrações de Banco de Dados
+**Desenvolvedor Web Full Stack** — Banca Online · 2020 · São Paulo, SP
 
-As migrações são gerenciadas pelo `node-pg-migrate` e ficam em `infra/migrations/`:
+Liderei integralmente um sistema de gerenciamento de apostas por números com transações de
+pagamento, login em múltiplos níveis de acesso e conferência dos números conforme as normas
+da Caixa Econômica Federal.
 
-| Migração                        | Descrição                                      |
-| ------------------------------- | ---------------------------------------------- |
-| `create-users`                  | Tabela de usuários (username, email, password) |
-| `create-sessions`               | Tabela de sessões (token, user_id, expires_at) |
-| `add-features-to-users`         | Coluna `features` na tabela de usuários        |
-| `create-user-activation-tokens` | Tabela de tokens de ativação                   |
+`HTML` `CSS` `PHP` `JavaScript` `MySQL` `PagSeguro`
 
-```bash
-# Criar nova migração
-npm run migrations:create -- nome-da-migracao
+**Desenvolvedor Mobile / AR & Artista 3D** — Echo Interaction Group · 2019 · Orlando, EUA (remoto)
 
-# Executar migrações pendentes
-npm run migrations:up
-```
+Integrei a equipe de um aplicativo de realidade aumentada, modelando e texturizando props em
+pipeline PBR e programando suas interações dentro da Unity Engine.
 
----
+`Unity` `C#` `ARCore` `Blender`
 
-## Testes
+### 🎨 Arte & Animação
 
-O projeto utiliza **Jest** com testes de integração e unitários, orquestrados por um `orchestrator` que gerencia o estado do banco de dados e serviços auxiliares.
+**Fundador · Artista & Engenheiro de Software** — Judhagsan · 2019 – presente · Remoto, mundial
 
-```bash
-# Executar todos os testes
-npm test
+Colaboro com estúdios ao redor do mundo em regime de contrato e freelance, entregando
+animações 2D e 3D em uma ampla variedade de estilos e soluções de jogos programadas dentro
+de game engines ou em qualquer outro ambiente.
 
-# Executar em modo watch
-npm run test:watch
-```
+**Artista de Ambientes 3D** — Wirestock · 2024 – 2025 · Remoto
 
-### Estrutura de Testes
+Criei modelos 3D de ambientes e cuidei da texturização para renderização de alta qualidade.
 
-```
-tests/
-├── orchestrator.js          # Helpers: createUser, createSession, clearDatabase, etc.
-├── integration/
-│   ├── api/                 # Testes de endpoints da API
-│   ├── infra/               # Testes de infraestrutura
-│   └── _use-cases/          # Testes de fluxos completos
-└── unit/
-    └── models/              # Testes unitários dos models
-```
+`Blender` `Unreal Engine`
 
----
+**Artista 3D & Motion Designer** — Nomads Digital · 2021 – 2023 · Budapeste, Hungria
 
-## CI/CD
+Criei peças estáticas e animadas em 2D e 3D — modelagem de personagens, ambientes e
+cenários, texturização, rigging e animação. Produzi animações para franquias de jogos como
+**State of Survival**, **Forge of Empires** e **Elvenar**, além de minigames interativos.
 
-O projeto possui **GitHub Actions** configuradas para rodar em cada **Pull Request**:
+`Blender` `After Effects` `Photoshop` `Illustrator` `Unity`
 
-### Linting (`linting.yaml`)
+**Motion Designer** — Dr. Tips · 2020 · Brasil
 
-- **Prettier** — Verificação de formatação
-- **ESLint** — Verificação de regras de linting
-- **Commitlint** — Verificação de mensagens de commit (Conventional Commits)
+Animei vídeos explicativos 2D que transformam temas médicos complexos em conteúdo claro e
+envolvente.
 
-### Testes (`tests.yaml`)
+`Illustrator` `After Effects`
 
-- **Jest** — Execução de todos os testes automatizados em Ubuntu
+**Motion Designer** — Giftway · 2017 – 2019 · Brasil
+
+Criei animações 2D e 3D para campanhas de marketing e publicidade, além de renders 3D de
+produtos para material promocional.
+
+`Blender` `Photoshop` `After Effects` `Illustrator`
+
+**Artista 3D** — Beyond Skyrim · 2016 · Remoto
+
+Contribuí com o projeto comunitário que expande o mapa de Skyrim para recriar o mundo de
+The Elder Scrolls pelo continente de Tamriel, modelando e texturizando props de cenário.
+
+`Maya` `Photoshop`
+
+**Designer Gráfico** — Gráfica Esag · 2014 – 2016 · Brasil
+
+Criei layouts e ilustrações para impressão (folhetos, flyers, banners) e uma ampla variedade
+de material digital para marketing e comunicação.
+
+`Photoshop` `Illustrator` `CorelDRAW`
 
 ---
 
-## Licença
+## 🎓 Formação
 
-Este projeto está licenciado sob a [MIT License](LICENSE). :D
+| Instituição                          | Curso                                   | Período     |
+| ------------------------------------ | --------------------------------------- | ----------- |
+| FMU — Centro Universitário FIAM-FAAM | Bacharelado em Engenharia da Computação | 2022 – 2026 |
+| AXIS School of Visual Effects        | Design de Ambientes                     | 2016        |
+
+**Idiomas:** Português (nativo) · Inglês (avançado)
+
+---
+
+## 📫 Contato
+
+- 🌐 Formulário em [judhagsan.com/contato](https://judhagsan.com/contato)
+- ✉️ [contato@judhagsan.com](mailto:contato@judhagsan.com)
+- ▶️ [youtube.com/@Judhagsan](https://www.youtube.com/@Judhagsan)
+
+<div align="center">
+<br/>
+
+<sub>Este repositório é o código-fonte de <a href="https://judhagsan.com">judhagsan.com</a> — documentação técnica em <a href="docs/README.md"><code>docs/README.md</code></a> · Licença <a href="LICENSE">MIT</a></sub>
+
+</div>
