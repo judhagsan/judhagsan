@@ -58,7 +58,7 @@ Aplicação web full-stack construída com **Next.js** e **PostgreSQL**, com sis
 
 ## Arquitetura do Projeto
 
-```
+```text
 judhagsan/
 ├── infra/                        # Infraestrutura
 │   ├── compose.yaml              # Docker Compose (Postgres + MailCatcher)
@@ -290,7 +290,7 @@ npm run test:watch
 
 ### Estrutura de Testes
 
-```
+```text
 tests/
 ├── orchestrator.js          # Helpers: createUser, createSession, clearDatabase, etc.
 ├── integration/
