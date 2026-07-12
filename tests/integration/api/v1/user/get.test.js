@@ -64,6 +64,8 @@ describe("GET /api/v1/user", () => {
           "delete:user",
           "manage:device",
         ],
+        supporter_wall_opt_in: false,
+        discord_connected: false,
         created_at: createdUser.created_at.toISOString(),
         updated_at: activatedUser.updated_at.toISOString(),
       });
@@ -135,6 +137,8 @@ describe("GET /api/v1/user", () => {
           "delete:user",
           "manage:device",
         ],
+        supporter_wall_opt_in: false,
+        discord_connected: false,
         created_at: createdUser.created_at.toISOString(),
         updated_at: activatedUser.updated_at.toISOString(),
       });

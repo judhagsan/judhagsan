@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import CardYoutube from "../components/cardYoutube";
 import CardUsuario from "../components/CardUsuario";
 import CardDispositivos from "../components/CardDispositivos";
+import CardApoiador from "../components/CardApoiador";
 import CardSessao from "../components/CardSessao";
 import CardPrivacidade from "../components/CardPrivacidade";
 import CardContato from "../components/CardContato";
@@ -41,6 +42,9 @@ export default function SessaoPage() {
             {/* User + Dispositivos column — full-width on mobile, sidebar on desktop */}
             <div className="w-full lg:absolute lg:top-0 lg:left-0 lg:w-1/4 lg:max-h-full flex flex-col gap-4 lg:overflow-y-auto lg:pr-2">
               {isLoggedIn && <CardUsuario user={user} />}
+              {isLoggedIn && user?.features?.includes("apoiador") && (
+                <CardApoiador user={user} />
+              )}
               {isLoggedIn && <CardDispositivos />}
             </div>
 

@@ -142,6 +142,27 @@ const translations = {
       "Não foi possível carregar os vídeos",
     Hoje: "Hoje",
 
+    // Apoiador
+    Apoiador: "Apoiador",
+    Apoiadores: "Apoiadores",
+    "Texto agradecimento apoiadores":
+      "Pessoas incríveis que mantêm o desenvolvimento do Pindorama vivo. Muito obrigado!",
+    "Nenhum apoiador ainda": "Ainda não há apoiadores públicos por aqui.",
+    "Erro ao carregar apoiadores": "Não foi possível carregar os apoiadores.",
+    "Entrar no Discord": "Entrar no Discord",
+    "Discord conectado": "Discord conectado",
+    "Texto beneficio discord":
+      "Entre no servidor com o cargo exclusivo de apoiador.",
+    "Exibir meu nome no mural": "Exibir meu nome no mural de apoiadores",
+    "Ver mural de apoiadores": "Ver mural de apoiadores",
+    "Discord conectado com sucesso": "Discord conectado com sucesso!",
+    "Erro ao conectar Discord":
+      "Não foi possível conectar ao Discord. Tente novamente.",
+    "Discord ja vinculado":
+      "Esta conta do Discord já está vinculada a outro usuário.",
+    "Salvando...": "Salvando...",
+    "Erro ao salvar": "Não foi possível salvar.",
+
     // Activation Card
     Sessao: "Sessão",
     Ativar_cadastro: "Ativar cadastro",
@@ -293,6 +314,26 @@ const translations = {
     Assistir: "Watch",
     "Nao foi possivel carregar os videos": "Could not load videos",
     Hoje: "Today",
+
+    // Apoiador
+    Apoiador: "Supporter",
+    Apoiadores: "Supporters",
+    "Texto agradecimento apoiadores":
+      "Amazing people who keep the development of Pindorama alive. Thank you so much!",
+    "Nenhum apoiador ainda": "No public supporters here yet.",
+    "Erro ao carregar apoiadores": "Could not load supporters.",
+    "Entrar no Discord": "Join the Discord",
+    "Discord conectado": "Discord connected",
+    "Texto beneficio discord":
+      "Join the server with the exclusive supporter role.",
+    "Exibir meu nome no mural": "Show my name on the supporters wall",
+    "Ver mural de apoiadores": "View supporters wall",
+    "Discord conectado com sucesso": "Discord connected successfully!",
+    "Erro ao conectar Discord": "Could not connect to Discord. Try again.",
+    "Discord ja vinculado":
+      "This Discord account is already linked to another user.",
+    "Salvando...": "Saving...",
+    "Erro ao salvar": "Could not save.",
 
     // Activation Card
     Sessao: "Dashboard",

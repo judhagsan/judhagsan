@@ -5,6 +5,7 @@ import {
   PackageIcon,
   TrashIcon,
   AlertFillIcon,
+  HeartFillIcon,
 } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
 
@@ -154,6 +155,12 @@ export default function CardUsuario({ user }) {
               <p className="text-xs text-white/50 break-all max-w-full">
                 {user?.email}
               </p>
+              {user?.features?.includes("apoiador") && (
+                <span className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-500/15 border border-amber-400/40 text-amber-300 text-[10px] uppercase tracking-widest font-semibold">
+                  <HeartFillIcon size={12} />
+                  {t("Apoiador")}
+                </span>
+              )}
             </div>
 
             <div className="mt-4 flex flex-col items-start gap-2 self-start">
