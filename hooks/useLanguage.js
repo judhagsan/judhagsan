@@ -125,7 +125,7 @@ const translations = {
     "Digite para confirmar": "Digite {username} para confirmar",
     Cancelar: "Cancelar",
     "Excluindo...": "Excluindo...",
-    "Bem vindo": "Bem vindo, {username}",
+    "Bem vindo": "Bem-vindo, {username}",
     "Exportar meus dados": "Exportar meus dados",
     "Exportando...": "Exportando...",
     "Erro exportar": "Não foi possível exportar.",
@@ -143,6 +143,7 @@ const translations = {
     Hoje: "Hoje",
 
     // Apoiador
+    Apoiar: "Apoiar",
     Apoiador: "Apoiador",
     Apoiadores: "Apoiadores",
     "Texto agradecimento apoiadores":
@@ -162,6 +163,17 @@ const translations = {
       "Esta conta do Discord já está vinculada a outro usuário.",
     "Salvando...": "Salvando...",
     "Erro ao salvar": "Não foi possível salvar.",
+    "Quero apoiar o Pindorama": "Quero apoiar o Pindorama",
+    "Texto apoio em breve":
+      "Programa de apoio recorrente em breve — enquanto isso, fale comigo pelo contato.",
+
+    // Portfolio captions
+    sos_caption: "Blender · Marketing de jogo",
+    vivo_caption: "After Effects · Campanha nacional",
+    lu_caption: "Animação 3D · Estúdio Little Unusual",
+
+    // YouTube Card (extra)
+    "Ver o canal": "Ver o canal",
 
     // Activation Card
     Sessao: "Sessão",
@@ -316,6 +328,7 @@ const translations = {
     Hoje: "Today",
 
     // Apoiador
+    Apoiar: "Support",
     Apoiador: "Supporter",
     Apoiadores: "Supporters",
     "Texto agradecimento apoiadores":
@@ -334,6 +347,17 @@ const translations = {
       "This Discord account is already linked to another user.",
     "Salvando...": "Saving...",
     "Erro ao salvar": "Could not save.",
+    "Quero apoiar o Pindorama": "I want to support Pindorama",
+    "Texto apoio em breve":
+      "Recurring support program coming soon — meanwhile, reach out via contact.",
+
+    // Portfolio captions
+    sos_caption: "Blender · Game marketing",
+    vivo_caption: "After Effects · National campaign",
+    lu_caption: "3D Animation · Studio Little Unusual",
+
+    // YouTube Card (extra)
+    "Ver o canal": "Visit the channel",
 
     // Activation Card
     Sessao: "Dashboard",

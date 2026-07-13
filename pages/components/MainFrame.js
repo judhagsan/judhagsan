@@ -95,8 +95,8 @@ export default function MainFrame({ children }) {
 
       {/* External Logo + Sobre link + Portfolio link (always visible, perfectly centered logo) */}
       <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 flex items-end justify-between w-[300px] lg:w-[340px] h-6 leading-none">
-        {/* Left: Sobre Link */}
-        <div className="flex-1 flex items-end justify-end">
+        {/* Left: Sobre Link — some em telas muito estreitas (fica no menu) */}
+        <div className="hidden min-[380px]:flex flex-1 items-end justify-end">
           {hasSidePanel ? (
             <button
               type="button"
@@ -128,8 +128,8 @@ export default function MainFrame({ children }) {
           />
         </Link>
 
-        {/* Right: Portfolio Link */}
-        <div className="flex-1 flex items-end justify-start">
+        {/* Right: Portfolio Link — some em telas muito estreitas (fica no menu) */}
+        <div className="hidden min-[380px]:flex flex-1 items-end justify-start">
           <Link
             href="/portfolio"
             className="inline-flex items-end text-xs lg:text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px]"

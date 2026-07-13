@@ -1,19 +1,26 @@
 import Head from "next/head";
+import Link from "next/link";
 import useSWR from "swr";
 import { HeartFillIcon } from "@primer/octicons-react";
 import MainFrame from "../components/MainFrame";
 import useLanguage from "hooks/useLanguage";
+import useUser from "hooks/useUser";
 
 const fetcher = (url) =>
   fetch(url).then((r) => (r.ok ? r.json() : Promise.reject(r)));
 
 export default function ApoiadoresPage() {
   const { t } = useLanguage();
+  const { user } = useUser();
   const { data, error, isLoading } = useSWR("/api/v1/supporters", fetcher, {
     revalidateOnFocus: false,
   });
 
   const supporters = data?.supporters || [];
+  const isSupporter = user?.features?.includes("apoiador");
+  const supporterCountLabel = (
+    supporters.length === 1 ? t("Apoiador") : t("Apoiadores")
+  ).toLowerCase();
 
   return (
     <MainFrame>
@@ -35,6 +42,11 @@ export default function ApoiadoresPage() {
             <p className="text-zinc-300 max-w-xl leading-relaxed text-sm lg:text-base">
               {t("Texto agradecimento apoiadores")}
             </p>
+            {supporters.length > 0 && (
+              <span className="font-mono text-[11px] uppercase tracking-widest text-amber-300/70">
+                {supporters.length} {supporterCountLabel}
+              </span>
+            )}
           </div>
 
           {/* Lista */}
@@ -67,6 +79,23 @@ export default function ApoiadoresPage() {
                   {supporterItem.username}
                 </span>
               ))}
+            </div>
+          )}
+
+          {/* CTA para quem ainda não apoia — vira o checkout quando a
+              cobrança recorrente entrar */}
+          {!isSupporter && (
+            <div className="mt-12 flex flex-col items-center gap-2 animate-[fadeIn_0.3s_ease-out]">
+              <Link
+                href="/contato"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/30 border border-amber-400/40 hover:border-amber-400/70 text-amber-200 text-sm font-semibold transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95"
+              >
+                <HeartFillIcon size={14} />
+                {t("Quero apoiar o Pindorama")}
+              </Link>
+              <p className="text-[11px] font-mono text-white/40">
+                {t("Texto apoio em breve")}
+              </p>
             </div>
           )}
         </div>

@@ -4,6 +4,15 @@ import { VideoIcon, PlayIcon } from "@primer/octicons-react";
 export default function CardReel() {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [duration, setDuration] = useState(null);
+
+  function handleLoadedMetadata() {
+    const seconds = videoRef.current?.duration;
+    if (!seconds || !Number.isFinite(seconds)) return;
+    const minutes = Math.floor(seconds / 60);
+    const rest = String(Math.round(seconds % 60)).padStart(2, "0");
+    setDuration(`${minutes}:${rest}`);
+  }
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -40,10 +49,20 @@ export default function CardReel() {
           <video
             ref={videoRef}
             src="/reel.webm"
+            poster="/reel-poster.jpg"
+            preload="metadata"
             loop
             playsInline
+            onLoadedMetadata={handleLoadedMetadata}
             className="w-full h-full object-cover group-hover/video:scale-[1.01] transition-transform duration-500"
           />
+
+          {/* Duração do reel — acima do overlay de play */}
+          {duration && !isPlaying && (
+            <span className="absolute bottom-3 right-3 z-20 px-2 py-0.5 rounded-md bg-black/60 border border-white/10 font-mono text-xs text-white/80">
+              {duration}
+            </span>
+          )}
 
           {/* Central Play Button Overlay */}
           <div

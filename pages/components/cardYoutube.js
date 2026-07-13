@@ -51,6 +51,10 @@ export default function CardYoutube() {
     fetchVideos();
   }, [language, t]);
 
+  // Tile "Ver o canal" preenche colunas vazias no desktop; quando ele está
+  // visível, o pill do header some no desktop para não duplicar o link.
+  const showsChannelTile = !loading && videos.length > 0 && videos.length < 3;
+
   return (
     <div className="w-full">
       <div className="glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col gap-3 animate-[fadeIn_0.3s_ease-out]">
@@ -70,7 +74,9 @@ export default function CardYoutube() {
             href={`https://www.youtube.com/channel/${CHANNEL_ID}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs font-semibold text-white/50 hover:text-white transition-colors uppercase tracking-wider bg-white/5 px-3 py-1 rounded-full cursor-pointer decoration-transparent"
+            className={`text-xs font-semibold text-white/50 hover:text-white transition-colors uppercase tracking-wider bg-white/5 px-3 py-1 rounded-full cursor-pointer decoration-transparent ${
+              showsChannelTile ? "lg:hidden" : ""
+            }`}
           >
             {t("Ver todos")}
           </a>
@@ -132,6 +138,23 @@ export default function CardYoutube() {
                   </div>
                 </a>
               ))}
+
+          {/* Preenche colunas vazias com convite ao canal */}
+          {showsChannelTile &&
+            Array.from({ length: 3 - Math.min(videos.length, 3) }).map(
+              (_, index) => (
+                <a
+                  key={`canal-${index}`}
+                  href={`https://www.youtube.com/channel/${CHANNEL_ID}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden lg:flex items-center justify-center gap-2 p-2 rounded-2xl border border-dashed border-white/10 hover:border-white/25 text-white/30 hover:text-white/70 transition-all cursor-pointer text-xs font-mono uppercase tracking-widest"
+                >
+                  <PlayIcon size={16} />
+                  {t("Ver o canal")}
+                </a>
+              ),
+            )}
         </div>
       </div>
     </div>

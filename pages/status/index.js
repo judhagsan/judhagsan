@@ -131,9 +131,9 @@ function DatabaseStatus() {
             </span>
             <span
               className="text-base text-white/90 truncate"
-              title={data?.dependencies?.database?.version || "N/A"}
+              title={data?.dependencies?.database?.version || "—"}
             >
-              {data?.dependencies?.database?.version?.split(" ")[0] || "N/A"}
+              {data?.dependencies?.database?.version?.split(" ")[0] || "—"}
             </span>
           </div>
 
@@ -142,7 +142,7 @@ function DatabaseStatus() {
               {t("Max Conexoes")}
             </span>
             <span className="text-base text-white/90">
-              {data?.dependencies?.database?.max_connections ?? "N/A"}
+              {data?.dependencies?.database?.max_connections ?? "—"}
             </span>
           </div>
 
@@ -152,15 +152,19 @@ function DatabaseStatus() {
                 {t("Conexoes Ativas")}
               </span>
               <span className="text-cyan-400 font-bold text-xl leading-none">
-                {data?.dependencies?.database?.opened_connections ?? "N/A"}
+                {data?.dependencies?.database?.opened_connections ?? "—"}
               </span>
             </div>
 
             <div className="w-full h-1.5 bg-black/40 rounded-full mt-2 overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-full relative"
+                className="h-full bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-full relative shadow-[0_0_8px_rgba(34,211,238,0.45)]"
                 style={{
                   width: `${Math.min(((data?.dependencies?.database?.opened_connections || 0) / (data?.dependencies?.database?.max_connections || 1)) * 100, 100)}%`,
+                  minWidth:
+                    (data?.dependencies?.database?.opened_connections || 0) > 0
+                      ? "6px"
+                      : undefined,
                 }}
               >
                 <div className="absolute top-0 right-0 bottom-0 left-0 bg-white/20 animate-pulse"></div>
