@@ -40,7 +40,9 @@ export default function SessaoPage() {
           {/* Center Section — stacked on mobile, complex layout on desktop */}
           <div className="lg:flex-1 lg:min-h-0 lg:-mt-8 relative flex flex-col lg:block gap-4 lg:gap-0 overflow-visible lg:overflow-visible shrink-0">
             {/* User + Dispositivos column — full-width on mobile, sidebar on desktop */}
-            <div className="w-full lg:absolute lg:top-0 lg:left-0 lg:w-1/4 lg:max-h-full flex flex-col gap-4 lg:overflow-y-auto lg:pr-2">
+            {/* top-8 compensa o -mt-8 da seção para os cards não entrarem
+                por baixo da borda superior do MainFrame */}
+            <div className="w-full lg:absolute lg:top-8 lg:left-0 lg:w-1/4 lg:max-h-[calc(100%-2rem)] flex flex-col gap-4 lg:overflow-y-auto lg:pr-2">
               {isLoggedIn && <CardUsuario user={user} />}
               {isLoggedIn && <CardDispositivos />}
             </div>
@@ -49,7 +51,7 @@ export default function SessaoPage() {
                 Escondido enquanto o painel lateral estiver aberto para não sobrepor. */}
             {isLoggedIn && user?.features?.includes("apoiador") && (
               <div
-                className={`w-full lg:absolute lg:top-0 lg:right-0 lg:w-1/4 lg:max-h-full flex-col gap-4 lg:overflow-y-auto lg:pl-2 ${
+                className={`w-full lg:absolute lg:top-8 lg:right-0 lg:w-1/4 lg:max-h-[calc(100%-2rem)] flex-col gap-4 lg:overflow-y-auto lg:pl-2 ${
                   activePanel ? "hidden" : "flex"
                 }`}
               >
@@ -58,8 +60,10 @@ export default function SessaoPage() {
             )}
 
             {/* Sessão + Side panel as centered flex group */}
-            <div className="w-full lg:h-full flex flex-col lg:flex-row items-center justify-center gap-6">
-              <div className="w-full lg:w-1/3 shrink-0">
+            {/* my-auto + overflow-y-auto = centralização segura: com pouca
+                altura o card rola em vez de estourar por cima do MainFrame */}
+            <div className="w-full lg:h-full lg:min-h-0 flex flex-col lg:flex-row items-center justify-center gap-6 lg:overflow-y-auto lg:pt-8">
+              <div className="w-full lg:w-1/3 shrink-0 lg:my-auto">
                 {isLoggedIn && <CardSessao />}
               </div>
 
