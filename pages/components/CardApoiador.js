@@ -63,7 +63,7 @@ export default function CardApoiador({ user }) {
 
   return (
     <div className="w-full h-auto">
-      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col group transition-all duration-500 hover:shadow-[0_0_30px_rgba(245,158,11,0.15)]">
+      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col group transition-all duration-500 hover:shadow-[0_0_30px_rgba(245,158,11,0.15)] animate-[fadeIn_0.4s_ease-out]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
         {/* Header */}
@@ -79,12 +79,12 @@ export default function CardApoiador({ user }) {
         <div className="flex flex-col gap-4 text-sm text-white/70 font-mono relative z-10">
           {/* Feedback do retorno do OAuth do Discord */}
           {discordResult === "connected" && (
-            <p className="text-emerald-300 text-xs">
+            <p className="text-emerald-300 text-xs animate-[fadeIn_0.3s_ease-out]">
               {t("Discord conectado com sucesso")}
             </p>
           )}
           {discordResult === "error" && (
-            <p className="text-red-300 text-xs">
+            <p className="text-red-300 text-xs animate-[fadeIn_0.3s_ease-out]">
               {discordReason === "already_linked"
                 ? t("Discord ja vinculado")
                 : t("Erro ao conectar Discord")}

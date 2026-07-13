@@ -23,7 +23,7 @@ export default function ApoiadoresPage() {
       </Head>
 
       <div className="relative z-10 w-full h-full rounded-[20px] overflow-hidden border border-white/5 shadow-[inset_0px_0px_50px_rgba(0,0,0,0.9)] flex">
-        <div className="relative z-10 flex-1 flex flex-col items-center p-6 lg:p-10 overflow-y-auto">
+        <div className="relative z-10 flex-1 flex flex-col items-center p-6 lg:p-10 overflow-y-auto animate-[fadeIn_0.3s_ease-out]">
           {/* Header */}
           <div className="flex flex-col items-center text-center gap-4 mt-8 lg:mt-16 mb-10">
             <div className="w-16 h-16 rounded-full bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shadow-lg shadow-amber-400/20">
