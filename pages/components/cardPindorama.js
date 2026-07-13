@@ -1,26 +1,34 @@
 import Link from "next/link";
 import { DownloadIcon } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
+import useUser from "hooks/useUser";
+import SupportButton from "./SupportButton";
 
 export default function CardPindorama({ onDownloadClick }) {
   const { t } = useLanguage();
+  const { user } = useUser();
+  const isSupporter = user?.features?.includes("apoiador");
+
   return (
     <div className="w-full h-auto lg:h-auto">
       <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-auto">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10"></div>
 
         {/* Header */}
-        <div className="shrink-0 mb-4 flex items-center gap-3 relative z-10">
-          <div className="w-10 h-10 rounded-full bg-yellow-500/30 border border-yellow-400/40 flex items-center justify-center text-yellow-300 shadow-lg shadow-yellow-400/25 shrink-0">
-            <img
-              src="/PinLogo.svg"
-              alt="PinLogo"
-              className="w-full h-full object-cover rounded-full"
-            />
+        <div className="shrink-0 mb-4 flex items-center justify-between gap-3 relative z-10">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-full bg-yellow-500/30 border border-yellow-400/40 flex items-center justify-center text-yellow-300 shadow-lg shadow-yellow-400/25 shrink-0">
+              <img
+                src="/PinLogo.svg"
+                alt="PinLogo"
+                className="w-full h-full object-cover rounded-full"
+              />
+            </div>
+            <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
+              Pindorama
+            </h2>
           </div>
-          <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
-            Pindorama
-          </h2>
+          {!isSupporter && <SupportButton />}
         </div>
 
         {/* Content - Centered in remaining space */}
