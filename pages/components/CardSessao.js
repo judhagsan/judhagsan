@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { DownloadIcon, InfoIcon } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
-import useUser from "hooks/useUser";
-import SupportButton from "./SupportButton";
 
 const versionFetcher = (url) =>
   fetch(url).then((r) => (r.ok ? r.json() : null));
@@ -90,8 +88,6 @@ function PlatformButton({ platformKey, primary }) {
 
 export default function CardSessao() {
   const { t } = useLanguage();
-  const { user } = useUser();
-  const isSupporter = user?.features?.includes("apoiador");
   const [platform, setPlatform] = useState(null);
   const { data: versionData } = useSWR("/api/v1/version", versionFetcher, {
     revalidateOnFocus: false,
@@ -111,27 +107,24 @@ export default function CardSessao() {
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10"></div>
 
         {/* Header */}
-        <div className="shrink-0 mb-4 flex items-center justify-between gap-3 relative z-10">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-full bg-yellow-500/30 border border-yellow-400/40 flex items-center justify-center text-yellow-300 shadow-lg shadow-yellow-400/25 shrink-0">
-              <img
-                src="/PinLogo.svg"
-                alt="PinLogo"
-                className="w-full h-full object-cover rounded-full"
-              />
-            </div>
-            <div className="flex items-baseline gap-3 min-w-0">
-              <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
-                Pindorama
-              </h2>
-              {versionLabel && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-xs uppercase tracking-wider text-white/50 font-mono">
-                  {versionLabel}
-                </span>
-              )}
-            </div>
+        <div className="shrink-0 mb-4 flex items-center gap-3 relative z-10">
+          <div className="w-10 h-10 rounded-full bg-yellow-500/30 border border-yellow-400/40 flex items-center justify-center text-yellow-300 shadow-lg shadow-yellow-400/25 shrink-0">
+            <img
+              src="/PinLogo.svg"
+              alt="PinLogo"
+              className="w-full h-full object-cover rounded-full"
+            />
           </div>
-          {!isSupporter && <SupportButton />}
+          <div className="flex items-baseline gap-3 min-w-0">
+            <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
+              Pindorama
+            </h2>
+            {versionLabel && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-xs uppercase tracking-wider text-white/50 font-mono">
+                {versionLabel}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Content */}

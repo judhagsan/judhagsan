@@ -164,8 +164,47 @@ const translations = {
     "Salvando...": "Salvando...",
     "Erro ao salvar": "Não foi possível salvar.",
     "Quero apoiar o Pindorama": "Quero apoiar o Pindorama",
-    "Texto apoio em breve":
-      "Programa de apoio recorrente em breve — enquanto isso, fale comigo pelo contato.",
+
+    // Página de apoio (/apoiar)
+    "Apoiar o Pindorama": "Apoiar o Pindorama",
+    "Apoiando como": "Apoiando como",
+    "Apoio mensal": "Apoio mensal",
+    "PIX avulso": "PIX avulso",
+    "por mes": "por mês",
+    "Texto apoio mensal":
+      "Cobrança recorrente no cartão. Você mantém os benefícios de apoiador enquanto a assinatura estiver ativa e pode cancelar quando quiser.",
+    "Outro valor": "Outro valor",
+    "Processando...": "Processando...",
+    "Assinar apoio mensal": "Apoiar por R$ 9,90/mês",
+    "Gerar PIX": "Gerar PIX",
+    "Texto redirect cartao":
+      "Você será levado ao ambiente seguro do AbacatePay para inserir os dados do cartão.",
+    "Texto pix seguro": "O QR Code é gerado aqui mesmo, sem sair do site.",
+    "Texto pix pontual":
+      "Contribuição pontual — não inclui os benefícios do apoio mensal.",
+    "Escaneie o QR Code": "Escaneie o QR Code no app do seu banco",
+    "Copiar codigo pix": "Copiar código PIX (copia e cola)",
+    "Aguardando pagamento": "Aguardando pagamento...",
+    "Apoio confirmado": "Apoio confirmado!",
+    "Texto apoio confirmado":
+      "Muito obrigado pela sua contribuição ao Pindorama!",
+    "Erro ao iniciar apoio":
+      "Não foi possível iniciar o apoio. Tente novamente.",
+    "Valor minimo pix": "O valor mínimo é R$ 1,00.",
+    "Texto apoio recebido":
+      "Apoio recebido, obrigado! Os benefícios são liberados em instantes.",
+
+    // Card de apoio (promo na sessão)
+    "Apoie o Pindorama": "Apoie o Pindorama",
+    "ou PIX avulso": "ou PIX avulso",
+    "Quero apoiar": "Quero apoiar",
+    "Vantagem selo": "Selo de apoiador",
+    "Vantagem discord": "Discord privado",
+    "Vantagem mural": "Nome no mural",
+    "Vantagem desenvolvimento": "Apoie o desenvolvimento do Pindorama",
+    "Vantagens de apoiador": "O que você recebe",
+    "Texto mensal curto": "Renova todo mês · cancele quando quiser",
+    "sufixo mes": "/mês",
 
     // Portfolio captions
     sos_caption: "Blender · Marketing de jogo",
@@ -348,8 +387,47 @@ const translations = {
     "Salvando...": "Saving...",
     "Erro ao salvar": "Could not save.",
     "Quero apoiar o Pindorama": "I want to support Pindorama",
-    "Texto apoio em breve":
-      "Recurring support program coming soon — meanwhile, reach out via contact.",
+
+    // Página de apoio (/apoiar)
+    "Apoiar o Pindorama": "Support Pindorama",
+    "Apoiando como": "Supporting as",
+    "Apoio mensal": "Monthly",
+    "PIX avulso": "One-time PIX",
+    "por mes": "per month",
+    "Texto apoio mensal":
+      "Recurring card charge. You keep the supporter benefits while the subscription is active and can cancel anytime.",
+    "Outro valor": "Other amount",
+    "Processando...": "Processing...",
+    "Assinar apoio mensal": "Support for R$ 9,90/mo",
+    "Gerar PIX": "Generate PIX",
+    "Texto redirect cartao":
+      "You'll be taken to AbacatePay's secure environment to enter your card details.",
+    "Texto pix seguro":
+      "The QR Code is generated right here, without leaving the site.",
+    "Texto pix pontual":
+      "One-time contribution — doesn't include the monthly support benefits.",
+    "Escaneie o QR Code": "Scan the QR Code in your bank app",
+    "Copiar codigo pix": "Copy PIX code (copy & paste)",
+    "Aguardando pagamento": "Waiting for payment...",
+    "Apoio confirmado": "Support confirmed!",
+    "Texto apoio confirmado":
+      "Thank you so much for your contribution to Pindorama!",
+    "Erro ao iniciar apoio": "Could not start the support. Try again.",
+    "Valor minimo pix": "The minimum amount is R$ 1.00.",
+    "Texto apoio recebido":
+      "Support received, thank you! Your benefits unlock in a moment.",
+
+    // Card de apoio (promo na sessão)
+    "Apoie o Pindorama": "Support Pindorama",
+    "ou PIX avulso": "or one-time PIX",
+    "Quero apoiar": "I want to support",
+    "Vantagem selo": "Supporter badge",
+    "Vantagem discord": "Private Discord",
+    "Vantagem mural": "Name on the wall",
+    "Vantagem desenvolvimento": "Support Pindorama's development",
+    "Vantagens de apoiador": "What you get",
+    "Texto mensal curto": "Renews monthly · cancel anytime",
+    "sufixo mes": "/mo",
 
     // Portfolio captions
     sos_caption: "Blender · Game marketing",

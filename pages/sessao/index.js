@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import CardYoutube from "../components/cardYoutube";
 import CardUsuario from "../components/CardUsuario";
 import CardDispositivos from "../components/CardDispositivos";
+import CardApoiar from "../components/CardApoiar";
 import CardSessao from "../components/CardSessao";
 import CardPrivacidade from "../components/CardPrivacidade";
 import CardContato from "../components/CardContato";
@@ -43,6 +44,9 @@ export default function SessaoPage() {
                 por baixo da borda superior do MainFrame */}
             <div className="w-full lg:absolute lg:top-8 lg:left-0 lg:w-1/4 lg:max-h-[calc(100%-2rem)] flex flex-col gap-4 lg:overflow-y-auto lg:pr-2">
               {isLoggedIn && <CardUsuario user={user} />}
+              {isLoggedIn && !user?.features?.includes("apoiador") && (
+                <CardApoiar />
+              )}
             </div>
 
             {/* Dispositivos column — full-width on mobile, right sidebar on
@@ -51,7 +55,7 @@ export default function SessaoPage() {
             {isLoggedIn && (
               <div
                 className={`w-full lg:absolute lg:top-8 lg:right-0 lg:w-1/4 lg:max-h-[calc(100%-2rem)] flex-col gap-4 lg:overflow-y-auto lg:pl-2 ${
-                  activePanel ? "hidden" : "flex"
+                  activePanel ? "hidden lg:flex" : "flex"
                 }`}
               >
                 <CardDispositivos />
@@ -62,11 +66,20 @@ export default function SessaoPage() {
             {/* my-auto + overflow-y-auto = centralização segura: com pouca
                 altura o card rola em vez de estourar por cima do MainFrame */}
             <div className="w-full lg:h-full lg:min-h-0 flex flex-col lg:flex-row items-center justify-center gap-6 lg:overflow-y-auto lg:pt-8">
-              <div className="w-full lg:w-1/3 shrink-0 lg:my-auto">
-                {isLoggedIn && <CardSessao />}
-              </div>
+              {/* Pindorama — no desktop dá lugar ao painel quando um está aberto,
+                  que passa a ocupar toda a área central */}
+              {isLoggedIn && (
+                <div
+                  className={`w-full lg:w-1/3 shrink-0 lg:my-auto ${
+                    activePanel ? "lg:hidden" : ""
+                  }`}
+                >
+                  <CardSessao />
+                </div>
+              )}
 
-              {/* Side panel — full-screen overlay on mobile */}
+              {/* Side panel — full-screen overlay on mobile; no desktop toma o
+                  lugar do card Pindorama e ocupa toda a área central */}
               {activePanel && (
                 <div
                   className="fixed inset-0 z-[52] bg-black/70 backdrop-blur-sm lg:hidden"
@@ -77,7 +90,7 @@ export default function SessaoPage() {
                 className={`
                   ${
                     activePanel
-                      ? "fixed inset-2 top-14 z-[53] lg:relative lg:inset-auto lg:top-auto lg:z-auto lg:flex-1 lg:w-auto lg:opacity-100"
+                      ? "fixed inset-2 top-14 z-[53] lg:relative lg:inset-auto lg:top-auto lg:z-auto lg:w-1/2 lg:opacity-100"
                       : "hidden lg:block lg:w-0 lg:opacity-0"
                   }
                   transition-all duration-500 ease-out overflow-hidden lg:h-[90%]

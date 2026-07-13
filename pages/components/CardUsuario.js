@@ -44,6 +44,7 @@ export default function CardUsuario({ user }) {
   const isSupporter = user?.features?.includes("apoiador");
   const discordResult = router.query.discord;
   const discordReason = router.query.reason;
+  const apoioResult = router.query.apoio;
 
   const confirmationMatches = confirmationInput === user?.username;
 
@@ -140,9 +141,9 @@ export default function CardUsuario({ user }) {
   }
 
   return (
-    <div className="w-full h-auto lg:h-full">
+    <div className="w-full h-auto">
       <div
-        className={`glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-full group transition-all duration-500 ${
+        className={`glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto group transition-all duration-500 ${
           isSupporter
             ? "hover:shadow-[0_0_30px_rgba(245,158,11,0.12)]"
             : "hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]"
@@ -223,12 +224,19 @@ export default function CardUsuario({ user }) {
                 )}
               </div>
               <div className="flex flex-col gap-1 min-w-0">
-                <p className="text-xl lg:text-2xl text-white font-semibold">
+                <p className="text-base lg:text-lg text-white font-semibold">
                   {t("Bem vindo", { username: user?.username })}
                 </p>
                 <p className="text-xs text-white/50 break-all">{user?.email}</p>
               </div>
             </div>
+
+            {/* Retorno do checkout de assinatura */}
+            {apoioResult === "sucesso" && (
+              <p className="text-emerald-300 text-xs animate-[fadeIn_0.3s_ease-out]">
+                {t("Texto apoio recebido")}
+              </p>
+            )}
 
             {/* Apoiador */}
             {isSupporter && (

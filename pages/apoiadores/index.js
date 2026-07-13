@@ -82,20 +82,16 @@ export default function ApoiadoresPage() {
             </div>
           )}
 
-          {/* CTA para quem ainda não apoia — vira o checkout quando a
-              cobrança recorrente entrar */}
+          {/* CTA para quem ainda não apoia */}
           {!isSupporter && (
             <div className="mt-12 flex flex-col items-center gap-2 animate-[fadeIn_0.3s_ease-out]">
               <Link
-                href="/contato"
+                href="/apoiar"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/30 border border-amber-400/40 hover:border-amber-400/70 text-amber-200 text-sm font-semibold transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95"
               >
                 <HeartFillIcon size={14} />
                 {t("Quero apoiar o Pindorama")}
               </Link>
-              <p className="text-[11px] font-mono text-white/40">
-                {t("Texto apoio em breve")}
-              </p>
             </div>
           )}
         </div>
