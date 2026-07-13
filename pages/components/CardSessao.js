@@ -128,7 +128,7 @@ export default function CardSessao() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 flex flex-col items-center justify-center text-center mt-6 mb-2">
+        <div className="flex-1 flex flex-col items-center justify-center text-center mb-2">
           <p className="text-zinc-300 mb-6 max-w-2xl leading-relaxed text-base lg:text-lg font-medium">
             {t("pindorama_desc")}
           </p>
