@@ -44,18 +44,21 @@ export default function SessaoPage() {
                 por baixo da borda superior do MainFrame */}
             <div className="w-full lg:absolute lg:top-8 lg:left-0 lg:w-1/4 lg:max-h-[calc(100%-2rem)] flex flex-col gap-4 lg:overflow-y-auto lg:pr-2">
               {isLoggedIn && <CardUsuario user={user} />}
-              {isLoggedIn && <CardDispositivos />}
+              {isLoggedIn && user?.features?.includes("apoiador") && (
+                <CardApoiador user={user} />
+              )}
             </div>
 
-            {/* Apoiador column — full-width on mobile, right sidebar on desktop.
-                Escondido enquanto o painel lateral estiver aberto para não sobrepor. */}
-            {isLoggedIn && user?.features?.includes("apoiador") && (
+            {/* Dispositivos column — full-width on mobile, right sidebar on
+                desktop. Escondido enquanto o painel lateral estiver aberto
+                para não sobrepor. */}
+            {isLoggedIn && (
               <div
                 className={`w-full lg:absolute lg:top-8 lg:right-0 lg:w-1/4 lg:max-h-[calc(100%-2rem)] flex-col gap-4 lg:overflow-y-auto lg:pl-2 ${
                   activePanel ? "hidden" : "flex"
                 }`}
               >
-                <CardApoiador user={user} />
+                <CardDispositivos />
               </div>
             )}
 
