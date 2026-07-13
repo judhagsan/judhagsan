@@ -152,9 +152,7 @@ export default function CardUsuario({ user }) {
                 <p className="text-xl lg:text-2xl text-white font-semibold">
                   {t("Bem vindo", { username: user?.username })}
                 </p>
-                <p className="text-xs text-white/50 break-all">
-                  {user?.email}
-                </p>
+                <p className="text-xs text-white/50 break-all">{user?.email}</p>
               </div>
             </div>
 
