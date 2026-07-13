@@ -5,7 +5,6 @@ import {
   PackageIcon,
   TrashIcon,
   AlertFillIcon,
-  HeartFillIcon,
 } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
 
@@ -145,22 +144,18 @@ export default function CardUsuario({ user }) {
           </form>
         ) : (
           <div className="flex flex-col items-center justify-center text-center gap-4 text-white/70 font-mono text-sm relative z-10 flex-1 h-full animate-[fadeIn_0.4s_ease-out]">
-            <div className="w-14 h-14 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-200">
-              <PersonFillIcon size={28} />
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <p className="text-xl lg:text-2xl text-white font-semibold">
-                {t("Bem vindo", { username: user?.username })}
-              </p>
-              <p className="text-xs text-white/50 break-all max-w-full">
-                {user?.email}
-              </p>
-              {user?.features?.includes("apoiador") && (
-                <span className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-500/15 border border-amber-400/40 text-amber-300 text-[10px] uppercase tracking-widest font-semibold">
-                  <HeartFillIcon size={12} />
-                  {t("Apoiador")}
-                </span>
-              )}
+            <div className="w-full flex items-center gap-4 text-left">
+              <div className="w-14 h-14 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-200 shrink-0">
+                <PersonFillIcon size={28} />
+              </div>
+              <div className="flex flex-col gap-1 min-w-0">
+                <p className="text-xl lg:text-2xl text-white font-semibold">
+                  {t("Bem vindo", { username: user?.username })}
+                </p>
+                <p className="text-xs text-white/50 break-all">
+                  {user?.email}
+                </p>
+              </div>
             </div>
 
             <div className="mt-4 flex flex-col items-start gap-2 self-start">
