@@ -2,6 +2,7 @@ import Head from "next/head";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import CardYoutube from "../components/cardYoutube";
+import SupportersTicker from "../components/SupportersTicker";
 import CardUsuario from "../components/CardUsuario";
 import CardDispositivos from "../components/CardDispositivos";
 import CardApoiar from "../components/CardApoiar";
@@ -109,7 +110,9 @@ export default function SessaoPage() {
             </div>
           </div>
 
-          <div className="lg:mt-auto flex items-end w-full shrink-0">
+          <div className="lg:mt-auto flex flex-col w-full shrink-0 gap-4">
+            {/* Faixa de apoiadores (some quando não há apoiadores públicos) */}
+            {isLoggedIn && <SupportersTicker />}
             {/* Bottom Section - YouTube Card */}
             <CardYoutube />
           </div>

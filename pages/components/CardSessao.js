@@ -115,7 +115,7 @@ export default function CardSessao() {
               className="w-full h-full object-cover rounded-full"
             />
           </div>
-          <div className="flex items-baseline gap-3 min-w-0">
+          <div className="flex items-center gap-3 min-w-0">
             <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
               Pindorama
             </h2>

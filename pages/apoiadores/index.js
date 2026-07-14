@@ -18,9 +18,6 @@ export default function ApoiadoresPage() {
 
   const supporters = data?.supporters || [];
   const isSupporter = user?.features?.includes("apoiador");
-  const supporterCountLabel = (
-    supporters.length === 1 ? t("Apoiador") : t("Apoiadores")
-  ).toLowerCase();
 
   return (
     <MainFrame>
@@ -42,11 +39,6 @@ export default function ApoiadoresPage() {
             <p className="text-zinc-300 max-w-xl leading-relaxed text-sm lg:text-base">
               {t("Texto agradecimento apoiadores")}
             </p>
-            {supporters.length > 0 && (
-              <span className="font-mono text-[11px] uppercase tracking-widest text-amber-300/70">
-                {supporters.length} {supporterCountLabel}
-              </span>
-            )}
           </div>
 
           {/* Lista */}
