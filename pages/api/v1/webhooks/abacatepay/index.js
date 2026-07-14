@@ -25,8 +25,15 @@ export default async function handler(request, response) {
       .json({ name: "MethodNotAllowedError", status_code: 405 });
   }
 
+  // Confirma que a requisição chegou (sem logar o segredo em si).
+  console.log("[abacatepay webhook] POST recebido", {
+    hasSecretQuery: Boolean(request.query.webhookSecret),
+    hasSignature: Boolean(request.headers["x-webhook-signature"]),
+  });
+
   const expectedSecret = process.env.ABACATEPAY_WEBHOOK_SECRET;
   if (!expectedSecret) {
+    console.error("[abacatepay webhook] ABACATEPAY_WEBHOOK_SECRET não setado");
     return response.status(500).json({
       name: "InternalServerError",
       message: "ABACATEPAY_WEBHOOK_SECRET não configurado.",
@@ -37,6 +44,7 @@ export default async function handler(request, response) {
   // Camada 1: segredo na query (?webhookSecret=...), que só o AbacatePay e nós
   // conhecemos.
   if (request.query.webhookSecret !== expectedSecret) {
+    console.warn("[abacatepay webhook] segredo da query não confere (401)");
     return response.status(401).json({
       name: "UnauthorizedError",
       message: "Credencial inválida.",
@@ -67,8 +75,22 @@ export default async function handler(request, response) {
     });
   }
 
+  // Log de diagnóstico (sem PII: só nomes/ids e a estrutura do payload) para
+  // entender o que o AbacatePay envia e por que o benefício foi ou não concedido.
+  console.log("[abacatepay webhook] recebido", {
+    event: event?.event,
+    id: event?.id,
+    dataId: event?.data?.id,
+    customerId: event?.data?.customer?.id || event?.data?.customerId,
+    dataKeys: event?.data ? Object.keys(event.data) : [],
+  });
+
   try {
     const result = await contribution.handleWebhookEvent(event);
+    console.log("[abacatepay webhook] resultado", {
+      event: event?.event,
+      ...result,
+    });
     return response.status(200).json({ ok: true, ...result });
   } catch (error) {
     // Log sanitizado; devolve 500 para o AbacatePay reentregar depois.

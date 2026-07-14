@@ -141,6 +141,11 @@ async function handleWebhookEvent(event) {
 
   const data = event.data || {};
   const userId = await resolveUserId(data);
+  console.log("[abacatepay webhook] resolveUserId", {
+    event: event.event,
+    dataId: data.id,
+    userId: userId || null,
+  });
 
   let outcome;
   if (!userId) {
