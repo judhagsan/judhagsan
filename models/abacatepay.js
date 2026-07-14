@@ -76,29 +76,6 @@ async function createCustomer({ name, email, cellphone, taxId }) {
   });
 }
 
-async function createPixQrCode({
-  amount,
-  expiresIn = 3600,
-  description,
-  customer,
-}) {
-  // Checkout transparente PIX da v2: o método vai no topo e o restante em
-  // `data`. A resposta mantém brCode/brCodeBase64/id/status/amount/expiresAt.
-  return request("/transparents/create", {
-    method: "POST",
-    body: {
-      method: "PIX",
-      data: { amount, expiresIn, description, customer },
-    },
-  });
-}
-
-async function checkPixQrCode(id) {
-  return request(`/transparents/check?id=${encodeURIComponent(id)}`, {
-    method: "GET",
-  });
-}
-
 async function createSubscription({
   productId,
   customerId,
@@ -134,8 +111,6 @@ function verifySignature(rawBody, signatureFromHeader) {
 
 const abacatepay = {
   createCustomer,
-  createPixQrCode,
-  checkPixQrCode,
   createSubscription,
   verifySignature,
 };

@@ -9,11 +9,8 @@ export default createRouter()
 
 async function postHandler(request, response) {
   const userTryingToSubscribe = request.context.user;
-  const { tax_id } = request.body || {};
 
-  const result = await contribution.startSubscription(userTryingToSubscribe, {
-    taxId: tax_id,
-  });
+  const result = await contribution.startSubscription(userTryingToSubscribe);
 
   response.setHeader("Cache-Control", "no-store");
   return response.status(201).json(result);

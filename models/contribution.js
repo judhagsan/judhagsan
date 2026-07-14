@@ -3,103 +3,23 @@ import webserver from "infra/webserver.js";
 import abacatepay from "models/abacatepay.js";
 import supporter from "models/supporter.js";
 import discord from "models/discord.js";
-import { ValidationError, ServiceError } from "infra/errors.js";
+import { ServiceError } from "infra/errors.js";
 
 const MONTHLY_PRODUCT_ID = process.env.ABACATEPAY_MONTHLY_PRODUCT_ID;
-const PIX_MIN_CENTS = 100; // R$ 1,00 (mínimo do AbacatePay)
-const PIX_MAX_CENTS = 500000; // R$ 5.000,00
 
-// Eventos que confirmam pagamento e concedem a feature de apoiador.
+// Eventos que confirmam pagamento e concedem a feature de apoiador
+// (subscription.completed na ativação, subscription.renewed a cada mês pago).
 const PAID_EVENT = /\.(paid|completed|renewed)$/;
 
-function normalizeTaxId(taxId) {
-  const digits = String(taxId || "").replace(/\D/g, "");
-  if (digits.length !== 11) {
-    throw new ValidationError({
-      message: "CPF inválido.",
-      action: "Informe um CPF válido, com 11 dígitos.",
-    });
-  }
-  return digits;
-}
+// Eventos que encerram a assinatura e revogam o benefício. Cobrimos o
+// cancelamento (único documentado hoje) e possíveis variantes terminais
+// (expiração/suspensão). NÃO revogamos numa falha pontual de cobrança: o
+// retryPolicy do AbacatePay ainda pode recuperar o pagamento nas tentativas
+// seguintes — só o encerramento definitivo tira o benefício.
+const REVOKE_EVENT =
+  /^subscription\.(cancelled|canceled|expired|suspended|ended)$/;
 
-// O AbacatePay exige o celular do cliente no PIX. Aceitamos 10 (fixo) ou 11
-// (móvel) dígitos e devolvemos apenas os números — o provedor cuida do formato.
-function normalizeCellphone(cellphone) {
-  const digits = String(cellphone || "").replace(/\D/g, "");
-  if (digits.length !== 10 && digits.length !== 11) {
-    throw new ValidationError({
-      message: "Celular inválido.",
-      action: "Informe um celular com DDD, com 10 ou 11 dígitos.",
-    });
-  }
-  return digits;
-}
-
-async function startPix(userObject, { amountCents, taxId, cellphone }) {
-  if (
-    !Number.isInteger(amountCents) ||
-    amountCents < PIX_MIN_CENTS ||
-    amountCents > PIX_MAX_CENTS
-  ) {
-    throw new ValidationError({
-      message: "Valor de apoio inválido.",
-      action: "Escolha um valor entre R$ 1,00 e R$ 5.000,00.",
-    });
-  }
-
-  const cleanTaxId = normalizeTaxId(taxId);
-  const cleanCellphone = normalizeCellphone(cellphone);
-
-  const pix = await abacatepay.createPixQrCode({
-    amount: amountCents,
-    expiresIn: 3600,
-    description: `Apoio ao Pindorama — ${userObject.username}`,
-    customer: {
-      name: userObject.username,
-      email: userObject.email,
-      cellphone: cleanCellphone,
-      taxId: cleanTaxId,
-    },
-  });
-
-  await recordPayment({
-    userId: userObject.id,
-    method: "pix",
-    kind: "one_time",
-    providerId: pix.id,
-    amountCents,
-    status: pix.status,
-  });
-
-  return {
-    id: pix.id,
-    brCode: pix.brCode,
-    brCodeBase64: pix.brCodeBase64,
-    amount: pix.amount,
-    status: pix.status,
-    expiresAt: pix.expiresAt,
-  };
-}
-
-async function checkPix(userObject, pixId) {
-  const payment = await findPaymentByProviderId(pixId);
-  if (!payment || payment.user_id !== userObject.id) {
-    throw new ValidationError({
-      message: "Cobrança não encontrada.",
-      action: "Verifique o pagamento e tente novamente.",
-    });
-  }
-
-  const pix = await abacatepay.checkPixQrCode(pixId);
-  await updatePaymentStatus(pixId, pix.status);
-
-  // PIX avulso é contribuição pontual: NÃO concede a feature de apoiador (os
-  // benefícios recorrentes são exclusivos da assinatura mensal).
-  return { status: pix.status };
-}
-
-async function startSubscription(userObject, { taxId }) {
+async function startSubscription(userObject) {
   if (!MONTHLY_PRODUCT_ID) {
     throw new ServiceError({
       message: "O apoio mensal está indisponível no momento.",
@@ -107,9 +27,8 @@ async function startSubscription(userObject, { taxId }) {
     });
   }
 
-  // Valida o CPF antes de redirecionar (o checkout hospedado do AbacatePay
-  // também vai solicitá-lo, junto do cartão).
-  normalizeTaxId(taxId);
+  // O checkout hospedado do AbacatePay coleta nome, CPF, endereço e cartão —
+  // não precisamos pedir nada disso antes do redirecionamento.
   const origin = webserver.origin;
 
   const subscription = await abacatepay.createSubscription({
@@ -153,43 +72,24 @@ async function handleWebhookEvent(event) {
       `[abacatepay] webhook ${event.event} sem usuário correspondente (${event.id})`,
     );
     outcome = { unmatched: true };
-  } else if (event.event === "subscription.cancelled") {
+  } else if (REVOKE_EVENT.test(event.event)) {
     await revokeSupporter(userId);
     outcome = { revoked: true };
   } else if (PAID_EVENT.test(event.event)) {
     if (data.id) {
       await updatePaymentStatus(data.id, "PAID");
     }
-    // A feature de apoiador é concedida apenas por assinatura mensal. O PIX
-    // avulso é contribuição pontual e NÃO dá os benefícios recorrentes.
-    const grantsBenefit = await isSubscriptionPayment(event.event, data);
-    if (grantsBenefit) {
-      await supporter.grant(userId);
-    }
-    outcome = { paid: true, granted: grantsBenefit };
+    // Só existe assinatura recorrente; qualquer pagamento confirmado concede
+    // (ou mantém) o apoiador. grant é idempotente, então renovações mensais
+    // apenas reafirmam o benefício.
+    await supporter.grant(userId);
+    outcome = { paid: true, granted: true };
   } else {
     outcome = { ignored: event.event };
   }
 
   await recordEvent(event.id, event.event);
   return outcome;
-}
-
-// Distingue pagamento de assinatura (concede benefícios) de PIX avulso (não
-// concede). A cobrança que registramos é a fonte da verdade e é consultada
-// PRIMEIRO: um PIX avulso é sempre gravado como `one_time`, então nunca concede
-// benefícios — não importa o nome do evento que o AbacatePay envie. Só quando
-// não há cobrança correspondente recorremos ao nome do evento (o checkout
-// hospedado e os eventos subscription.* são exclusivos da assinatura; o PIX
-// avulso usa apenas pixQrCode). Na dúvida, não concede.
-async function isSubscriptionPayment(eventName, data) {
-  if (data.id) {
-    const payment = await findPaymentByProviderId(data.id);
-    if (payment) return payment.kind === "subscription";
-  }
-  if (/^subscription\./.test(eventName)) return true;
-  if (eventName === "checkout.completed") return true;
-  return false;
 }
 
 async function revokeSupporter(userId) {
@@ -298,8 +198,6 @@ async function recordEvent(eventId, event) {
 }
 
 const contribution = {
-  startPix,
-  checkPix,
   startSubscription,
   handleWebhookEvent,
 };

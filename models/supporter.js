@@ -82,7 +82,10 @@ async function grant(userId) {
     return userFound;
   }
 
-  return await user.addFeatures(userId, [FEATURE]);
+  await user.addFeatures(userId, [FEATURE]);
+  // Ao virar apoiador pela primeira vez, entra no mural público por padrão.
+  // O apoiador pode desativar isso depois em /sessao.
+  return await setWallOptIn(userId, true);
 }
 
 async function revoke(userId) {
