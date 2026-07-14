@@ -26,10 +26,19 @@ function maskCpf(value) {
     .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 }
 
+function maskPhone(value) {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  return digits
+    .replace(/(\d{2})(\d)/, "($1) $2")
+    .replace(/(\d{5})(\d)/, "$1-$2")
+    .replace(/(\d{4})(\d)/, "$1-$2");
+}
+
 export default function CardApoiar() {
   const { t } = useLanguage();
   const [mode, setMode] = useState("mensal");
   const [cpf, setCpf] = useState("");
+  const [phone, setPhone] = useState("");
   const [amountCents, setAmountCents] = useState(PIX_SUGGESTIONS_CENTS[0]);
   const [customAmount, setCustomAmount] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,6 +49,8 @@ export default function CardApoiar() {
 
   const cpfDigits = cpf.replace(/\D/g, "");
   const cpfValid = cpfDigits.length === 11;
+  const phoneDigits = phone.replace(/\D/g, "");
+  const phoneValid = phoneDigits.length === 10 || phoneDigits.length === 11;
 
   // Polling do status do PIX enquanto pendente.
   useEffect(() => {
@@ -99,7 +110,7 @@ export default function CardApoiar() {
   }
 
   async function handlePix() {
-    if (isSubmitting || !cpfValid) return;
+    if (isSubmitting || !cpfValid || !phoneValid) return;
     const cents = resolvePixAmount();
     if (!cents || cents < 100) {
       setError(t("Valor minimo pix"));
@@ -112,7 +123,11 @@ export default function CardApoiar() {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount_cents: cents, tax_id: cpfDigits }),
+        body: JSON.stringify({
+          amount_cents: cents,
+          tax_id: cpfDigits,
+          cell_phone: phoneDigits,
+        }),
       });
       const body = await response.json();
       if (!response.ok || !body.brCode) {
@@ -278,27 +293,46 @@ export default function CardApoiar() {
         </div>
       )}
 
-      {/* CPF (comum aos dois) */}
-      <label className="flex flex-col gap-1 mt-4">
-        <span className="text-[10px] uppercase tracking-widest text-white/40">
-          CPF
-        </span>
-        <input
-          type="text"
-          inputMode="numeric"
-          value={cpf}
-          onChange={(e) => setCpf(maskCpf(e.target.value))}
-          placeholder="000.000.000-00"
-          className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-amber-400/60 outline-none text-white placeholder-white/30 transition-colors"
-        />
-      </label>
+      {/* CPF (comum) + Celular (só no PIX, exigido pelo AbacatePay) */}
+      <div
+        className={`mt-4 grid gap-3 ${mode === "pix" ? "grid-cols-2" : "grid-cols-1"}`}
+      >
+        <label className="flex flex-col gap-1">
+          <span className="text-[10px] uppercase tracking-widest text-white/40">
+            CPF
+          </span>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={cpf}
+            onChange={(e) => setCpf(maskCpf(e.target.value))}
+            placeholder="000.000.000-00"
+            className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-amber-400/60 outline-none text-white placeholder-white/30 transition-colors"
+          />
+        </label>
+        {mode === "pix" && (
+          <label className="flex flex-col gap-1">
+            <span className="text-[10px] uppercase tracking-widest text-white/40">
+              {t("Celular")}
+            </span>
+            <input
+              type="tel"
+              inputMode="numeric"
+              value={phone}
+              onChange={(e) => setPhone(maskPhone(e.target.value))}
+              placeholder="(11) 99999-9999"
+              className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-amber-400/60 outline-none text-white placeholder-white/30 transition-colors"
+            />
+          </label>
+        )}
+      </div>
 
       {error && <p className="text-red-300 text-xs mt-2">{error}</p>}
 
       <button
         type="button"
         onClick={mode === "mensal" ? handleSubscribe : handlePix}
-        disabled={isSubmitting || !cpfValid}
+        disabled={isSubmitting || !cpfValid || (mode === "pix" && !phoneValid)}
         className="mt-4 w-full inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/30 border border-amber-400/40 hover:border-amber-400/70 text-amber-100 font-semibold transition-all duration-300 cursor-pointer hover:scale-[1.02] active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
       >
         <HeartFillIcon size={16} />

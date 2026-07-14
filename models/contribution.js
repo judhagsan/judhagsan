@@ -23,7 +23,20 @@ function normalizeTaxId(taxId) {
   return digits;
 }
 
-async function startPix(userObject, { amountCents, taxId }) {
+// O AbacatePay exige o celular do cliente no PIX. Aceitamos 10 (fixo) ou 11
+// (móvel) dígitos e devolvemos apenas os números — o provedor cuida do formato.
+function normalizeCellphone(cellphone) {
+  const digits = String(cellphone || "").replace(/\D/g, "");
+  if (digits.length !== 10 && digits.length !== 11) {
+    throw new ValidationError({
+      message: "Celular inválido.",
+      action: "Informe um celular com DDD, com 10 ou 11 dígitos.",
+    });
+  }
+  return digits;
+}
+
+async function startPix(userObject, { amountCents, taxId, cellphone }) {
   if (
     !Number.isInteger(amountCents) ||
     amountCents < PIX_MIN_CENTS ||
@@ -36,6 +49,7 @@ async function startPix(userObject, { amountCents, taxId }) {
   }
 
   const cleanTaxId = normalizeTaxId(taxId);
+  const cleanCellphone = normalizeCellphone(cellphone);
 
   const pix = await abacatepay.createPixQrCode({
     amount: amountCents,
@@ -44,6 +58,7 @@ async function startPix(userObject, { amountCents, taxId }) {
     customer: {
       name: userObject.username,
       email: userObject.email,
+      cellphone: cleanCellphone,
       taxId: cleanTaxId,
     },
   });

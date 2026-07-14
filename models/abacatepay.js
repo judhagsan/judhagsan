@@ -1,12 +1,10 @@
 import crypto from "node:crypto";
 import { ServiceError } from "infra/errors.js";
 
-// v1 é a API estável (PIX via pixQrCode). As assinaturas recorrentes vivem na
-// API v2 (beta) — por isso as chamadas de subscription apontam para outra base.
-const BASE_URL_V1 =
-  process.env.ABACATEPAY_BASE_URL || "https://api.abacatepay.com/v1";
-const BASE_URL_V2 =
-  process.env.ABACATEPAY_BASE_URL_V2 || "https://api.abacatepay.com/v2";
+// Toda a integração usa a API v2 do AbacatePay: assinaturas recorrentes só
+// existem nela e o PIX é o "checkout transparente" (/transparents).
+const BASE_URL =
+  process.env.ABACATEPAY_BASE_URL || "https://api.abacatepay.com/v2";
 
 // Chave pública do AbacatePay usada para o HMAC-SHA256 dos webhooks (a mesma
 // para todas as lojas, conforme a doc). A autenticidade real vem do
@@ -25,13 +23,10 @@ function getApiKey() {
   return apiKey;
 }
 
-async function request(
-  path,
-  { method = "GET", body, baseUrl = BASE_URL_V1 } = {},
-) {
+async function request(path, { method = "GET", body } = {}) {
   let response;
   try {
-    response = await fetch(`${baseUrl}${path}`, {
+    response = await fetch(`${BASE_URL}${path}`, {
       method,
       headers: {
         Authorization: `Bearer ${getApiKey()}`,
@@ -77,7 +72,6 @@ async function request(
 async function createCustomer({ name, email, cellphone, taxId }) {
   return request("/customers/create", {
     method: "POST",
-    baseUrl: BASE_URL_V2,
     body: { name, email, cellphone, taxId },
   });
 }
@@ -88,14 +82,19 @@ async function createPixQrCode({
   description,
   customer,
 }) {
-  return request("/pixQrCode/create", {
+  // Checkout transparente PIX da v2: o método vai no topo e o restante em
+  // `data`. A resposta mantém brCode/brCodeBase64/id/status/amount/expiresAt.
+  return request("/transparents/create", {
     method: "POST",
-    body: { amount, expiresIn, description, customer },
+    body: {
+      method: "PIX",
+      data: { amount, expiresIn, description, customer },
+    },
   });
 }
 
 async function checkPixQrCode(id) {
-  return request(`/pixQrCode/check?id=${encodeURIComponent(id)}`, {
+  return request(`/transparents/check?id=${encodeURIComponent(id)}`, {
     method: "GET",
   });
 }
@@ -108,7 +107,6 @@ async function createSubscription({
 }) {
   return request("/subscriptions/create", {
     method: "POST",
-    baseUrl: BASE_URL_V2,
     body: {
       items: [{ id: productId, quantity: 1 }],
       // customerId é opcional; quando ausente o checkout hospedado coleta os

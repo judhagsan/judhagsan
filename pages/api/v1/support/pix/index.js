@@ -9,11 +9,12 @@ export default createRouter()
 
 async function postHandler(request, response) {
   const userTryingToSupport = request.context.user;
-  const { amount_cents, tax_id } = request.body || {};
+  const { amount_cents, tax_id, cell_phone } = request.body || {};
 
   const pix = await contribution.startPix(userTryingToSupport, {
     amountCents: Number(amount_cents),
     taxId: tax_id,
+    cellphone: cell_phone,
   });
 
   response.setHeader("Cache-Control", "no-store");

@@ -174,6 +174,7 @@ const translations = {
     "Texto apoio mensal":
       "Cobrança recorrente no cartão. Você mantém os benefícios de apoiador enquanto a assinatura estiver ativa e pode cancelar quando quiser.",
     "Outro valor": "Outro valor",
+    Celular: "Celular",
     "Processando...": "Processando...",
     "Assinar apoio mensal": "Apoiar por R$ 9,90/mês",
     "Gerar PIX": "Gerar PIX",
@@ -397,6 +398,7 @@ const translations = {
     "Texto apoio mensal":
       "Recurring card charge. You keep the supporter benefits while the subscription is active and can cancel anytime.",
     "Outro valor": "Other amount",
+    Celular: "Phone",
     "Processando...": "Processing...",
     "Assinar apoio mensal": "Support for R$ 9,90/mo",
     "Gerar PIX": "Generate PIX",
