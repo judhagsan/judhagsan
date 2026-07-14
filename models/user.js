@@ -1,5 +1,6 @@
 import database from "infra/database.js";
 import password from "models/password.js";
+import emailValidation from "infra/emailValidation.js";
 import { ValidationError, NotFoundError } from "infra/errors.js";
 
 async function findOneById(id) {
@@ -99,6 +100,11 @@ async function create(userInputValues) {
   validatePrivacyAcceptance(userInputValues);
   validatePasswordComplexity(userInputValues.password);
   await validateUniqueUsername(userInputValues.username);
+  // Formato + domínio com MX antes de gravar/enviar ativação: evita cadastrar
+  // (e mandar email para) endereços malformados ou de domínios que não existem.
+  userInputValues.email = await emailValidation.assertValidEmail(
+    userInputValues.email,
+  );
   await validateUniqueEmail(userInputValues.email);
   await hashPasswordInObject(userInputValues);
   injectDefaultFeaturesInObject(userInputValues);
