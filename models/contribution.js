@@ -12,29 +12,6 @@ const PIX_MAX_CENTS = 500000; // R$ 5.000,00
 // Eventos que confirmam pagamento e concedem a feature de apoiador.
 const PAID_EVENT = /\.(paid|completed|renewed)$/;
 
-async function ensureCustomer(userObject, { taxId } = {}) {
-  if (userObject.abacatepay_customer_id) {
-    return userObject.abacatepay_customer_id;
-  }
-
-  const customer = await abacatepay.createCustomer({
-    name: userObject.username,
-    email: userObject.email,
-    taxId,
-  });
-
-  await database.query({
-    text: `
-      UPDATE users
-      SET abacatepay_customer_id = $2, updated_at = timezone('utc', now())
-      WHERE id = $1
-    ;`,
-    values: [userObject.id, customer.id],
-  });
-
-  return customer.id;
-}
-
 function normalizeTaxId(taxId) {
   const digits = String(taxId || "").replace(/\D/g, "");
   if (digits.length !== 11) {
@@ -115,13 +92,13 @@ async function startSubscription(userObject, { taxId }) {
     });
   }
 
-  const cleanTaxId = normalizeTaxId(taxId);
-  const customerId = await ensureCustomer(userObject, { taxId: cleanTaxId });
+  // Valida o CPF antes de redirecionar (o checkout hospedado do AbacatePay
+  // também vai solicitá-lo, junto do cartão).
+  normalizeTaxId(taxId);
   const origin = webserver.origin;
 
   const subscription = await abacatepay.createSubscription({
     productId: MONTHLY_PRODUCT_ID,
-    customerId,
     returnUrl: `${origin}/apoiar`,
     completionUrl: `${origin}/sessao?apoio=sucesso`,
   });

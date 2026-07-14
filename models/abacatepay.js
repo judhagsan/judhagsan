@@ -1,8 +1,12 @@
 import crypto from "node:crypto";
 import { ServiceError } from "infra/errors.js";
 
-const BASE_URL =
+// v1 é a API estável (PIX via pixQrCode). As assinaturas recorrentes vivem na
+// API v2 (beta) — por isso as chamadas de subscription apontam para outra base.
+const BASE_URL_V1 =
   process.env.ABACATEPAY_BASE_URL || "https://api.abacatepay.com/v1";
+const BASE_URL_V2 =
+  process.env.ABACATEPAY_BASE_URL_V2 || "https://api.abacatepay.com/v2";
 
 // Chave pública do AbacatePay usada para o HMAC-SHA256 dos webhooks (a mesma
 // para todas as lojas, conforme a doc). A autenticidade real vem do
@@ -21,10 +25,13 @@ function getApiKey() {
   return apiKey;
 }
 
-async function request(path, { method = "GET", body } = {}) {
+async function request(
+  path,
+  { method = "GET", body, baseUrl = BASE_URL_V1 } = {},
+) {
   let response;
   try {
-    response = await fetch(`${BASE_URL}${path}`, {
+    response = await fetch(`${baseUrl}${path}`, {
       method,
       headers: {
         Authorization: `Bearer ${getApiKey()}`,
@@ -48,11 +55,19 @@ async function request(path, { method = "GET", body } = {}) {
 
   // A API responde no padrão { data, error }. Erro pode vir com HTTP 200.
   if (!response.ok || payload?.error) {
+    const detail =
+      (typeof payload?.error === "string"
+        ? payload.error
+        : payload?.error && JSON.stringify(payload.error)) ||
+      "erro desconhecido";
+    // Log server-side sem PII (é a mensagem da própria API) — o handler global
+    // de erros omite a `cause`, então sem isto o motivo real fica invisível.
+    console.error(
+      `[abacatepay] ${method} ${path} -> HTTP ${response.status}: ${detail}`,
+    );
     throw new ServiceError({
       message: "Falha ao processar o pagamento com o provedor.",
-      cause: `AbacatePay ${response.status} em ${path}: ${
-        payload?.error || "erro desconhecido"
-      }`,
+      cause: `AbacatePay ${response.status} em ${path}: ${detail}`,
     });
   }
 
@@ -60,8 +75,9 @@ async function request(path, { method = "GET", body } = {}) {
 }
 
 async function createCustomer({ name, email, cellphone, taxId }) {
-  return request("/customer/create", {
+  return request("/customers/create", {
     method: "POST",
+    baseUrl: BASE_URL_V2,
     body: { name, email, cellphone, taxId },
   });
 }
@@ -92,8 +108,11 @@ async function createSubscription({
 }) {
   return request("/subscriptions/create", {
     method: "POST",
+    baseUrl: BASE_URL_V2,
     body: {
       items: [{ id: productId, quantity: 1 }],
+      // customerId é opcional; quando ausente o checkout hospedado coleta os
+      // dados do cliente (nome, e-mail, CPF e cartão).
       customerId,
       methods: ["CARD"],
       returnUrl,
