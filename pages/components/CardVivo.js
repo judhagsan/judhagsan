@@ -155,9 +155,7 @@ export default function CardVivo({ onBack }) {
                     <div className="text-xs font-bold tracking-widest uppercase text-white/40">
                       {t(label)}
                     </div>
-                    <div className="text-sm text-white/80 mt-1">
-                      {t(value)}
-                    </div>
+                    <div className="text-sm text-white/80 mt-1">{t(value)}</div>
                   </div>
                 ))}
 

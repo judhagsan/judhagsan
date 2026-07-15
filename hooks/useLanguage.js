@@ -432,7 +432,6 @@ const translations = {
     "Texto mensal curto": "Renews monthly · cancel anytime",
     "sufixo mes": "/mo",
 
-
     // YouTube Card (extra)
     "Ver o canal": "Visit the channel",
 
