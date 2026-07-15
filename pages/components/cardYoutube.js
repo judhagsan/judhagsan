@@ -51,13 +51,17 @@ export default function CardYoutube() {
     fetchVideos();
   }, [language, t]);
 
+  // Tile "Ver o canal" preenche colunas vazias no desktop; quando ele está
+  // visível, o pill do header some no desktop para não duplicar o link.
+  const showsChannelTile = !loading && videos.length > 0 && videos.length < 3;
+
   return (
     <div className="w-full">
-      <div className="glass-card rounded-[20px] p-4 lg:p-6 shadow-2xl relative overflow-hidden flex flex-col gap-4">
+      <div className="glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col gap-3 animate-[fadeIn_0.3s_ease-out]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10"></div>
 
         {/* Header */}
-        <div className="shrink-0 mb-4 flex items-center justify-between pl-2 relative z-10">
+        <div className="shrink-0 flex items-center justify-between pl-2 relative z-10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-300 shadow-lg shadow-red-500/15 shrink-0">
               <PlayIcon size={20} />
@@ -70,14 +74,16 @@ export default function CardYoutube() {
             href={`https://www.youtube.com/channel/${CHANNEL_ID}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs font-semibold text-white/50 hover:text-white transition-colors uppercase tracking-wider bg-white/5 px-3 py-1 rounded-full cursor-pointer decoration-transparent"
+            className={`text-xs font-semibold text-white/50 hover:text-white transition-colors uppercase tracking-wider bg-white/5 px-3 py-1 rounded-full cursor-pointer decoration-transparent ${
+              showsChannelTile ? "lg:hidden" : ""
+            }`}
           >
             {t("Ver todos")}
           </a>
         </div>
 
         {/* Video List - Responsive Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4">
           {loading
             ? // Skeleton Loading
               [1, 2, 3].map((i) => (
@@ -85,7 +91,7 @@ export default function CardYoutube() {
                   key={i}
                   className={`flex gap-4 p-2 rounded-xl bg-white/5 animate-pulse ${i > 1 ? "hidden lg:flex" : "flex"}`}
                 >
-                  <div className="w-28 h-20 lg:w-48 lg:h-28 rounded-lg bg-white/10 shrink-0"></div>
+                  <div className="w-28 h-20 lg:w-40 lg:h-24 rounded-lg bg-white/10 shrink-0"></div>
                   <div className="flex-1 space-y-2 py-2 min-w-0">
                     <div className="h-4 bg-white/10 rounded w-3/4"></div>
                     <div className="h-4 bg-white/5 rounded w-1/2"></div>
@@ -98,10 +104,10 @@ export default function CardYoutube() {
                   href={`https://www.youtube.com/watch?v=${video.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`group gap-3 lg:gap-4 p-2 lg:p-3 rounded-2xl hover:bg-white/10 transition-all cursor-pointer border border-transparent hover:border-white/5 deco ${index > 0 ? "hidden lg:flex" : "flex"}`}
+                  className={`group gap-3 p-2 rounded-2xl hover:bg-white/10 transition-all cursor-pointer border border-transparent hover:border-white/5 deco ${index > 0 ? "hidden lg:flex" : "flex"}`}
                 >
                   {/* Thumbnail */}
-                  <div className="relative w-28 h-20 lg:w-48 lg:h-28 flex-shrink-0 rounded-xl overflow-hidden shadow-lg border border-white/5">
+                  <div className="relative w-28 h-20 lg:w-40 lg:h-24 flex-shrink-0 rounded-xl overflow-hidden shadow-lg border border-white/5">
                     <img
                       src={video.thumbnail}
                       alt={video.title}
@@ -121,7 +127,7 @@ export default function CardYoutube() {
                     <h3 className="text-sm lg:text-base font-bold text-white line-clamp-2 leading-snug group-hover:text-cyan-400 transition-colors">
                       {video.title}
                     </h3>
-                    <div className="flex items-center gap-2 mt-1 lg:mt-2">
+                    <div className="flex items-center gap-2 mt-1">
                       <span className="text-xs text-zinc-400 font-medium bg-black/30 px-2 py-0.5 rounded-md">
                         {t(video.views)}
                       </span>
@@ -132,6 +138,23 @@ export default function CardYoutube() {
                   </div>
                 </a>
               ))}
+
+          {/* Preenche colunas vazias com convite ao canal */}
+          {showsChannelTile &&
+            Array.from({ length: 3 - Math.min(videos.length, 3) }).map(
+              (_, index) => (
+                <a
+                  key={`canal-${index}`}
+                  href={`https://www.youtube.com/channel/${CHANNEL_ID}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden lg:flex items-center justify-center gap-2 p-2 rounded-2xl border border-dashed border-white/10 hover:border-white/25 text-white/30 hover:text-white/70 transition-all cursor-pointer text-xs font-mono uppercase tracking-widest"
+                >
+                  <PlayIcon size={16} />
+                  {t("Ver o canal")}
+                </a>
+              ),
+            )}
         </div>
       </div>
     </div>

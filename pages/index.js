@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import CardYoutube from "./components/cardYoutube";
 import CardPindorama from "./components/cardPindorama";
 import CardReel from "./components/CardReel";
+import SupportersTicker from "./components/SupportersTicker";
 import CardLogin from "./components/CardLogin";
 import CardCadastro from "./components/CardCadastro";
 import CardPrivacidade from "./components/CardPrivacidade";
@@ -27,6 +28,8 @@ export default function SamuraiDashboard() {
       router.replace("/sessao");
     }
   }, [isLoading, isLoggedIn, router]);
+
+  const showingPindorama = activeCard !== "login" && activeCard !== "cadastro";
 
   let centerCard;
   if (activeCard === "login") {
@@ -63,11 +66,11 @@ export default function SamuraiDashboard() {
         <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-6 gap-6 overflow-y-auto lg:overflow-hidden">
           {/* Center Section - Active card + Privacidade panel */}
           <div className="lg:flex-1 flex flex-col lg:flex-row items-stretch justify-start lg:justify-center min-h-0 gap-4 lg:gap-6 shrink-0">
-            <div
-              key={activeCard}
-              className="w-full lg:w-1/3 lg:h-auto lg:self-center shrink-0 animate-[fadeIn_0.12s_ease-out]"
-            >
-              {centerCard}
+            <div className="w-full lg:w-1/3 lg:self-center shrink-0 flex flex-col gap-4">
+              {showingPindorama && <SupportersTicker />}
+              <div key={activeCard} className="animate-[fadeIn_0.12s_ease-out]">
+                {centerCard}
+              </div>
             </div>
 
             {!activePanel && (

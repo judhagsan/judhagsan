@@ -115,7 +115,7 @@ export default function CardSessao() {
               className="w-full h-full object-cover rounded-full"
             />
           </div>
-          <div className="flex items-baseline gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
               Pindorama
             </h2>
@@ -128,7 +128,7 @@ export default function CardSessao() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 flex flex-col items-center justify-center text-center mt-6 mb-2">
+        <div className="flex-1 flex flex-col items-center justify-center text-center mb-2">
           <p className="text-zinc-300 mb-6 max-w-2xl leading-relaxed text-base lg:text-lg font-medium">
             {t("pindorama_desc")}
           </p>

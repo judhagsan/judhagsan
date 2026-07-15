@@ -13,7 +13,7 @@ export default function CardSobre({ onClose }) {
 
   return (
     <div className="w-full h-auto lg:h-full">
-      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] animate-[fadeIn_0.3s_ease-out]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
         {/* Header */}

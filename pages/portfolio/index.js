@@ -12,7 +12,7 @@ import CardLittleUnusual from "../components/CardLittleUnusual";
 import CardVivo from "../components/CardVivo";
 import useLanguage from "hooks/useLanguage";
 
-function MediaCard({ src, label = "", onClick }) {
+function MediaCard({ src, poster, label = "", caption = "", onClick }) {
   const [loaded, setLoaded] = useState(false);
 
   return (
@@ -22,21 +22,20 @@ function MediaCard({ src, label = "", onClick }) {
       className="group/media block w-full cursor-pointer p-0 border-0 bg-transparent outline-none"
     >
       <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10 bg-black/40 shadow-inner transition-all duration-500 group-hover/media:border-white/25 group-hover/media:shadow-[0_0_30px_rgba(6,182,212,0.15)] group-focus-visible/media:border-white/40">
-        {!loaded && (
+        {!loaded && !poster && (
           <div className="absolute inset-0 z-10 flex items-center justify-center text-white/25 animate-pulse pointer-events-none">
             <VideoIcon size={28} />
           </div>
         )}
         <video
           src={src}
+          poster={poster}
           autoPlay
           loop
           muted
           playsInline
           onLoadedData={() => setLoaded(true)}
-          className={`w-full h-full object-cover transition duration-500 group-hover/media:scale-[1.02] ${
-            loaded ? "opacity-100" : "opacity-0"
-          }`}
+          className="w-full h-full object-cover transition duration-500 group-hover/media:scale-[1.02]"
         />
         {/* Glass sheen — same gradient as .glass-card */}
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/10 to-transparent" />
@@ -44,6 +43,11 @@ function MediaCard({ src, label = "", onClick }) {
       <span className="block mt-3 text-center text-sm lg:text-base font-bold tracking-widest uppercase text-white/50 transition-colors group-hover/media:text-white/90">
         {label}
       </span>
+      {caption && (
+        <span className="block mt-1 text-center text-[11px] font-mono uppercase tracking-widest text-white/30 transition-colors group-hover/media:text-white/50">
+          {caption}
+        </span>
+      )}
     </button>
   );
 }
@@ -82,9 +86,9 @@ export default function PortfolioPage() {
           )}
 
           {!project && (
-            /* Portfolio card — same chrome as the project cards, full center */
-            <div className="w-full lg:h-full lg:min-h-0 animate-[fadeIn_0.12s_ease-out]">
-              <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-full transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+            /* Portfolio card — abraça o conteúdo para deixar o fundo respirar */
+            <div className="w-full lg:my-auto animate-[fadeIn_0.12s_ease-out]">
+              <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
                 {/* Header */}
@@ -106,21 +110,27 @@ export default function PortfolioPage() {
                 </div>
 
                 {/* Project grid */}
-                <div className="flex-1 min-h-0 overflow-y-auto pr-3 relative z-10">
+                <div className="relative z-10">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
                     <MediaCard
                       src="/sos/sos_seringa.webm"
+                      poster="/sos/sos_seringa-poster.jpg"
                       label="State of Survival"
+                      caption={t("sos_caption")}
                       onClick={() => setProject("sos")}
                     />
                     <MediaCard
-                      src="/vivo/bf_filme_10s.webm"
+                      src="/vivo/bf_16x9_qr.webm"
+                      poster="/vivo/bf_16x9_qr-poster.jpg"
                       label={`Vivo - Black Friday & ${t("Natal")}`}
+                      caption={t("vivo_caption")}
                       onClick={() => setProject("vivo")}
                     />
                     <MediaCard
                       src="/little_unusual/little_unusual.webm"
+                      poster="/little_unusual/dimond.jpg"
                       label="Little Unusual"
+                      caption={t("lu_caption")}
                       onClick={() => setProject("little_unusual")}
                     />
                   </div>

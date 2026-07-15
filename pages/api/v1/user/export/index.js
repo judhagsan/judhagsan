@@ -72,6 +72,8 @@ async function getHandler(request, response) {
       username: userFound.username,
       email: userFound.email,
       privacy_accepted_at: userFound.privacy_accepted_at,
+      supporter_wall_opt_in: userFound.supporter_wall_opt_in,
+      discord_user_id: userFound.discord_user_id,
       created_at: userFound.created_at,
     },
     sessions: sessionsResult.rows,

@@ -117,6 +117,32 @@ describe("POST /api/v1/users", () => {
       });
     });
 
+    test("With malformed `email`", async () => {
+      // Formato inválido é rejeitado antes de qualquer consulta de DNS, então
+      // este caso é determinístico. A checagem de MX do domínio é coberta pelo
+      // unit test de infra/emailValidation.
+      const response = await fetch(`${webserver.origin}/api/v1/users`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "emailmalformado",
+          email: "nao-eh-um-email",
+          password: "senha12345",
+          privacy_accepted: true,
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message: "Email inválido.",
+        action: "Informe um endereço de email válido.",
+        status_code: 400,
+      });
+    });
+
     test("Without privacy acceptance", async () => {
       const response = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",

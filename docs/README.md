@@ -152,6 +152,25 @@ As variáveis estão definidas em `.env.development`:
 | `EMAIL_SMTP_HOST`   | Host SMTP           | `localhost`      |
 | `EMAIL_SMTP_PORT`   | Porta SMTP          | `1025`           |
 
+Integração Discord (benefício de apoiador — valores fake em dev, reais só na Vercel):
+
+| Variável                    | Descrição                                            |
+| --------------------------- | ---------------------------------------------------- |
+| `DISCORD_CLIENT_ID`         | Client ID do aplicativo no Discord Developer Portal  |
+| `DISCORD_CLIENT_SECRET`     | Client Secret do aplicativo                          |
+| `DISCORD_BOT_TOKEN`         | Token do bot (precisa da permissão **Manage Roles**) |
+| `DISCORD_GUILD_ID`          | ID do servidor (guild) dos apoiadores                |
+| `DISCORD_SUPPORTER_ROLE_ID` | ID do cargo de apoiador a ser atribuído              |
+| `DISCORD_REDIRECT_URI`      | URL de callback registrada no aplicativo (OAuth2)    |
+
+Integração AbacatePay (apoio recorrente + PIX — chave de DEV em dev, produção só na Vercel):
+
+| Variável                        | Descrição                                                                         |
+| ------------------------------- | --------------------------------------------------------------------------------- |
+| `ABACATEPAY_API_KEY`            | Chave da API (a de DEV gera transações simuladas; a de produção cobra de verdade) |
+| `ABACATEPAY_WEBHOOK_SECRET`     | Segredo passado na URL do webhook (`?webhookSecret=...`) e validado no servidor   |
+| `ABACATEPAY_MONTHLY_PRODUCT_ID` | ID do produto MONTHLY (R$ 9,90) criado no painel, usado na assinatura             |
+
 ---
 
 ## Scripts Disponíveis
@@ -200,9 +219,33 @@ Base URL: `/api/v1`
 
 ### Usuário Autenticado
 
-| Método | Endpoint | Descrição                       |
-| ------ | -------- | ------------------------------- |
-| `GET`  | `/user`  | Retorna dados do usuário logado |
+| Método  | Endpoint          | Descrição                                           |
+| ------- | ----------------- | --------------------------------------------------- |
+| `GET`   | `/user`           | Retorna dados do usuário logado                     |
+| `PATCH` | `/user/supporter` | Define exibição no mural de apoiadores (`apoiador`) |
+
+### Apoiadores
+
+| Método | Endpoint            | Descrição                                                    |
+| ------ | ------------------- | ------------------------------------------------------------ |
+| `GET`  | `/supporters`       | Lista pública de apoiadores com opt-in no mural (site + app) |
+| `GET`  | `/discord/connect`  | Inicia OAuth2 do Discord (exige feature `apoiador`)          |
+| `GET`  | `/discord/callback` | Callback do OAuth2: entra no servidor e recebe o cargo       |
+
+### Apoio / Pagamentos (AbacatePay)
+
+| Método | Endpoint                | Descrição                                                         |
+| ------ | ----------------------- | ----------------------------------------------------------------- |
+| `POST` | `/support/subscription` | Cria a assinatura mensal e retorna a URL do checkout hospedado    |
+| `POST` | `/support/pix`          | Gera um PIX avulso (QR Code + copia-e-cola) para o valor pedido   |
+| `GET`  | `/support/pix/:id`      | Consulta o status de um PIX (usado pelo polling da página)        |
+| `POST` | `/webhooks/abacatepay`  | Recebe eventos do AbacatePay; concede/revoga a feature `apoiador` |
+
+O webhook valida duas camadas: o segredo na query (`?webhookSecret=`) e a
+assinatura HMAC-SHA256 no header `X-Webhook-Signature`. É idempotente (dedupe
+por id do evento) e concede a feature de apoiador em eventos de pagamento
+(`*.paid` / `*.completed` / `subscription.renewed`), revogando em
+`subscription.cancelled` (removendo também o cargo do Discord).
 
 ### Ativação de Conta
 
@@ -245,6 +288,73 @@ Base URL: `/api/v1`
 | `read:migration`        | Listar migrações                              |
 | `read:status`           | Visualizar status básico do sistema           |
 | `read:status:all`       | Visualizar status completo (inclui versão DB) |
+| `manage:device`         | Gerenciar dispositivos (telemetria Pindorama) |
+| `apoiador`              | Benefícios de apoiador do Pindorama           |
+
+### Apoiadores (apoio ao Pindorama)
+
+Usuários com a feature `apoiador` têm acesso aos benefícios de quem apoia o
+desenvolvimento do Pindorama. A feature é concedida automaticamente pelo
+webhook do AbacatePay quando o pagamento é confirmado (assinatura mensal ou
+PIX avulso) e revogada no cancelamento da assinatura — ver
+`models/contribution.js`. Também pode ser concedida manualmente via
+`models/supporter.js` → `grant`/`revoke`.
+
+Benefícios atuais:
+
+- **Selo de apoiador** no card de usuário da página de sessão.
+- **Mural de apoiadores** (`/apoiadores`): página pública que lista quem
+  apoia. A exibição é opt-in (`PATCH /api/v1/user/supporter`), desligada por
+  padrão. O mesmo endpoint `GET /api/v1/supporters` alimenta a tela de
+  créditos do app Pindorama.
+- **Servidor do Discord**: botão "Entrar no Discord" na sessão. O fluxo OAuth2
+  (`identify` + `guilds.join`) adiciona o usuário ao servidor automaticamente
+  e o bot atribui o cargo de apoiador.
+
+Configuração do Discord (uma vez, no [Discord Developer Portal](https://discord.com/developers/applications)):
+
+1. Crie um aplicativo e copie o **Client ID** e o **Client Secret**.
+2. Em _OAuth2 → Redirects_, registre a URL de callback
+   (`https://judhagsan.com/api/v1/discord/callback` em produção).
+3. Em _Bot_, crie o bot, copie o **token** e convide-o para o servidor com as
+   permissões **Manage Roles** e **Create Instant Invite**.
+4. Crie o cargo de apoiador no servidor e **posicione o cargo do bot acima
+   dele** na hierarquia (senão o Discord recusa a atribuição).
+5. Com o modo desenvolvedor do Discord ativo, copie o **ID do servidor** e o
+   **ID do cargo** e preencha as variáveis `DISCORD_*` na Vercel.
+
+### Apoio recorrente e PIX (AbacatePay)
+
+Dois caminhos de apoio, ambos concedendo a feature `apoiador` via webhook:
+
+- **Assinatura mensal (cartão)** — `R$ 9,90/mês`. Os dados do cartão são
+  inseridos no **checkout hospedado do AbacatePay** (PCI); nossa página coleta
+  nome/e-mail/CPF, cria a assinatura e redireciona.
+- **PIX avulso** — valor sugerido ou livre. O QR Code e o copia-e-cola são
+  gerados e exibidos na própria página (`/apoiar`), com polling do status.
+
+Fluxo de código: `models/abacatepay.js` (cliente REST + validação de webhook)
+→ `models/contribution.js` (orquestração: cliente, PIX, assinatura, webhook)
+→ rotas em `pages/api/v1/support/*` e `pages/api/v1/webhooks/abacatepay`.
+
+Configuração no [painel do AbacatePay](https://www.abacatepay.com/) (uma vez):
+
+1. **Chave de DEV primeiro.** Em _Integração_, gere uma chave de
+   desenvolvimento (transações simuladas) e use-a localmente em
+   `ABACATEPAY_API_KEY`. Só troque pela chave de produção na Vercel ao final.
+2. **Produto mensal.** Crie um produto com ciclo **MONTHLY** e preço
+   **R$ 9,90**. Copie o **ID do produto** para `ABACATEPAY_MONTHLY_PRODUCT_ID`.
+3. **Webhook.** Cadastre a URL
+   `https://judhagsan.com/api/v1/webhooks/abacatepay?webhookSecret=SEU_SEGREDO`,
+   escolhendo um segredo forte e replicando-o em `ABACATEPAY_WEBHOOK_SECRET`.
+   Assine os eventos de pagamento e de assinatura
+   (`*.completed`, `*.paid`, `subscription.renewed`, `subscription.cancelled`).
+4. **Variáveis na Vercel.** Preencha `ABACATEPAY_API_KEY` (produção),
+   `ABACATEPAY_WEBHOOK_SECRET` e `ABACATEPAY_MONTHLY_PRODUCT_ID`, e faça
+   redeploy.
+5. **Teste no sandbox.** Com a chave de DEV, gere um PIX em `/apoiar` e use o
+   simulador de pagamento do AbacatePay para confirmar — o webhook deve
+   conceder a feature `apoiador` automaticamente.
 
 ### Sessões
 

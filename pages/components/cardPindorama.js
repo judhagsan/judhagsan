@@ -4,6 +4,7 @@ import useLanguage from "hooks/useLanguage";
 
 export default function CardPindorama({ onDownloadClick }) {
   const { t } = useLanguage();
+
   return (
     <div className="w-full h-auto lg:h-auto">
       <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-auto">

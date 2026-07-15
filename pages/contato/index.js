@@ -20,7 +20,7 @@ export default function ContatoPage() {
         <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-6 gap-6">
           {/* Center Section - Contato Card */}
           <div className="lg:flex-1 flex items-start lg:items-center justify-center min-h-0 shrink-0">
-            <div className="w-full h-full lg:h-full">
+            <div className="w-full">
               <CardContato />
             </div>
           </div>
