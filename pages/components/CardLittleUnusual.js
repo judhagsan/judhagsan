@@ -31,11 +31,11 @@ export default function CardLittleUnusual({ onBack }) {
 
   return (
     <div className="w-full h-auto lg:h-full animate-[fadeIn_0.12s_ease-out]">
-      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-full transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+      <div className="glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-full transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
         {/* Header — back + animated logo + project info beside it */}
-        <div className="shrink-0 mb-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 relative z-10">
+        <div className="shrink-0 mb-3 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 relative z-10">
           <div className="flex items-center gap-3 shrink-0">
             <button
               type="button"
@@ -75,7 +75,7 @@ export default function CardLittleUnusual({ onBack }) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-h-0 overflow-y-auto pr-3 relative z-10 flex flex-col gap-6">
+        <div className="flex-1 min-h-0 overflow-y-auto pr-3 relative z-10 flex flex-col gap-5">
           {/* 3D explorations + specs beside them */}
           <div className="shrink-0 flex flex-col lg:flex-row gap-4 lg:gap-6">
             <div className="w-full lg:w-4/5 grid grid-cols-2 gap-4">
@@ -94,12 +94,12 @@ export default function CardLittleUnusual({ onBack }) {
               {specs.map(([label, value]) => (
                 <div
                   key={label}
-                  className="bg-white/[0.02] border border-white/5 rounded-xl p-4 text-center"
+                  className="bg-white/[0.02] border border-white/5 rounded-xl p-3 text-center"
                 >
                   <div className="text-xs font-bold tracking-widest uppercase text-white/40">
                     {t(label)}
                   </div>
-                  <div className="text-base text-white/80 mt-1">{t(value)}</div>
+                  <div className="text-sm text-white/80 mt-1">{t(value)}</div>
                 </div>
               ))}
             </div>

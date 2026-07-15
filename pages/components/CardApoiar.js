@@ -97,13 +97,13 @@ export default function CardApoiar() {
 function Shell({ t, children }) {
   return (
     <div className="w-full">
-      <div className="glass-card rounded-[20px] p-5 shadow-2xl relative overflow-hidden flex flex-col animate-[fadeIn_0.3s_ease-out]">
+      <div className="glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col animate-[fadeIn_0.3s_ease-out]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
         <div className="shrink-0 mb-3 flex items-center gap-3 relative z-10">
-          <div className="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
-            <HeartFillIcon size={18} />
+          <div className="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
+            <HeartFillIcon size={16} />
           </div>
-          <h2 className="text-lg font-bold tracking-tight text-white/90">
+          <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
             {t("Apoiar o Pindorama")}
           </h2>
         </div>
