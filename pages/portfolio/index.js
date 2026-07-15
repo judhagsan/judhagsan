@@ -10,9 +10,10 @@ import MainFrame from "../components/MainFrame";
 import CardSos from "../components/CardSos";
 import CardLittleUnusual from "../components/CardLittleUnusual";
 import CardVivo from "../components/CardVivo";
+import CardPoloVivo from "../components/CardPoloVivo";
 import useLanguage from "hooks/useLanguage";
 
-function MediaCard({ src, poster, label = "", caption = "", onClick }) {
+function MediaCard({ src, poster, label = "", onClick, zoom }) {
   const [loaded, setLoaded] = useState(false);
 
   return (
@@ -35,19 +36,18 @@ function MediaCard({ src, poster, label = "", caption = "", onClick }) {
           muted
           playsInline
           onLoadedData={() => setLoaded(true)}
-          className="w-full h-full object-cover transition duration-500 group-hover/media:scale-[1.02]"
+          className={`w-full h-full object-cover transition duration-500 ${
+            zoom
+              ? "scale-[1.4] group-hover/media:scale-[1.44]"
+              : "group-hover/media:scale-[1.02]"
+          }`}
         />
         {/* Glass sheen — same gradient as .glass-card */}
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/10 to-transparent" />
       </div>
-      <span className="block mt-3 text-center text-sm lg:text-base font-bold tracking-widest uppercase text-white/50 transition-colors group-hover/media:text-white/90">
+      <span className="block mt-2 text-center text-xs lg:text-sm font-bold tracking-widest uppercase text-white/50 transition-colors group-hover/media:text-white/90">
         {label}
       </span>
-      {caption && (
-        <span className="block mt-1 text-center text-[11px] font-mono uppercase tracking-widest text-white/30 transition-colors group-hover/media:text-white/50">
-          {caption}
-        </span>
-      )}
     </button>
   );
 }
@@ -66,7 +66,7 @@ export default function PortfolioPage() {
 
       {/* Main Container (The "Clear" Window) */}
       <div className="relative z-10 w-full h-full rounded-[20px] overflow-hidden border border-white/5 shadow-[inset_0px_0px_50px_rgba(0,0,0,0.9)] flex flex-col">
-        <div className="relative z-10 flex-1 min-h-0 flex flex-col p-4 lg:p-6 overflow-y-auto lg:overflow-hidden">
+        <div className="relative z-10 flex-1 min-h-0 flex flex-col p-3 lg:p-4 overflow-y-auto lg:overflow-hidden">
           {project === "sos" && (
             <div className="w-full lg:h-full lg:min-h-0">
               <CardSos onBack={() => setProject(null)} />
@@ -85,14 +85,20 @@ export default function PortfolioPage() {
             </div>
           )}
 
+          {project === "polo_vivo" && (
+            <div className="w-full lg:h-full lg:min-h-0">
+              <CardPoloVivo onBack={() => setProject(null)} />
+            </div>
+          )}
+
           {!project && (
             /* Portfolio card — abraça o conteúdo para deixar o fundo respirar */
             <div className="w-full lg:my-auto animate-[fadeIn_0.12s_ease-out]">
-              <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+              <div className="glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
                 {/* Header */}
-                <div className="shrink-0 mb-4 flex items-center gap-3 relative z-10">
+                <div className="shrink-0 mb-3 flex items-center gap-3 relative z-10">
                   <button
                     type="button"
                     onClick={() => router.push("/")}
@@ -101,37 +107,41 @@ export default function PortfolioPage() {
                   >
                     <ArrowLeftIcon size={18} />
                   </button>
-                  <div className="w-10 h-10 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
-                    <BriefcaseIcon size={20} />
+                  <div className="w-8 h-8 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
+                    <BriefcaseIcon size={16} />
                   </div>
-                  <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
+                  <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
                     {t("Portfolio")}
                   </h2>
                 </div>
 
                 {/* Project grid */}
                 <div className="relative z-10">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                     <MediaCard
                       src="/sos/sos_seringa.webm"
                       poster="/sos/sos_seringa-poster.jpg"
                       label="State of Survival"
-                      caption={t("sos_caption")}
                       onClick={() => setProject("sos")}
                     />
                     <MediaCard
                       src="/vivo/bf_16x9_qr.webm"
                       poster="/vivo/bf_16x9_qr-poster.jpg"
                       label={`Vivo - Black Friday & ${t("Natal")}`}
-                      caption={t("vivo_caption")}
                       onClick={() => setProject("vivo")}
                     />
                     <MediaCard
                       src="/little_unusual/little_unusual.webm"
                       poster="/little_unusual/dimond.jpg"
                       label="Little Unusual"
-                      caption={t("lu_caption")}
                       onClick={() => setProject("little_unusual")}
+                    />
+                    <MediaCard
+                      src="/polo_vivo/polo_vivo.webm"
+                      poster="/polo_vivo/polo_vivo-poster.jpg"
+                      label="Polo Vivo"
+                      zoom
+                      onClick={() => setProject("polo_vivo")}
                     />
                   </div>
                 </div>

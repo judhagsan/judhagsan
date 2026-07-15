@@ -143,7 +143,7 @@ export default function CardUsuario({ user }) {
   return (
     <div className="w-full h-auto">
       <div
-        className={`glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto group transition-all duration-500 ${
+        className={`glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto group transition-all duration-500 ${
           isSupporter
             ? "hover:shadow-[0_0_30px_rgba(245,158,11,0.12)]"
             : "hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]"

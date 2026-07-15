@@ -1,3 +1,7 @@
+/* Custom Web Fonts — precisa vir antes do import do Tailwind, que é
+   expandido em regras concretas antes da checagem de ordem dos @import */
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@900&display=swap");
+
 @import "tailwindcss";
 
 @plugin "daisyui" {
@@ -153,6 +157,3 @@
     transform: translate(5%, 0);
   }
 }
-
-/* Custom Web Fonts */
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@900&display=swap");

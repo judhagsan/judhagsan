@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { ArrowLeftIcon, PlayIcon } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
 
-export default function CardSos({ onBack }) {
+export default function CardPoloVivo({ onBack }) {
   const { t } = useLanguage();
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -19,9 +19,9 @@ export default function CardSos({ onBack }) {
   };
 
   const specs = [
-    ["Ferramenta", "Blender, Premiere, After Effects"],
-    ["Plataforma", "Redes sociais"],
-    ["Mercado", "Europa"],
+    ["Ferramenta", "After Effects, Photoshop"],
+    ["Plataforma", "polo_vivo_platform"],
+    ["Mercado", "Brasil"],
   ];
 
   return (
@@ -29,7 +29,7 @@ export default function CardSos({ onBack }) {
       <div className="glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-full transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
-        {/* Header — back + animated logo + description beside it */}
+        {/* Header — back + title + description beside it */}
         <div className="shrink-0 mb-3 flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4 relative z-10">
           <div className="flex items-center gap-3 shrink-0">
             <button
@@ -40,10 +40,10 @@ export default function CardSos({ onBack }) {
             >
               <ArrowLeftIcon size={18} />
             </button>
-            <h2 className="sr-only">State of Survival</h2>
+            <h2 className="sr-only">Polo Vivo</h2>
             <div className="relative h-10 lg:h-12 rounded-lg overflow-hidden border border-white/10 bg-black/40">
               <video
-                src="/sos/state_logo.webm"
+                src="/polo_vivo/polo_vivo_title.webm"
                 autoPlay
                 loop
                 muted
@@ -54,22 +54,23 @@ export default function CardSos({ onBack }) {
             </div>
           </div>
           <p className="flex-1 min-w-0 text-white/70 leading-relaxed text-base sm:-mt-1">
-            {t("sos_desc")}
+            {t("polo_vivo_desc")}
           </p>
         </div>
 
         {/* Content */}
         <div className="flex-1 min-h-0 overflow-y-auto pr-3 relative z-10 flex flex-col gap-5">
-          {/* Main piece + specs beside it */}
+          {/* Main film + specs beside it */}
           <div className="shrink-0 flex flex-col lg:flex-row gap-4 lg:gap-6">
             {/* Main piece — click to play, with sound */}
             <div
               onClick={togglePlay}
-              className="relative shrink-0 w-full lg:w-4/5 rounded-xl overflow-hidden border border-white/10 bg-black/40 shadow-inner aspect-[5/3] cursor-pointer group/video"
+              className="relative shrink-0 w-full lg:w-4/5 rounded-xl overflow-hidden border border-white/10 bg-black/40 shadow-inner aspect-video cursor-pointer group/video"
             >
               <video
                 ref={videoRef}
-                src="/sos/sos-03.webm"
+                src="/polo_vivo/polo_vivo.webm"
+                poster="/polo_vivo/polo_vivo-poster.jpg"
                 loop
                 playsInline
                 className="w-full h-full object-cover group-hover/video:scale-[1.01] transition-transform duration-500"
@@ -107,6 +108,24 @@ export default function CardSos({ onBack }) {
                   <div className="text-sm text-white/80 mt-1">{t(value)}</div>
                 </div>
               ))}
+
+              {/* Vertical cut below the specs — the box is sized by the
+                  leftover height and keeps the exact 9:16 ratio, so the
+                  whole piece stays visible with no cropping */}
+              <div className="flex justify-center lg:flex-1 lg:min-h-0">
+                <div className="relative w-40 lg:w-auto lg:h-full lg:max-w-full aspect-[9/16] rounded-xl overflow-hidden border border-white/10 bg-black/40 shadow-inner">
+                  <video
+                    src="/polo_vivo/polo_vivo_online.webm"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Glass sheen — same gradient as .glass-card */}
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/10 to-transparent" />
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -63,10 +63,10 @@ export default function CardYoutube() {
         {/* Header */}
         <div className="shrink-0 flex items-center justify-between pl-2 relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-300 shadow-lg shadow-red-500/15 shrink-0">
-              <PlayIcon size={20} />
+            <div className="w-8 h-8 rounded-full bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-300 shadow-lg shadow-red-500/15 shrink-0">
+              <PlayIcon size={16} />
             </div>
-            <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
+            <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
               {t("Ultimos videos")}
             </h2>
           </div>

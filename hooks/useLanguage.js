@@ -32,6 +32,9 @@ const translations = {
       "A campanha foi criada para a Vivo, com voice over de Ivete Sangalo, promovendo as ofertas de Black Friday e Natal. Produzida em After Effects e Photoshop, foi entregue em diversos formatos, como filmes 16:9, peças 1:1 e 9:16, bumpers de 6 segundos e banners, cobrindo redes sociais, livestreams, vídeos patrocinados com influenciadores e TV, para o público brasileiro.",
     sos_desc:
       "A animação foi criada para promover o jogo State of Survival, especialmente voltada para as redes sociais na Europa. Devido às diretrizes e regras específicas das plataformas, a animação foi projetada para minimizar a exibição de sangue e conteúdo violento. Desenvolvida inteiramente no Blender, a animação combina visuais impactantes com uma abordagem cuidadosa para garantir a conformidade com as normas de conteúdo das redes sociais.",
+    polo_vivo_platform: "YouTube e Redes sociais",
+    polo_vivo_desc:
+      "Vinheta de abertura criada para os vídeos religiosos do Polo Vivo, utilizando animação frame a frame. Foi entregue em 16:9 para o YouTube e em versão vertical para os vídeos de comentários nas redes sociais.",
     Cliente: "Cliente",
     "Minha função": "Minha função",
     lu_client: "Estúdio Little Unusual",
@@ -207,11 +210,6 @@ const translations = {
     "Texto mensal curto": "Renova todo mês · cancele quando quiser",
     "sufixo mes": "/mês",
 
-    // Portfolio captions
-    sos_caption: "Blender · Marketing de jogo",
-    vivo_caption: "After Effects · Campanha nacional",
-    lu_caption: "Animação 3D · Estúdio Little Unusual",
-
     // YouTube Card (extra)
     "Ver o canal": "Ver o canal",
 
@@ -259,6 +257,9 @@ const translations = {
       "The campaign was created for Vivo, featuring a voice over by Ivete Sangalo, promoting the Black Friday and Christmas offers. Produced in After Effects and Photoshop, it was delivered across a wide range of formats, including 16:9 films, 1:1 and 9:16 cuts, 6-second bumpers, and banners, covering social media, livestreams, influencer-sponsored videos, and TV for the Brazilian audience.",
     sos_desc:
       "The animation was created to promote the game State of Survival, with a focus on social media platforms in Europe. To adhere to the specific guidelines and regulations of these platforms, the animation was designed to minimize the display of blood and violent content. Crafted entirely in Blender, the animation combines striking visuals with a careful approach to ensure compliance with social media content policies.",
+    polo_vivo_platform: "YouTube & Social media",
+    polo_vivo_desc:
+      "Opening intro created for Polo Vivo's religious videos, using frame-by-frame animation. It was delivered in 16:9 for YouTube and as a vertical cut for the commentary videos on social media.",
     Cliente: "Client",
     "Minha função": "My Role",
     lu_client: "Studio Little Unusual",
@@ -430,11 +431,6 @@ const translations = {
     "Vantagens de apoiador": "What you get",
     "Texto mensal curto": "Renews monthly · cancel anytime",
     "sufixo mes": "/mo",
-
-    // Portfolio captions
-    sos_caption: "Blender · Game marketing",
-    vivo_caption: "After Effects · National campaign",
-    lu_caption: "3D Animation · Studio Little Unusual",
 
     // YouTube Card (extra)
     "Ver o canal": "Visit the channel",

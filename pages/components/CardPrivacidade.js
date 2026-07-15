@@ -27,10 +27,10 @@ export default function CardPrivacidade({ onClose }) {
 
   return (
     <div className="w-full h-auto lg:h-full">
-      <div className="glass-card rounded-[20px] p-6 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] animate-[fadeIn_0.3s_ease-out]">
+      <div className="glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-full group transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] animate-[fadeIn_0.3s_ease-out]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
-        <div className="shrink-0 mb-4 relative z-10">
+        <div className="shrink-0 mb-3 relative z-10">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               {onClose && (
@@ -43,10 +43,10 @@ export default function CardPrivacidade({ onClose }) {
                   <ArrowLeftIcon size={18} />
                 </button>
               )}
-              <div className="w-10 h-10 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
-                <ShieldLockIcon size={20} />
+              <div className="w-8 h-8 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
+                <ShieldLockIcon size={16} />
               </div>
-              <h2 className="text-lg lg:text-xl font-bold tracking-tight text-white/90">
+              <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
                 {t("Termos de Uso")}
               </h2>
             </div>
