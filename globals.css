@@ -100,6 +100,23 @@
   }
 }
 
+/* Entrada do painel lateral (privacidade/contato/sobre) no desktop: o painel
+   vem da profundidade, crescendo até o tamanho final enquanto o card central
+   desliza para a esquerda. O card fica na frente pelo z-index, então o painel
+   emerge por trás dele. Escala 2D em vez de translateZ: transformação 3D
+   costuma bagunçar a rasterização do `backdrop-blur` do .glass-card. Anima só
+   `transform` de propósito — qualquer opacidade intermediária no ancestral
+   cria um novo backdrop root e desliga o blur até a animação terminar. */
+@keyframes panelIn {
+  from {
+    transform: scale(0.88);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
 /* Marquee dos créditos de apoiadores: translada exatamente uma cópia do
    conteúdo (duplicado no componente) para um loop sem emenda. */
 @keyframes marquee {

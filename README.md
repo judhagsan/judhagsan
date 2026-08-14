@@ -30,8 +30,8 @@ jogos programadas diretamente em engines como Unreal e Unity.
 Atualmente sou graduando em **Engenharia da Computação** (2022 – 2026), e minha principal
 intenção é unir a engenharia e a arte.
 
-> 🌐 **[judhagsan.com](https://judhagsan.com)** é o meu portfolio: reel de animação, projetos
-> comerciais, contato e o download do Pindorama. Este repositório é o código-fonte do site —
+> 🌐 **[judhagsan.com](https://judhagsan.com)** é o meu portfolio: projetos comerciais,
+> contato e o download do Pindorama. Este repositório é o código-fonte do site —
 > a documentação técnica está em [`docs/README.md`](docs/README.md).
 
 ---

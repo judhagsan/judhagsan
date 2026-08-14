@@ -2,7 +2,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import CardYoutube from "../components/cardYoutube";
 import CardCadastro from "../components/CardCadastro";
-import CardReel from "../components/CardReel";
 import CardPrivacidade from "../components/CardPrivacidade";
 import CardContato from "../components/CardContato";
 import CardSobre from "../components/CardSobre";
@@ -27,20 +26,23 @@ export default function CadastroPage() {
         {/* Main Content Area */}
         <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-6 gap-6 overflow-y-auto lg:overflow-hidden">
           {/* Center Section - Active card + Privacidade panel */}
-          <div className="lg:flex-1 flex flex-col lg:flex-row items-stretch justify-start lg:justify-center min-h-0 gap-4 lg:gap-6 shrink-0">
-            <div className="w-full lg:w-1/3 lg:h-auto lg:self-center shrink-0 animate-[fadeIn_0.12s_ease-out]">
-              <CardCadastro
-                onPrivacyClick={() => setActivePanel("privacy")}
-                onLoginClick={() => router.push("/login")}
-                onBack={() => router.push("/login")}
-              />
-            </div>
-
-            {!activePanel && (
-              <div className="w-full lg:flex-1 lg:h-full lg:w-auto shrink-0 animate-[fadeIn_0.12s_ease-out]">
-                <CardReel />
+          <div className="lg:flex-1 flex flex-col lg:flex-row items-stretch justify-start min-h-0 gap-4 lg:gap-6 shrink-0">
+            {/* Sem painel aberto, o deslocamento de 100% da própria largura
+                (w-1/3) deixa o card exatamente centralizado; ao abrir o painel
+                ele desliza de volta para a esquerda, abrindo espaço. */}
+            <div
+              className={`w-full lg:w-1/3 lg:h-auto lg:self-center shrink-0 lg:relative lg:z-10 lg:transition-transform lg:duration-[800ms] lg:ease-out ${
+                activePanel ? "lg:translate-x-0" : "lg:translate-x-full"
+              }`}
+            >
+              <div className="animate-[fadeIn_0.12s_ease-out]">
+                <CardCadastro
+                  onPrivacyClick={() => setActivePanel("privacy")}
+                  onLoginClick={() => router.push("/login")}
+                  onBack={() => router.push("/login")}
+                />
               </div>
-            )}
+            </div>
 
             {/* Side panel — full-screen overlay on mobile, inline on desktop */}
             {activePanel && (
@@ -54,7 +56,7 @@ export default function CadastroPage() {
               className={`
                 ${
                   activePanel
-                    ? "fixed inset-2 top-14 z-[53] lg:relative lg:inset-auto lg:top-auto lg:z-auto lg:flex-1 lg:h-full lg:w-auto lg:shrink-0 lg:opacity-100 animate-[fadeIn_0.12s_ease-out]"
+                    ? "fixed inset-2 top-14 z-[53] lg:relative lg:inset-auto lg:top-auto lg:z-0 lg:flex-1 lg:h-full lg:w-auto lg:shrink-0 lg:opacity-100 animate-[fadeIn_0.12s_ease-out] lg:animate-[panelIn_0.8s_ease-out]"
                     : "hidden"
                 }
                 transition-all duration-500 ease-out lg:transition-none overflow-hidden

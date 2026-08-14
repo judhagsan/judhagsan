@@ -76,7 +76,7 @@ export default function CardPoloVivo({ onBack }) {
                 className="w-full h-full object-cover group-hover/video:scale-[1.01] transition-transform duration-500"
               />
 
-              {/* Play overlay (CardReel pattern, compact) */}
+              {/* Play overlay — compact */}
               <div
                 className={`absolute inset-0 z-10 flex items-center justify-center bg-black/35 backdrop-blur-[1px] transition-all duration-300 ${
                   isPlaying ? "opacity-0 pointer-events-none" : "opacity-100"
