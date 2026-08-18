@@ -2,9 +2,8 @@ import database from "infra/database.js";
 import user from "models/user.js";
 import { ValidationError } from "infra/errors.js";
 
-// Feature concedida a quem apoia o Pindorama. Hoje é concedida manualmente;
-// quando a cobrança recorrente (AbacatePay) entrar, o webhook de assinatura
-// passa a chamar `grant`/`revoke`.
+// Feature concedida a quem apoia o Pindorama. É concedida manualmente: não há
+// meio de pagamento integrado ao site hoje.
 const FEATURE = "apoiador";
 
 async function listPublic() {

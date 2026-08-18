@@ -44,7 +44,6 @@ export default function CardUsuario({ user }) {
   const isSupporter = user?.features?.includes("apoiador");
   const discordResult = router.query.discord;
   const discordReason = router.query.reason;
-  const apoioResult = router.query.apoio;
 
   const confirmationMatches = confirmationInput === user?.username;
 
@@ -230,13 +229,6 @@ export default function CardUsuario({ user }) {
                 <p className="text-xs text-white/50 break-all">{user?.email}</p>
               </div>
             </div>
-
-            {/* Retorno do checkout de assinatura */}
-            {apoioResult === "sucesso" && (
-              <p className="text-emerald-300 text-xs animate-[fadeIn_0.3s_ease-out]">
-                {t("Texto apoio recebido")}
-              </p>
-            )}
 
             {/* Apoiador */}
             {isSupporter && (

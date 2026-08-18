@@ -3,7 +3,7 @@ import { HeartFillIcon } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
 
 // Pill compacto de apoio, usado no header dos cards do Pindorama (home e
-// sessão) e no ticker. Leva à página de apoio (assinatura mensal ou PIX).
+// sessão) e no ticker. Leva à página que descreve os benefícios de apoiador.
 export default function SupportButton() {
   const { t } = useLanguage();
 
