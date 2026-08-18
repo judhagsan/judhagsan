@@ -17,7 +17,6 @@ const translations = {
     // Navigation / General
     "Termos de Uso": "Termos de Uso",
     Contato: "Contato",
-    Sobre: "Sobre",
     Login: "Login",
     Cadastrar: "Cadastrar",
     Sair: "Sair",
@@ -188,7 +187,6 @@ const translations = {
     // Navigation / General
     "Termos de Uso": "Terms of Use",
     Contato: "Contact",
-    Sobre: "About",
     Login: "Login",
     Cadastrar: "Register",
     Sair: "Sign Out",
