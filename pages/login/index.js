@@ -30,7 +30,7 @@ export default function LoginPage() {
                 (w-1/3) deixa o card exatamente centralizado; ao abrir o painel
                 ele desliza de volta para a esquerda, abrindo espaço. */}
             <div
-              className={`w-full lg:w-1/3 lg:h-auto lg:self-center shrink-0 lg:relative lg:z-10 lg:transition-transform lg:duration-[800ms] lg:ease-out ${
+              className={`w-full lg:w-1/3 lg:h-auto lg:self-center shrink-0 lg:relative lg:z-10 lg:transition-transform lg:duration-[350ms] lg:ease-out ${
                 activePanel ? "lg:translate-x-0" : "lg:translate-x-full"
               }`}
             >
@@ -54,7 +54,7 @@ export default function LoginPage() {
               className={`
                 ${
                   activePanel
-                    ? "fixed inset-2 top-14 z-[53] lg:relative lg:inset-auto lg:top-auto lg:z-0 lg:flex-1 lg:h-full lg:w-auto lg:shrink-0 lg:opacity-100 animate-[fadeIn_0.12s_ease-out] lg:animate-[panelIn_0.8s_ease-out]"
+                    ? "fixed inset-2 top-14 z-[53] lg:relative lg:inset-auto lg:top-auto lg:z-0 lg:flex-1 lg:h-full lg:w-auto lg:shrink-0 lg:opacity-100 card-enter lg:animate-[panelIn_0.35s_ease-out]"
                     : "hidden"
                 }
                 transition-all duration-500 ease-out lg:transition-none overflow-hidden
