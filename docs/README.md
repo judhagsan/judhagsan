@@ -152,6 +152,15 @@ As variáveis estão definidas em `.env.development`:
 | `EMAIL_SMTP_HOST`   | Host SMTP           | `localhost`      |
 | `EMAIL_SMTP_PORT`   | Porta SMTP          | `1025`           |
 
+Integração Mercado Pago (apoio mensal — credenciais de **teste** em dev):
+
+| Variável                     | Descrição                                                        |
+| ---------------------------- | ---------------------------------------------------------------- |
+| `MERCADOPAGO_PUBLIC_KEY`     | Chave pública, usada pelo SDK no browser para tokenizar o cartão |
+| `MERCADOPAGO_ACCESS_TOKEN`   | Token que assina as chamadas à API; nunca sai do servidor        |
+| `MERCADOPAGO_WEBHOOK_SECRET` | Segredo da assinatura do webhook (painel > Webhooks)             |
+| `MERCADOPAGO_BACK_URL`       | URL de retorno após a assinatura                                 |
+
 Integração Discord (benefício de apoiador — valores fake em dev, reais só na Vercel):
 
 | Variável                    | Descrição                                            |
@@ -224,6 +233,16 @@ Base URL: `/api/v1`
 | `GET`  | `/discord/connect`  | Inicia OAuth2 do Discord (exige feature `apoiador`)          |
 | `GET`  | `/discord/callback` | Callback do OAuth2: entra no servidor e recebe o cargo       |
 
+### Apoio (Mercado Pago)
+
+| Método   | Endpoint                | Descrição                                                       |
+| -------- | ----------------------- | --------------------------------------------------------------- |
+| `GET`    | `/support/config`       | Public key do Mercado Pago e valor mensal, para a tela de apoio |
+| `POST`   | `/support/subscription` | Cria a assinatura mensal a partir do token do cartão            |
+| `DELETE` | `/support/subscription` | Cancela a assinatura (acesso segue até o fim do ciclo pago)     |
+| `POST`   | `/support/pix`          | Gera o Pix de reposição de um ciclo                             |
+| `POST`   | `/webhooks/mercadopago` | Notificações assinadas de assinatura e pagamento                |
+
 ### Ativação de Conta
 
 | Método | Endpoint                | Descrição                                 |
@@ -271,10 +290,32 @@ Base URL: `/api/v1`
 ### Apoiadores (apoio ao Pindorama)
 
 Usuários com a feature `apoiador` têm acesso aos benefícios de quem apoia o
-desenvolvimento do Pindorama. Não há meio de pagamento integrado ao site: a
-feature é concedida e revogada manualmente via `models/supporter.js` →
-`grant`/`revoke`. A página `/apoiar` descreve os benefícios e informa que o
-apoio está temporariamente indisponível.
+desenvolvimento do Pindorama. A feature vem da assinatura mensal cobrada pelo
+[Mercado Pago](https://www.mercadopago.com.br/developers) e também pode ser
+concedida à mão via `models/supporter.js` → `grant`/`revoke`.
+
+**Assinatura no cartão** (`POST /api/v1/support/subscription`): o SDK do Mercado
+Pago tokeniza o cartão no browser via Secure Fields — número, validade e CVV
+ficam em iframes do próprio Mercado Pago e não passam pelo nosso servidor. Só o
+token sobe, e vira um `preapproval` mensal. O `external_reference` carrega o id
+do usuário, que é como o webhook descobre de quem é a cobrança.
+
+**Pix de reposição** (`POST /api/v1/support/pix`): saída manual para quem teve o
+cartão recusado e não quer esperar a retentativa. Cobre um ciclo e não renova.
+
+**Webhook** (`POST /api/v1/webhooks/mercadopago`): valida o header `x-signature`
+(HMAC-SHA256 sobre id do recurso + `x-request-id` + timestamp) e recusa com 401
+o que não for assinado. Mesmo assim o payload não decide nada: o estado real vem
+de uma consulta à API. O evento só é marcado como processado depois que o
+benefício foi aplicado, para que a reentrega conserte o que falhou. Tudo fica em
+`mercadopago_webhook_events`.
+
+**Validade e expiração**: cada cobrança aprovada empurra `users.supporter_until`
+para a data da próxima cobrança mais 11 dias de carência — o Mercado Pago
+retenta uma cobrança rejeitada por até 10 dias, e ninguém pode perder o acesso
+enquanto essa régua roda. Quem revoga é o cron diário (`/api/v1/cleanup`), nunca
+o webhook. Assim, cancelar mantém o acesso até o fim do ciclo pago, e apoiador
+concedido à mão (sem `supporter_until`) nunca expira sozinho.
 
 Benefícios atuais:
 
