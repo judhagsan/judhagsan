@@ -1,4 +1,5 @@
 import database from "infra/database.js";
+import supporter from "models/supporter.js";
 
 async function runCleanup() {
   const [
@@ -37,7 +38,12 @@ async function runCleanup() {
     }),
   ]);
 
+  // Apoio vencido perde a feature aqui, não no webhook: assim uma renovação
+  // que nunca chega também expira.
+  const supportersExpired = await supporter.expireOverdue();
+
   return {
+    supporters_expired: supportersExpired,
     sessions_deleted: sessionsResult.rowCount,
     activation_tokens_deleted: activationTokensResult.rowCount,
     rate_limits_deleted: rateLimitsResult.rowCount,
