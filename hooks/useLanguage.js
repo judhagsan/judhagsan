@@ -148,12 +148,34 @@ const translations = {
 
     // Card de apoio (/apoiar e promo na sessão)
     "Apoiar o Pindorama": "Apoiar o Pindorama",
+    "Apoie o Pindorama e receba": "Apoie o Pindorama e receba:",
+    "Apoie o Pindorama por valor e receba": "Apoie por {valor} e receba:",
+    "Pagar com cartao": "Pagar com cartão",
     "Vantagem selo": "Selo de apoiador",
     "Vantagem discord": "Discord privado",
     "Vantagem mural": "Nome no mural",
-    "Vantagens de apoiador": "O que você recebe",
     "Texto apoio indisponivel":
       "O apoio está temporariamente indisponível enquanto um novo meio de pagamento não entra no ar. Quem já é apoiador mantém todos os benefícios.",
+    "Nome no cartao": "Nome no cartão",
+    "Numero do cartao": "Número do cartão",
+    Validade: "Validade",
+    "sufixo mes": "/mês",
+    "Processando...": "Processando...",
+    "Texto cobranca recorrente":
+      "Cobrança mensal no cartão, renovada automaticamente. Você pode cancelar quando quiser.",
+    "Pagar com Pix": "Pagar um mês com Pix",
+    "Apoio confirmado": "Apoio confirmado",
+    "Texto apoio confirmado":
+      "Muito obrigado! Assim que a cobrança for aprovada, os benefícios entram na sua conta.",
+    "Erro ao iniciar apoio":
+      "Não foi possível iniciar o apoio agora. Tente novamente em instantes.",
+    "Erro no cartao":
+      "Não foi possível validar o cartão. Confira os dados e tente de novo.",
+    "Escaneie o QR Code": "Escaneie o QR Code",
+    "Copiar codigo pix": "Copiar código Pix",
+    "Codigo copiado": "Código copiado",
+    "Texto pix pontual":
+      "Este Pix cobre um mês de apoio e não renova sozinho. A assinatura no cartão segue ativa.",
 
     // YouTube Card (extra)
     "Ver o canal": "Ver o canal",
@@ -315,12 +337,34 @@ const translations = {
 
     // Card de apoio (/apoiar e promo na sessão)
     "Apoiar o Pindorama": "Support Pindorama",
+    "Apoie o Pindorama e receba": "Support Pindorama and get:",
+    "Apoie o Pindorama por valor e receba": "Support for {valor} and get:",
+    "Pagar com cartao": "Pay with card",
     "Vantagem selo": "Supporter badge",
     "Vantagem discord": "Private Discord",
     "Vantagem mural": "Name on the wall",
-    "Vantagens de apoiador": "What you get",
     "Texto apoio indisponivel":
       "Support is temporarily unavailable while a new payment method isn't live. Current supporters keep all their benefits.",
+    "Nome no cartao": "Name on card",
+    "Numero do cartao": "Card number",
+    Validade: "Expiration",
+    "sufixo mes": "/month",
+    "Processando...": "Processing...",
+    "Texto cobranca recorrente":
+      "Monthly charge on your card, renewed automatically. You can cancel any time.",
+    "Pagar com Pix": "Pay one month with Pix",
+    "Apoio confirmado": "Support confirmed",
+    "Texto apoio confirmado":
+      "Thank you! As soon as the charge is approved, the benefits land on your account.",
+    "Erro ao iniciar apoio":
+      "We couldn't start your support right now. Please try again in a moment.",
+    "Erro no cartao":
+      "We couldn't validate the card. Check the details and try again.",
+    "Escaneie o QR Code": "Scan the QR Code",
+    "Copiar codigo pix": "Copy Pix code",
+    "Codigo copiado": "Code copied",
+    "Texto pix pontual":
+      "This Pix covers one month of support and doesn't renew. Your card subscription stays active.",
 
     // YouTube Card (extra)
     "Ver o canal": "Visit the channel",
