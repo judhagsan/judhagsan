@@ -124,7 +124,6 @@ const translations = {
     Hoje: "Hoje",
 
     // Apoiador
-    Apoiar: "Apoiar",
     Apoiador: "Apoiador",
     Apoiadores: "Apoiadores",
     "Texto agradecimento apoiadores":
@@ -314,7 +313,6 @@ const translations = {
     Hoje: "Today",
 
     // Apoiador
-    Apoiar: "Support",
     Apoiador: "Supporter",
     Apoiadores: "Supporters",
     "Texto agradecimento apoiadores":
