@@ -19,11 +19,30 @@ const API_BASE_URL = "https://api.mercadopago.com";
 // venha a usar o mesmo campo.
 const REFERENCE_PREFIX = "user";
 
+// Para onde o Mercado Pago devolve quem vier de um fluxo com redirect. A
+// Vercel expõe o host de cada deploy, então preview e produção acertam
+// sozinhos: `VERCEL_BRANCH_URL` é estável por branch (a de deploy muda a cada
+// push e deixaria a variável desatualizada). O domínio público é o último
+// recurso porque a API recusa qualquer coisa que não seja URL válida — e isso
+// inclui localhost, que foi como o primeiro teste quebrou.
+function getBackUrl() {
+  if (process.env.MERCADOPAGO_BACK_URL) {
+    return process.env.MERCADOPAGO_BACK_URL;
+  }
+
+  const vercelHost = process.env.VERCEL_BRANCH_URL || process.env.VERCEL_URL;
+
+  if (vercelHost) {
+    return `https://${vercelHost}/apoiar`;
+  }
+
+  return "https://judhagsan.com/apoiar";
+}
+
 function getConfiguration() {
   const configuration = {
     accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
     webhookSecret: process.env.MERCADOPAGO_WEBHOOK_SECRET,
-    backUrl: process.env.MERCADOPAGO_BACK_URL,
   };
 
   const missingValues = Object.entries(configuration)
@@ -93,8 +112,6 @@ async function createSubscription({
   amount,
   reason,
 }) {
-  const { backUrl } = getConfiguration();
-
   return await request("/preapproval", {
     method: "POST",
     idempotencyKey: `preapproval-${userId}-${Date.now()}`,
@@ -103,7 +120,7 @@ async function createSubscription({
       external_reference: buildExternalReference(userId),
       payer_email: email,
       card_token_id: cardTokenId,
-      back_url: backUrl,
+      back_url: getBackUrl(),
       // "authorized" já nasce cobrando: a primeira parcela sai em até uma hora.
       status: "authorized",
       auto_recurring: {
@@ -216,6 +233,7 @@ function isValidSignature({ signatureHeader, requestId, dataId }) {
 }
 
 const mercadopago = {
+  getBackUrl,
   buildExternalReference,
   parseExternalReference,
   createSubscription,
