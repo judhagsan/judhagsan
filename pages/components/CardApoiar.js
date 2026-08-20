@@ -114,7 +114,13 @@ export default function CardApoiar() {
       }
 
       setStatus("confirmado");
-    } catch {
+    } catch (error) {
+      // O SDK rejeita com uma lista de códigos (invalid_card_number,
+      // invalid_expiry_date, invalid_security_code, invalid_identification_
+      // number...). Sem isso no console, todo problema de cartão vira a mesma
+      // frase e não há como saber qual campo recusou.
+      console.error("Falha ao tokenizar o cartão:", error?.cause || error);
+
       setErrorMessage(t("Erro no cartao"));
       setStatus("pronto");
     }
