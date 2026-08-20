@@ -438,11 +438,15 @@ function Shell({ title, children }) {
     <div className="w-full">
       <div className="glass-card group rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col animate-[fadeIn_0.3s_ease-out]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
-        <div className="shrink-0 mb-3 flex items-center gap-3 relative z-10">
+        <div className="shrink-0 mb-3 flex items-start gap-3 relative z-10">
           <div className="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
             <HeartFillIcon size={16} />
           </div>
-          <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90 whitespace-nowrap">
+          {/* Sem nowrap: este card aparece com max-w-md em /apoiar e numa coluna
+              estreita em /sessao — largura fixa de texto corta em um dos dois.
+              `min-w-0` porque filho de flex não encolhe abaixo do conteúdo por
+              conta própria, que é o que fazia o título passar da borda. */}
+          <h2 className="min-w-0 text-base lg:text-lg font-bold tracking-tight leading-snug text-balance text-white/90">
             {title}
           </h2>
         </div>
