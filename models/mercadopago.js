@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { ServiceError } from "infra/errors.js";
+import { ServiceError, NotFoundError } from "infra/errors.js";
 
 // Integração com o Mercado Pago (https://www.mercadopago.com.br/developers).
 //
@@ -80,6 +80,15 @@ async function request(path, { method = "GET", body, idempotencyKey } = {}) {
   });
 
   const responseBody = await response.json().catch(() => null);
+
+  // Recurso que não existe não é falha de integração: notificação de teste e
+  // recurso apagado caem aqui, e insistir neles não leva a lugar nenhum.
+  if (response.status === 404) {
+    throw new NotFoundError({
+      message: "Recurso não encontrado no Mercado Pago.",
+      cause: `${method} ${path} respondeu 404: ${JSON.stringify(responseBody)}`,
+    });
+  }
 
   if (!response.ok) {
     // O controller sanitiza o log e descarta a `cause`, para não vazar dado

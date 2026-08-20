@@ -3,6 +3,7 @@ import controller from "infra/controller.js";
 import database from "infra/database.js";
 import mercadopago from "models/mercadopago.js";
 import supporter from "models/supporter.js";
+import { NotFoundError } from "infra/errors.js";
 
 export default createRouter()
   .post(postHandler)
@@ -63,6 +64,14 @@ async function postHandler(request, response) {
 
     return response.status(200).json(result);
   } catch (error) {
+    // O recurso não existe mais (ou nunca existiu, como no simulador do
+    // painel). Reentregar não resolveria, então o evento fecha aqui em vez de
+    // ficar preso na fila de retentativa.
+    if (error instanceof NotFoundError) {
+      await markProcessed(eventRecord.id);
+      return response.status(200).json({ status: "recurso_inexistente" });
+    }
+
     await markFailed(eventRecord.id, error);
     throw error;
   }
