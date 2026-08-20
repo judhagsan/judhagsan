@@ -82,6 +82,17 @@ async function request(path, { method = "GET", body, idempotencyKey } = {}) {
   const responseBody = await response.json().catch(() => null);
 
   if (!response.ok) {
+    // O controller sanitiza o log e descarta a `cause`, para não vazar dado
+    // pessoal de outras integrações. O que se perde aí é justamente o motivo
+    // da recusa — então ele sai antes, com o que o Mercado Pago respondeu e
+    // nada do que enviamos.
+    console.error({
+      name: "MercadoPagoError",
+      request: `${method} ${path}`,
+      status: response.status,
+      response: responseBody,
+    });
+
     throw new ServiceError({
       message: "O Mercado Pago recusou a requisição.",
       cause: `${method} ${path} respondeu HTTP ${response.status}: ${JSON.stringify(responseBody)}`,
