@@ -93,33 +93,12 @@ export default function MainFrame({ children }) {
         )}
       </div>
 
-      {/* External Logo + Sobre link + Portfolio link (always visible, perfectly centered logo) */}
-      <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 flex items-end justify-between w-[300px] lg:w-[340px] h-6 leading-none">
-        {/* Left: Sobre Link — some em telas muito estreitas (fica no menu) */}
-        <div className="hidden min-[380px]:flex flex-1 items-end justify-end">
-          {hasSidePanel ? (
-            <button
-              type="button"
-              onClick={() => setActivePanel("about")}
-              className="cursor-pointer inline-flex items-end text-xs lg:text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none p-0 border-0 bg-transparent outline-none translate-y-[-2px]"
-            >
-              {t("Sobre")}
-            </button>
-          ) : (
-            <Link
-              href="/sobre"
-              className="inline-flex items-end text-xs lg:text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px]"
-            >
-              {t("Sobre")}
-            </Link>
-          )}
-        </div>
-
-        {/* Center: Logo */}
+      {/* External Logo (always visible, perfectly centered) */}
+      <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 flex items-end justify-center h-6 leading-none">
         <Link
           href={isLoggedIn ? "/sessao" : "/"}
           onClick={resetActiveCard}
-          className="cursor-pointer shrink-0 mx-4 lg:mx-6 flex items-end justify-center"
+          className="cursor-pointer shrink-0 flex items-end justify-center"
         >
           <img
             src="/Logo.png"
@@ -127,16 +106,6 @@ export default function MainFrame({ children }) {
             className="h-5 lg:h-6 w-auto opacity-90 hover:opacity-100 transition-opacity"
           />
         </Link>
-
-        {/* Right: Portfolio Link — some em telas muito estreitas (fica no menu) */}
-        <div className="hidden min-[380px]:flex flex-1 items-end justify-start">
-          <Link
-            href="/portfolio"
-            className="inline-flex items-end text-xs lg:text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px]"
-          >
-            {t("Portfolio")}
-          </Link>
-        </div>
       </div>
 
       {/* Auth Actions (desktop only) */}
@@ -219,32 +188,6 @@ export default function MainFrame({ children }) {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Navigation Links */}
-            {hasSidePanel ? (
-              <button
-                type="button"
-                onClick={() => handleSidePanelClick("about")}
-                className="cursor-pointer text-left py-3 text-base font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors border-b border-white/5"
-              >
-                {t("Sobre")}
-              </button>
-            ) : (
-              <Link
-                href="/sobre"
-                onClick={() => setMenuOpen(false)}
-                className="py-3 text-base font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors border-b border-white/5"
-              >
-                {t("Sobre")}
-              </Link>
-            )}
-
-            <Link
-              href="/portfolio"
-              onClick={() => setMenuOpen(false)}
-              className="py-3 text-base font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors border-b border-white/5"
-            >
-              {t("Portfolio")}
-            </Link>
-
             {hasSidePanel ? (
               <button
                 type="button"

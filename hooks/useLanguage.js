@@ -17,28 +17,6 @@ const translations = {
     // Navigation / General
     "Termos de Uso": "Termos de Uso",
     Contato: "Contato",
-    Sobre: "Sobre",
-    Portfolio: "Portfolio",
-    Ferramenta: "Ferramenta",
-    Plataforma: "Plataforma",
-    Mercado: "Mercado",
-    "Redes sociais": "Redes sociais",
-    Europa: "Europa",
-    "Mundo todo": "Mundo todo",
-    Natal: "Natal",
-    Brasil: "Brasil",
-    vivo_platform: "TV, Redes sociais, Livestream e Influencers",
-    vivo_desc:
-      "A campanha foi criada para a Vivo, com voice over de Ivete Sangalo, promovendo as ofertas de Black Friday e Natal. Produzida em After Effects e Photoshop, foi entregue em diversos formatos, como filmes 16:9, peças 1:1 e 9:16, bumpers de 6 segundos e banners, cobrindo redes sociais, livestreams, vídeos patrocinados com influenciadores e TV, para o público brasileiro.",
-    sos_desc:
-      "A animação foi criada para promover o jogo State of Survival, especialmente voltada para as redes sociais na Europa. Devido às diretrizes e regras específicas das plataformas, a animação foi projetada para minimizar a exibição de sangue e conteúdo violento. Desenvolvida inteiramente no Blender, a animação combina visuais impactantes com uma abordagem cuidadosa para garantir a conformidade com as normas de conteúdo das redes sociais.",
-    polo_vivo_platform: "YouTube e Redes sociais",
-    polo_vivo_desc:
-      "Vinheta de abertura criada para os vídeos religiosos do Polo Vivo, utilizando animação frame a frame. Foi entregue em 16:9 para o YouTube e em versão vertical para os vídeos de comentários nas redes sociais.",
-    Cliente: "Cliente",
-    "Minha função": "Minha função",
-    lu_client: "Estúdio Little Unusual",
-    lu_role: "Animação 3D, Modelagem, Renderização, Texturização, Iluminação",
     Login: "Login",
     Cadastrar: "Cadastrar",
     Sair: "Sair",
@@ -146,7 +124,6 @@ const translations = {
     Hoje: "Hoje",
 
     // Apoiador
-    Apoiar: "Apoiar",
     Apoiador: "Apoiador",
     Apoiadores: "Apoiadores",
     "Texto agradecimento apoiadores":
@@ -168,47 +145,36 @@ const translations = {
     "Erro ao salvar": "Não foi possível salvar.",
     "Quero apoiar o Pindorama": "Quero apoiar o Pindorama",
 
-    // Página de apoio (/apoiar)
+    // Card de apoio (/apoiar e promo na sessão)
     "Apoiar o Pindorama": "Apoiar o Pindorama",
-    "Apoiando como": "Apoiando como",
-    "Apoio mensal": "Apoio mensal",
-    "PIX avulso": "PIX avulso",
-    "por mes": "por mês",
-    "Texto apoio mensal":
-      "Cobrança recorrente no cartão. Você mantém os benefícios de apoiador enquanto a assinatura estiver ativa e pode cancelar quando quiser.",
-    "Outro valor": "Outro valor",
-    Celular: "Celular",
-    "Processando...": "Processando...",
-    "Assinar apoio mensal": "Apoiar por R$ 9,90/mês",
-    "Gerar PIX": "Gerar PIX",
-    "Texto redirect cartao":
-      "Você será levado ao ambiente seguro do AbacatePay para inserir os dados do cartão.",
-    "Texto pix seguro": "O QR Code é gerado aqui mesmo, sem sair do site.",
-    "Texto pix pontual":
-      "Contribuição pontual — não inclui os benefícios do apoio mensal.",
-    "Escaneie o QR Code": "Escaneie o QR Code no app do seu banco",
-    "Copiar codigo pix": "Copiar código PIX (copia e cola)",
-    "Aguardando pagamento": "Aguardando pagamento...",
-    "Apoio confirmado": "Apoio confirmado!",
-    "Texto apoio confirmado":
-      "Muito obrigado pela sua contribuição ao Pindorama!",
-    "Erro ao iniciar apoio":
-      "Não foi possível iniciar o apoio. Tente novamente.",
-    "Valor minimo pix": "O valor mínimo é R$ 1,00.",
-    "Texto apoio recebido":
-      "Apoio recebido, obrigado! Os benefícios são liberados em instantes.",
-
-    // Card de apoio (promo na sessão)
-    "Apoie o Pindorama": "Apoie o Pindorama",
-    "ou PIX avulso": "ou PIX avulso",
-    "Quero apoiar": "Quero apoiar",
+    "Apoie o Pindorama e receba": "Apoie o Pindorama e receba:",
+    "Apoie o Pindorama por valor e receba": "Apoie por {valor} e receba:",
+    "Pagar com cartao": "Pagar com cartão",
     "Vantagem selo": "Selo de apoiador",
     "Vantagem discord": "Discord privado",
     "Vantagem mural": "Nome no mural",
-    "Vantagem desenvolvimento": "Apoie o desenvolvimento do Pindorama",
-    "Vantagens de apoiador": "O que você recebe",
-    "Texto mensal curto": "Renova todo mês · cancele quando quiser",
+    "Texto apoio indisponivel":
+      "O apoio está temporariamente indisponível enquanto um novo meio de pagamento não entra no ar. Quem já é apoiador mantém todos os benefícios.",
+    "Nome no cartao": "Nome no cartão",
+    "Numero do cartao": "Número do cartão",
+    Validade: "Validade",
     "sufixo mes": "/mês",
+    "Processando...": "Processando...",
+    "Texto cobranca recorrente":
+      "Cobrança mensal no cartão, renovada automaticamente. Você pode cancelar quando quiser.",
+    "Pagar com Pix": "Pagar um mês com Pix",
+    "Apoio confirmado": "Apoio confirmado",
+    "Texto apoio confirmado":
+      "Muito obrigado! Assim que a cobrança for aprovada, os benefícios entram na sua conta.",
+    "Erro ao iniciar apoio":
+      "Não foi possível iniciar o apoio agora. Tente novamente em instantes.",
+    "Erro no cartao":
+      "Não foi possível validar o cartão. Confira os dados e tente de novo.",
+    "Escaneie o QR Code": "Escaneie o QR Code",
+    "Copiar codigo pix": "Copiar código Pix",
+    "Codigo copiado": "Código copiado",
+    "Texto pix pontual":
+      "Este Pix cobre um mês de apoio e não renova sozinho. A assinatura no cartão segue ativa.",
 
     // YouTube Card (extra)
     "Ver o canal": "Ver o canal",
@@ -242,28 +208,6 @@ const translations = {
     // Navigation / General
     "Termos de Uso": "Terms of Use",
     Contato: "Contact",
-    Sobre: "About",
-    Portfolio: "Portfolio",
-    Ferramenta: "Tool",
-    Plataforma: "Platform",
-    Mercado: "Market",
-    "Redes sociais": "Social media",
-    Europa: "Europe",
-    "Mundo todo": "Worldwide",
-    Natal: "Christmas",
-    Brasil: "Brazil",
-    vivo_platform: "TV, Social media, Livestream & Influencers",
-    vivo_desc:
-      "The campaign was created for Vivo, featuring a voice over by Ivete Sangalo, promoting the Black Friday and Christmas offers. Produced in After Effects and Photoshop, it was delivered across a wide range of formats, including 16:9 films, 1:1 and 9:16 cuts, 6-second bumpers, and banners, covering social media, livestreams, influencer-sponsored videos, and TV for the Brazilian audience.",
-    sos_desc:
-      "The animation was created to promote the game State of Survival, with a focus on social media platforms in Europe. To adhere to the specific guidelines and regulations of these platforms, the animation was designed to minimize the display of blood and violent content. Crafted entirely in Blender, the animation combines striking visuals with a careful approach to ensure compliance with social media content policies.",
-    polo_vivo_platform: "YouTube & Social media",
-    polo_vivo_desc:
-      "Opening intro created for Polo Vivo's religious videos, using frame-by-frame animation. It was delivered in 16:9 for YouTube and as a vertical cut for the commentary videos on social media.",
-    Cliente: "Client",
-    "Minha função": "My Role",
-    lu_client: "Studio Little Unusual",
-    lu_role: "3D Animation, Modeling, Rendering, Texturing, Lighting",
     Login: "Login",
     Cadastrar: "Register",
     Sair: "Sign Out",
@@ -369,7 +313,6 @@ const translations = {
     Hoje: "Today",
 
     // Apoiador
-    Apoiar: "Support",
     Apoiador: "Supporter",
     Apoiadores: "Supporters",
     "Texto agradecimento apoiadores":
@@ -390,47 +333,36 @@ const translations = {
     "Erro ao salvar": "Could not save.",
     "Quero apoiar o Pindorama": "I want to support Pindorama",
 
-    // Página de apoio (/apoiar)
+    // Card de apoio (/apoiar e promo na sessão)
     "Apoiar o Pindorama": "Support Pindorama",
-    "Apoiando como": "Supporting as",
-    "Apoio mensal": "Monthly",
-    "PIX avulso": "One-time PIX",
-    "por mes": "per month",
-    "Texto apoio mensal":
-      "Recurring card charge. You keep the supporter benefits while the subscription is active and can cancel anytime.",
-    "Outro valor": "Other amount",
-    Celular: "Phone",
-    "Processando...": "Processing...",
-    "Assinar apoio mensal": "Support for R$ 9,90/mo",
-    "Gerar PIX": "Generate PIX",
-    "Texto redirect cartao":
-      "You'll be taken to AbacatePay's secure environment to enter your card details.",
-    "Texto pix seguro":
-      "The QR Code is generated right here, without leaving the site.",
-    "Texto pix pontual":
-      "One-time contribution — doesn't include the monthly support benefits.",
-    "Escaneie o QR Code": "Scan the QR Code in your bank app",
-    "Copiar codigo pix": "Copy PIX code (copy & paste)",
-    "Aguardando pagamento": "Waiting for payment...",
-    "Apoio confirmado": "Support confirmed!",
-    "Texto apoio confirmado":
-      "Thank you so much for your contribution to Pindorama!",
-    "Erro ao iniciar apoio": "Could not start the support. Try again.",
-    "Valor minimo pix": "The minimum amount is R$ 1.00.",
-    "Texto apoio recebido":
-      "Support received, thank you! Your benefits unlock in a moment.",
-
-    // Card de apoio (promo na sessão)
-    "Apoie o Pindorama": "Support Pindorama",
-    "ou PIX avulso": "or one-time PIX",
-    "Quero apoiar": "I want to support",
+    "Apoie o Pindorama e receba": "Support Pindorama and get:",
+    "Apoie o Pindorama por valor e receba": "Support for {valor} and get:",
+    "Pagar com cartao": "Pay with card",
     "Vantagem selo": "Supporter badge",
     "Vantagem discord": "Private Discord",
     "Vantagem mural": "Name on the wall",
-    "Vantagem desenvolvimento": "Support Pindorama's development",
-    "Vantagens de apoiador": "What you get",
-    "Texto mensal curto": "Renews monthly · cancel anytime",
-    "sufixo mes": "/mo",
+    "Texto apoio indisponivel":
+      "Support is temporarily unavailable while a new payment method isn't live. Current supporters keep all their benefits.",
+    "Nome no cartao": "Name on card",
+    "Numero do cartao": "Card number",
+    Validade: "Expiration",
+    "sufixo mes": "/month",
+    "Processando...": "Processing...",
+    "Texto cobranca recorrente":
+      "Monthly charge on your card, renewed automatically. You can cancel any time.",
+    "Pagar com Pix": "Pay one month with Pix",
+    "Apoio confirmado": "Support confirmed",
+    "Texto apoio confirmado":
+      "Thank you! As soon as the charge is approved, the benefits land on your account.",
+    "Erro ao iniciar apoio":
+      "We couldn't start your support right now. Please try again in a moment.",
+    "Erro no cartao":
+      "We couldn't validate the card. Check the details and try again.",
+    "Escaneie o QR Code": "Scan the QR Code",
+    "Copiar codigo pix": "Copy Pix code",
+    "Codigo copiado": "Code copied",
+    "Texto pix pontual":
+      "This Pix covers one month of support and doesn't renew. Your card subscription stays active.",
 
     // YouTube Card (extra)
     "Ver o canal": "Visit the channel",

@@ -44,7 +44,6 @@ export default function CardUsuario({ user }) {
   const isSupporter = user?.features?.includes("apoiador");
   const discordResult = router.query.discord;
   const discordReason = router.query.reason;
-  const apoioResult = router.query.apoio;
 
   const confirmationMatches = confirmationInput === user?.username;
 
@@ -142,13 +141,7 @@ export default function CardUsuario({ user }) {
 
   return (
     <div className="w-full h-auto">
-      <div
-        className={`glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto group transition-all duration-500 ${
-          isSupporter
-            ? "hover:shadow-[0_0_30px_rgba(245,158,11,0.12)]"
-            : "hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]"
-        }`}
-      >
+      <div className="glass-card group rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
 
         {isConfirming ? (
@@ -224,19 +217,12 @@ export default function CardUsuario({ user }) {
                 )}
               </div>
               <div className="flex flex-col gap-1 min-w-0">
-                <p className="text-base lg:text-lg text-white font-semibold">
+                <h2 className="font-outfit text-base lg:text-lg font-bold tracking-tight text-white/90">
                   {t("Bem vindo", { username: user?.username })}
-                </p>
+                </h2>
                 <p className="text-xs text-white/50 break-all">{user?.email}</p>
               </div>
             </div>
-
-            {/* Retorno do checkout de assinatura */}
-            {apoioResult === "sucesso" && (
-              <p className="text-emerald-300 text-xs animate-[fadeIn_0.3s_ease-out]">
-                {t("Texto apoio recebido")}
-              </p>
-            )}
 
             {/* Apoiador */}
             {isSupporter && (
@@ -312,30 +298,33 @@ export default function CardUsuario({ user }) {
 
             {isSupporter && <span className="h-px w-full bg-white/5"></span>}
 
-            {/* Ações de conta */}
+            {/* Ações de conta, lado a lado. O erro de exportação fica embaixo
+                para não empurrar os botões de linha. */}
             <div className="flex flex-col items-start gap-2">
-              <button
-                type="button"
-                onClick={handleExport}
-                disabled={isExporting}
-                className="cursor-pointer inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-cyan-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <PackageIcon size={12} />
-                {isExporting ? t("Exportando...") : t("Exportar meus dados")}
-              </button>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                <button
+                  type="button"
+                  onClick={handleExport}
+                  disabled={isExporting}
+                  className="cursor-pointer inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-cyan-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <PackageIcon size={12} />
+                  {isExporting ? t("Exportando...") : t("Exportar meus dados")}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsConfirming(true)}
+                  className="cursor-pointer inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-red-300 transition-colors"
+                >
+                  <TrashIcon size={12} />
+                  {t("Excluir conta")}
+                </button>
+              </div>
 
               {exportError && (
                 <p className="text-red-300 text-xs">{exportError}</p>
               )}
-
-              <button
-                type="button"
-                onClick={() => setIsConfirming(true)}
-                className="cursor-pointer inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-red-300 transition-colors"
-              >
-                <TrashIcon size={12} />
-                {t("Excluir conta")}
-              </button>
             </div>
           </div>
         )}

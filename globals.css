@@ -88,6 +88,31 @@
   }
 }
 
+/* Entrada dos cards. O fade roda no próprio elemento que carrega o
+   `backdrop-filter`, nunca em um ancestral: opacidade intermediária em
+   ancestral cria um novo backdrop root e desliga o blur do .glass-card até a
+   animação acabar — é isso que aparece como um flash no fim da entrada. Por
+   isso a classe vale tanto aplicada no card quanto em um wrapper, mas só
+   anima o card. A escala é discreta de propósito; o "pop" de scale(0.85) é
+   coisa do fadeIn, que segue servindo a ícones e mensagens. A duração
+   acompanha a entrada dos cards centrais (fadeIn 0.12s) de propósito. */
+.card-enter.glass-card,
+.card-enter .glass-card {
+  animation: cardIn 0.12s ease-out;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -96,6 +121,23 @@
 
   to {
     opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Entrada do painel lateral (privacidade/contato) no desktop: o painel
+   vem da profundidade, crescendo até o tamanho final enquanto o card central
+   desliza para a esquerda. O card fica na frente pelo z-index, então o painel
+   emerge por trás dele. Escala 2D em vez de translateZ: transformação 3D
+   costuma bagunçar a rasterização do `backdrop-blur` do .glass-card. Anima só
+   `transform` de propósito — qualquer opacidade intermediária no ancestral
+   cria um novo backdrop root e desliga o blur até a animação terminar. */
+@keyframes panelIn {
+  from {
+    transform: scale(0.88);
+  }
+
+  to {
     transform: scale(1);
   }
 }

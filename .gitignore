@@ -2,3 +2,7 @@
 node_modules
 .DS_Store
 .env copy.development
+
+# Credenciais locais: o .env.development é versionado, então segredo nenhum
+# entra nele. O Next lê estes com prioridade em dev.
+.env*.local
