@@ -119,7 +119,15 @@ export default function CardApoiar() {
       // invalid_expiry_date, invalid_security_code, invalid_identification_
       // number...). Sem isso no console, todo problema de cartão vira a mesma
       // frase e não há como saber qual campo recusou.
-      console.error("Falha ao tokenizar o cartão:", error?.cause || error);
+      //
+      // Fica fora de produção: não há dado de cartão aqui — ele vive dentro
+      // dos iframes do Mercado Pago —, mas é diagnóstico interno e não tem por
+      // que aparecer no console de quem só quer apoiar. A checagem é por
+      // VERCEL_ENV, não por NODE_ENV: preview também roda como produção, e é
+      // exatamente onde o log precisa aparecer.
+      if (process.env.NEXT_PUBLIC_VERCEL_ENV !== "production") {
+        console.error("Falha ao tokenizar o cartão:", error?.cause || error);
+      }
 
       setErrorMessage(t("Erro no cartao"));
       setStatus("pronto");

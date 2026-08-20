@@ -81,9 +81,14 @@ async function request(path, { method = "GET", body, idempotencyKey } = {}) {
 
   const responseBody = await response.json().catch(() => null);
 
-  // Recurso que não existe não é falha de integração: notificação de teste e
-  // recurso apagado caem aqui, e insistir neles não leva a lugar nenhum.
-  if (response.status === 404) {
+  // 404 só vira NotFoundError em consulta: aí ele significa mesmo "esse
+  // recurso não existe" — notificação de teste, recurso apagado — e o webhook
+  // fecha o evento em vez de reentregar para sempre.
+  //
+  // Em criação, 404 é outra coisa: foi assim que o "Card token service not
+  // found" chegou ao browser como 404 da nossa API, parecendo rota inexistente.
+  // Falha de serviço tem que se parecer com falha de serviço.
+  if (response.status === 404 && method === "GET") {
     throw new NotFoundError({
       message: "Recurso não encontrado no Mercado Pago.",
       cause: `${method} ${path} respondeu 404: ${JSON.stringify(responseBody)}`,
