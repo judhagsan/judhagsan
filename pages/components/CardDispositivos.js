@@ -111,7 +111,7 @@ export default function CardDispositivos() {
           </h2>
         </div>
 
-        <div className="relative z-10 flex flex-col gap-3 text-white/70 font-mono text-sm">
+        <div className="relative z-10 flex flex-col gap-3 text-white/70 text-sm">
           {isLoading && (
             <p className="text-white/40 text-center py-2">
               {t("Carregando...")}

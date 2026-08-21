@@ -17,7 +17,7 @@ export default function CardNormal({ title, icon: Icon, children }) {
           </h2>
         </div>
 
-        <div className="flex flex-col gap-4 text-white/70 font-mono text-sm relative z-10 flex-1 h-full">
+        <div className="flex flex-col gap-4 text-white/70 text-sm relative z-10 flex-1 h-full">
           {children}
         </div>
       </div>

@@ -2,7 +2,6 @@ import Head from "next/head";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import CardYoutube from "../components/cardYoutube";
-import SupportersTicker from "../components/SupportersTicker";
 import CardUsuario from "../components/CardUsuario";
 import CardDispositivos from "../components/CardDispositivos";
 import CardApoiar from "../components/CardApoiar";
@@ -44,9 +43,12 @@ export default function SessaoPage() {
                 por baixo da borda superior do MainFrame */}
             <div className="w-full lg:absolute lg:top-8 lg:left-0 lg:w-1/4 lg:max-h-[calc(100%-2rem)] flex flex-col gap-4 lg:overflow-y-auto lg:pr-2">
               {isLoggedIn && <CardUsuario user={user} />}
-              {isLoggedIn && !user?.features?.includes("apoiador") && (
-                <CardApoiar />
-              )}
+              {/* Sem condição de propósito: o card decide sozinho o que
+                  mostrar. Quem não apoia vê o formulário; quem tem assinatura
+                  vê o estado dela e o botão de cancelar. Escondê-lo de quem já
+                  é apoiador deixava justamente quem paga sem lugar nenhum para
+                  gerenciar o próprio apoio. */}
+              {isLoggedIn && <CardApoiar />}
             </div>
 
             {/* Dispositivos column — full-width on mobile, right sidebar on
@@ -107,8 +109,6 @@ export default function SessaoPage() {
           </div>
 
           <div className="lg:mt-auto flex flex-col w-full shrink-0 gap-4">
-            {/* Faixa de apoiadores (some quando não há apoiadores públicos) */}
-            {isLoggedIn && <SupportersTicker />}
             {/* Bottom Section - YouTube Card */}
             <CardYoutube />
           </div>

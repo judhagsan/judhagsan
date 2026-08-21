@@ -132,16 +132,12 @@ const translations = {
     "Erro ao carregar apoiadores": "Não foi possível carregar os apoiadores.",
     "Entrar no Discord": "Entrar no Discord",
     "Discord conectado": "Discord conectado",
-    "Texto beneficio discord":
-      "Entre no servidor com o cargo exclusivo de apoiador.",
-    "Exibir meu nome no mural": "Exibir meu nome no mural de apoiadores",
     "Ver mural de apoiadores": "Ver mural de apoiadores",
     "Discord conectado com sucesso": "Discord conectado com sucesso!",
     "Erro ao conectar Discord":
       "Não foi possível conectar ao Discord. Tente novamente.",
     "Discord ja vinculado":
       "Esta conta do Discord já está vinculada a outro usuário.",
-    "Salvando...": "Salvando...",
     "Erro ao salvar": "Não foi possível salvar.",
     "Quero apoiar o Pindorama": "Quero apoiar o Pindorama",
 
@@ -163,9 +159,30 @@ const translations = {
     "Texto cobranca recorrente":
       "Cobrança mensal no cartão, renovada automaticamente. Você pode cancelar quando quiser.",
     "Pagar com Pix": "Pagar um mês com Pix",
-    "Apoio confirmado": "Apoio confirmado",
-    "Texto apoio confirmado":
-      "Muito obrigado! Assim que a cobrança for aprovada, os benefícios entram na sua conta.",
+
+    // Estado da assinatura
+    "Apoio ao Pindorama ativo": "Apoio ao Pindorama ativo",
+    "Aguardando a cobranca": "Aguardando a cobrança",
+    "Cobranca recusada": "Cobrança recusada",
+    "Assinatura pendente": "Assinatura pendente",
+    "Assinatura cancelada": "Assinatura cancelada",
+    "Valor por mes": "{valor} por mês, no cartão",
+    "Texto validacao cartao":
+      "O Mercado Pago fez uma validação de R$ 0,00 no seu cartão só para confirmar que ele é válido. Isso não é a cobrança, e nada foi debitado por ela.",
+    "Texto cobranca a caminho":
+      "A primeira cobrança sai em até uma hora. Os benefícios entram na sua conta assim que ela for aprovada, e você não precisa fazer mais nada.",
+    "Texto beneficios ate": "Benefícios liberados até {data}.",
+    "Texto proxima cobranca": "Próxima cobrança em {data}.",
+    "Texto cobranca recusada":
+      "A última cobrança não passou. O Mercado Pago tenta de novo por até 10 dias e seu acesso continua nesse período. Se preferir resolver na hora, pague um mês com Pix.",
+    "Texto assinatura pendente":
+      "O Mercado Pago ainda não autorizou esta assinatura. Se continuar assim por alguns minutos, cancele e tente de novo.",
+    "Texto assinatura cancelada":
+      "Não haverá novas cobranças. O acesso continua até o fim do período que você já pagou.",
+    "Cancelar assinatura": "Cancelar assinatura",
+    "Cancelando...": "Cancelando...",
+    "Erro ao cancelar":
+      "Não foi possível cancelar agora. Tente novamente em instantes.",
     "Erro ao iniciar apoio":
       "Não foi possível iniciar o apoio agora. Tente novamente em instantes.",
     "Erro no cartao":
@@ -321,15 +338,11 @@ const translations = {
     "Erro ao carregar apoiadores": "Could not load supporters.",
     "Entrar no Discord": "Join the Discord",
     "Discord conectado": "Discord connected",
-    "Texto beneficio discord":
-      "Join the server with the exclusive supporter role.",
-    "Exibir meu nome no mural": "Show my name on the supporters wall",
     "Ver mural de apoiadores": "View supporters wall",
     "Discord conectado com sucesso": "Discord connected successfully!",
     "Erro ao conectar Discord": "Could not connect to Discord. Try again.",
     "Discord ja vinculado":
       "This Discord account is already linked to another user.",
-    "Salvando...": "Saving...",
     "Erro ao salvar": "Could not save.",
     "Quero apoiar o Pindorama": "I want to support Pindorama",
 
@@ -351,9 +364,30 @@ const translations = {
     "Texto cobranca recorrente":
       "Monthly charge on your card, renewed automatically. You can cancel any time.",
     "Pagar com Pix": "Pay one month with Pix",
-    "Apoio confirmado": "Support confirmed",
-    "Texto apoio confirmado":
-      "Thank you! As soon as the charge is approved, the benefits land on your account.",
+
+    // Subscription state
+    "Apoio ao Pindorama ativo": "Support for Pindorama active",
+    "Aguardando a cobranca": "Waiting for the charge",
+    "Cobranca recusada": "Charge declined",
+    "Assinatura pendente": "Subscription pending",
+    "Assinatura cancelada": "Subscription cancelled",
+    "Valor por mes": "{valor} per month, on your card",
+    "Texto validacao cartao":
+      "Mercado Pago ran a R$ 0.00 validation on your card just to confirm it works. That is not the charge, and nothing was debited for it.",
+    "Texto cobranca a caminho":
+      "The first charge goes out within the hour. The benefits land on your account as soon as it is approved, and there is nothing else for you to do.",
+    "Texto beneficios ate": "Benefits active until {data}.",
+    "Texto proxima cobranca": "Next charge on {data}.",
+    "Texto cobranca recusada":
+      "The last charge did not go through. Mercado Pago retries for up to 10 days and your access stays on during that window. To settle it now, pay one month with Pix.",
+    "Texto assinatura pendente":
+      "Mercado Pago has not authorized this subscription yet. If it stays this way for a few minutes, cancel it and try again.",
+    "Texto assinatura cancelada":
+      "There will be no further charges. Your access stays until the end of the period you already paid for.",
+    "Cancelar assinatura": "Cancel subscription",
+    "Cancelando...": "Cancelling...",
+    "Erro ao cancelar":
+      "We couldn't cancel it right now. Please try again in a moment.",
     "Erro ao iniciar apoio":
       "We couldn't start your support right now. Please try again in a moment.",
     "Erro no cartao":

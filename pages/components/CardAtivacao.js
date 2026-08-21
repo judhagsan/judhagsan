@@ -63,7 +63,7 @@ export default function CardAtivacao({ tokenId }) {
           </h2>
         </div>
 
-        <div className="flex flex-col items-center justify-center text-center gap-3 text-white/70 font-mono text-sm relative z-10 flex-1 h-full">
+        <div className="flex flex-col items-center justify-center text-center gap-3 text-white/70 text-sm relative z-10 flex-1 h-full">
           {status === "loading" && (
             <>
               <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-cyan-300 animate-spin">

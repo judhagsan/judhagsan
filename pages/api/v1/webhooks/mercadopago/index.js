@@ -143,7 +143,13 @@ async function handleAuthorizedPayment(authorizedPaymentId) {
   if (!isApproved(authorizedPayment?.payment?.status)) {
     // Cobrança rejeitada não revoga: o Mercado Pago ainda vai retentar, e a
     // carência do `supporter_until` existe exatamente para cobrir isso.
-    return { status: "cobranca_pendente" };
+    //
+    // Mas avisa. Este é o único ponto do sistema que sabe que a cobrança
+    // falhou, e ele roda quando ninguém está olhando a tela — uma hora depois
+    // de assinar, ou um mês depois, no meio da noite.
+    const notified = await notifyDeclineWithoutFailingTheEvent(userId);
+
+    return { status: "cobranca_pendente", notified };
   }
 
   await supporter.grantUntil(userId, calculateValidUntil(subscription));
@@ -173,6 +179,24 @@ async function handlePixPayment(paymentId) {
   );
 
   return { status: "apoio_concedido" };
+}
+
+// O aviso é efeito colateral, não a razão do evento existir. Se o SMTP estiver
+// fora, o benefício já foi tratado e reentregar a notificação não conserta
+// e-mail — deixar o erro subir faria o Mercado Pago retentar o evento inteiro
+// para sempre. Registra e segue.
+async function notifyDeclineWithoutFailingTheEvent(userId) {
+  try {
+    return await supporter.notifyChargeDeclined(userId);
+  } catch (error) {
+    console.error({
+      name: "SupporterNoticeError",
+      userId,
+      error: String(error?.message || error),
+    });
+
+    return false;
+  }
 }
 
 function calculateValidUntil(subscription) {

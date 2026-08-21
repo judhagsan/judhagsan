@@ -83,7 +83,6 @@ function filterOutput(user, feature, resource) {
         username: resource.username,
         email: resource.email,
         features: resource.features,
-        supporter_wall_opt_in: resource.supporter_wall_opt_in,
         discord_connected: Boolean(resource.discord_user_id),
         created_at: resource.created_at,
         updated_at: resource.updated_at,

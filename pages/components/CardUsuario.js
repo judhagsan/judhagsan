@@ -35,47 +35,11 @@ export default function CardUsuario({ user }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [isExporting, setIsExporting] = useState(false);
   const [exportError, setExportError] = useState("");
-  const [wallOptIn, setWallOptIn] = useState(
-    user?.supporter_wall_opt_in ?? false,
-  );
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveError, setSaveError] = useState("");
-
   const isSupporter = user?.features?.includes("apoiador");
   const discordResult = router.query.discord;
   const discordReason = router.query.reason;
 
   const confirmationMatches = confirmationInput === user?.username;
-
-  async function handleWallOptInChange(event) {
-    const nextValue = event.target.checked;
-    if (isSaving) return;
-
-    setIsSaving(true);
-    setSaveError("");
-
-    try {
-      const response = await fetch("/api/v1/user/supporter", {
-        method: "PATCH",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ wall_opt_in: nextValue }),
-      });
-
-      if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        setSaveError(body.message || t("Erro ao salvar"));
-        return;
-      }
-
-      const body = await response.json();
-      setWallOptIn(body.supporter_wall_opt_in);
-    } catch {
-      setSaveError(t("Erro de conexao"));
-    } finally {
-      setIsSaving(false);
-    }
-  }
 
   async function handleExport() {
     if (isExporting) return;
@@ -147,7 +111,7 @@ export default function CardUsuario({ user }) {
         {isConfirming ? (
           <form
             onSubmit={handleDelete}
-            className="flex flex-col items-center justify-center text-center gap-4 text-white/70 font-mono text-sm relative z-10 flex-1 h-full animate-[fadeIn_0.18s_ease-out]"
+            className="flex flex-col items-center justify-center text-center gap-4 text-white/70 text-sm relative z-10 flex-1 h-full animate-[fadeIn_0.18s_ease-out]"
           >
             <div className="w-14 h-14 rounded-full bg-red-500/20 border border-red-400/40 flex items-center justify-center text-red-200">
               <AlertFillIcon size={28} />
@@ -200,7 +164,7 @@ export default function CardUsuario({ user }) {
             </div>
           </form>
         ) : (
-          <div className="flex flex-col gap-4 text-white/70 font-mono text-sm relative z-10 flex-1 h-full animate-[fadeIn_0.4s_ease-out]">
+          <div className="flex flex-col gap-4 text-white/70 text-sm relative z-10 flex-1 h-full animate-[fadeIn_0.4s_ease-out]">
             {/* Identidade — o selo no avatar é quem conta o status de apoiador */}
             <div className="flex items-center gap-4 text-left">
               <div className="relative shrink-0">
@@ -217,7 +181,7 @@ export default function CardUsuario({ user }) {
                 )}
               </div>
               <div className="flex flex-col gap-1 min-w-0">
-                <h2 className="font-outfit text-base lg:text-lg font-bold tracking-tight text-white/90">
+                <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
                   {t("Bem vindo", { username: user?.username })}
                 </h2>
                 <p className="text-xs text-white/50 break-all">{user?.email}</p>
@@ -247,52 +211,34 @@ export default function CardUsuario({ user }) {
                   </p>
                 )}
 
-                {user?.discord_connected ? (
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 text-xs self-start">
-                    <CheckCircleFillIcon size={14} />
-                    {t("Discord conectado")}
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-1.5">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                  {/* Os dois lados a lado: são as duas ações do apoiador, e
+                      ficavam em linhas separadas como se não tivessem relação.
+                      `flex-wrap` cobre a coluna estreita do /sessao, onde os
+                      dois não cabem na mesma linha. */}
+                  {user?.discord_connected ? (
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 text-xs shrink-0">
+                      <CheckCircleFillIcon size={14} />
+                      {t("Discord conectado")}
+                    </div>
+                  ) : (
                     <a
                       href="/api/v1/discord/connect"
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#5865F2]/15 hover:bg-[#5865F2]/35 border border-[#5865F2]/40 hover:border-[#5865F2]/70 text-indigo-200 text-xs font-semibold transition-all duration-300 self-start cursor-pointer hover:scale-105 active:scale-95"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#5865F2]/15 hover:bg-[#5865F2]/35 border border-[#5865F2]/40 hover:border-[#5865F2]/70 text-indigo-200 text-xs font-semibold transition-all duration-300 shrink-0 cursor-pointer hover:scale-105 active:scale-95"
                     >
                       <DiscordIcon size={16} />
                       {t("Entrar no Discord")}
                     </a>
-                    <p className="text-[11px] text-white/40">
-                      {t("Texto beneficio discord")}
-                    </p>
-                  </div>
-                )}
+                  )}
 
-                <label className="flex items-center gap-2.5 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={wallOptIn}
-                    onChange={handleWallOptInChange}
-                    disabled={isSaving}
-                    className="w-4 h-4 rounded accent-amber-400 cursor-pointer disabled:cursor-not-allowed"
-                  />
-                  <span className="text-xs">
-                    {isSaving
-                      ? t("Salvando...")
-                      : t("Exibir meu nome no mural")}
-                  </span>
-                </label>
-
-                {saveError && (
-                  <p className="text-red-300 text-xs">{saveError}</p>
-                )}
-
-                <Link
-                  href="/apoiadores"
-                  className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-amber-300 transition-colors"
-                >
-                  <HeartFillIcon size={12} />
-                  {t("Ver mural de apoiadores")}
-                </Link>
+                  <Link
+                    href="/apoiadores"
+                    className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-amber-300 transition-colors shrink-0"
+                  >
+                    <HeartFillIcon size={12} />
+                    {t("Ver mural de apoiadores")}
+                  </Link>
+                </div>
               </div>
             )}
 

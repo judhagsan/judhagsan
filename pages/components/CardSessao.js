@@ -120,7 +120,7 @@ export default function CardSessao() {
               Pindorama
             </h2>
             {versionLabel && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-xs uppercase tracking-wider text-white/50 font-mono">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-xs uppercase tracking-wider text-white/50">
                 {versionLabel}
               </span>
             )}

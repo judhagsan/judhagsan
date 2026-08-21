@@ -96,7 +96,7 @@ export default function CardContato({ onClose }) {
             {/* Left Column: Form (2/3 width on desktop) */}
             <div className="lg:col-span-2 flex flex-col justify-start">
               {status === "success" ? (
-                <div className="flex flex-col items-center justify-center text-center p-6 gap-3 text-white/70 font-mono text-sm flex-1 h-full min-h-[300px] border border-cyan-500/10 rounded-2xl bg-cyan-950/10 animate-[fadeIn_0.3s_ease-out]">
+                <div className="flex flex-col items-center justify-center text-center p-6 gap-3 text-white/70 text-sm flex-1 h-full min-h-[300px] border border-cyan-500/10 rounded-2xl bg-cyan-950/10 animate-[fadeIn_0.3s_ease-out]">
                   <div className="w-12 h-12 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-200 animate-[fadeIn_0.4s_ease-out]">
                     <CheckCircleFillIcon size={24} />
                   </div>
@@ -117,7 +117,7 @@ export default function CardContato({ onClose }) {
               ) : (
                 <form
                   onSubmit={handleSubmit}
-                  className="flex flex-col gap-4 text-white/70 font-mono text-sm"
+                  className="flex flex-col gap-4 text-white/70 text-sm"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <label className="flex flex-col gap-1.5">

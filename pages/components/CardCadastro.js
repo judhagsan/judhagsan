@@ -100,7 +100,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
         </div>
 
         {registeredEmail ? (
-          <div className="flex flex-col items-center justify-center text-center gap-3 text-white/70 font-mono text-sm relative z-10 flex-1">
+          <div className="flex flex-col items-center justify-center text-center gap-3 text-white/70 text-sm relative z-10 flex-1">
             <div className="w-12 h-12 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-200 animate-[fadeIn_0.4s_ease-out]">
               <CheckCircleFillIcon size={24} />
             </div>
@@ -124,7 +124,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
         ) : (
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col gap-4 text-white/70 font-mono text-sm relative z-10 flex-1"
+            className="flex flex-col gap-4 text-white/70 text-sm relative z-10 flex-1"
           >
             <label className="flex flex-col gap-1">
               <span className="text-xs uppercase tracking-widest text-white/50">

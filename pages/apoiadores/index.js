@@ -43,19 +43,17 @@ export default function ApoiadoresPage() {
 
           {/* Lista */}
           {isLoading && (
-            <p className="text-white/50 font-mono text-sm">
-              {t("Carregando...")}
-            </p>
+            <p className="text-white/50 text-sm">{t("Carregando...")}</p>
           )}
 
           {error && (
-            <p className="text-red-300 font-mono text-sm">
+            <p className="text-red-300 text-sm">
               {t("Erro ao carregar apoiadores")}
             </p>
           )}
 
           {!isLoading && !error && supporters.length === 0 && (
-            <p className="text-white/50 font-mono text-sm">
+            <p className="text-white/50 text-sm">
               {t("Nenhum apoiador ainda")}
             </p>
           )}
@@ -65,7 +63,7 @@ export default function ApoiadoresPage() {
               {supporters.map((supporterItem) => (
                 <span
                   key={supporterItem.username}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-sm font-mono transition-all duration-300 hover:bg-amber-500/20 hover:border-amber-500/50"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-sm transition-all duration-300 hover:bg-amber-500/20 hover:border-amber-500/50"
                 >
                   <HeartFillIcon size={12} />
                   {supporterItem.username}

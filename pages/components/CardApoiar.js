@@ -13,6 +13,11 @@ const ADVANTAGES = ["Vantagem selo", "Vantagem discord", "Vantagem mural"];
 
 const SDK_URL = "https://sdk.mercadopago.com/js/v2";
 
+// Estados em que existe assinatura para mostrar. `cancelled` fica de fora de
+// propósito: quem cancelou pode assinar de novo, então volta a ver o
+// formulário no próximo carregamento.
+const LIVE_STATUSES = ["authorized", "paused", "pending"];
+
 const INPUT_CLASS =
   "w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-amber-400/50 outline-none text-sm text-white/90 transition-colors";
 
@@ -25,13 +30,14 @@ const INPUT_CLASS =
 // Quando a cobrança do cartão é recusada, o Pix de reposição é a saída manual:
 // paga-se um ciclo na mão sem esperar a retentativa do Mercado Pago.
 export default function CardApoiar() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [status, setStatus] = useState("carregando");
   const [errorMessage, setErrorMessage] = useState(null);
   const [monthlyValue, setMonthlyValue] = useState(null);
   const [pix, setPix] = useState(null);
   const [copied, setCopied] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [subscription, setSubscription] = useState(null);
   const fieldsRef = useRef(null);
 
   useEffect(() => {
@@ -39,18 +45,36 @@ export default function CardApoiar() {
 
     async function setup() {
       try {
-        const configResponse = await fetch("/api/v1/support/config");
+        // Estado e configuração vêm juntos: quem já assina não precisa esperar
+        // o SDK carregar para saber em que pé está o próprio apoio.
+        const [configResponse, stateResponse] = await Promise.all([
+          fetch("/api/v1/support/config"),
+          fetch("/api/v1/support/subscription"),
+        ]);
 
         if (!configResponse.ok) throw new Error("config");
 
         const config = await configResponse.json();
+        if (cancelled) return;
+
+        setMonthlyValue(config.monthly_value);
+
+        const state = stateResponse.ok ? await stateResponse.json() : null;
+        if (cancelled) return;
+
+        // Assinatura viva ocupa o lugar do formulário. Os Secure Fields nem
+        // chegam a ser montados: os containers não existem nesse caminho, e
+        // montar iframe em elemento ausente quebra o SDK.
+        if (state && LIVE_STATUSES.includes(state.status)) {
+          setSubscription(state);
+          setStatus("assinatura");
+          return;
+        }
 
         if (!config.public_key) throw new Error("sem chave");
 
         await loadScript();
         if (cancelled) return;
-
-        setMonthlyValue(config.monthly_value);
 
         const mp = new window.MercadoPago(config.public_key, {
           locale: "pt-BR",
@@ -113,7 +137,17 @@ export default function CardApoiar() {
         return;
       }
 
-      setStatus("confirmado");
+      // O que acabou de acontecer não é pagamento: é assinatura autorizada. O
+      // painel de estado diz isso com todas as letras, inclusive a validação
+      // de R$ 0,00 que o Mercado Pago faz no cartão e que chega por e-mail
+      // parecendo cobrança.
+      setSubscription({
+        status: body.status,
+        is_supporter: false,
+        supporter_until: null,
+        next_payment_date: body.next_payment_date || null,
+      });
+      setStatus("assinatura");
     } catch (error) {
       // O SDK rejeita com uma lista de códigos (invalid_card_number,
       // invalid_expiry_date, invalid_security_code, invalid_identification_
@@ -135,6 +169,11 @@ export default function CardApoiar() {
   }
 
   async function handlePix() {
+    // O Pix é oferecido em dois lugares — no formulário e no painel de uma
+    // assinatura com cobrança recusada. Falhando, tem que voltar para o de
+    // onde saiu, senão quem tem assinatura cai no formulário de criar outra.
+    const previousStatus = status;
+
     setErrorMessage(null);
     setStatus("processando");
 
@@ -144,7 +183,7 @@ export default function CardApoiar() {
 
       if (!response.ok) {
         setErrorMessage(body.message || t("Erro ao iniciar apoio"));
-        setStatus("pronto");
+        setStatus(previousStatus);
         return;
       }
 
@@ -152,7 +191,32 @@ export default function CardApoiar() {
       setStatus("pix");
     } catch {
       setErrorMessage(t("Erro ao iniciar apoio"));
-      setStatus("pronto");
+      setStatus(previousStatus);
+    }
+  }
+
+  async function handleCancel() {
+    setErrorMessage(null);
+    setStatus("cancelando");
+
+    try {
+      const response = await fetch("/api/v1/support/subscription", {
+        method: "DELETE",
+      });
+
+      const body = await response.json();
+
+      if (!response.ok) {
+        setErrorMessage(body.message || t("Erro ao cancelar"));
+        setStatus("assinatura");
+        return;
+      }
+
+      setSubscription((current) => ({ ...current, status: body.status }));
+      setStatus("assinatura");
+    } catch {
+      setErrorMessage(t("Erro ao cancelar"));
+      setStatus("assinatura");
     }
   }
 
@@ -162,10 +226,28 @@ export default function CardApoiar() {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  if (status === "confirmado") {
+  // Havendo assinatura, o painel dela é a tela — inclusive durante um cancelamento
+  // ou um Pix em curso. A única exceção é o QR, que precisa da tela inteira.
+  //
+  // O título do estado sobe para o cabeçalho do card: ele já tem um ícone e um
+  // <h2>, então repetir título e ícone dentro do corpo era dizer a mesma coisa
+  // duas vezes, e empurrava o texto que importa para baixo da dobra.
+  if (subscription && status !== "pix") {
+    const state = describeSubscription({ t, language, subscription });
+
     return (
-      <Shell title={t("Apoiar o Pindorama")}>
-        <Confirmation t={t} />
+      <Shell title={state.title}>
+        <SubscriptionState
+          t={t}
+          state={state}
+          cancelled={subscription.status === "cancelled"}
+          monthlyValue={monthlyValue}
+          errorMessage={errorMessage}
+          busy={status === "cancelando" || status === "processando"}
+          cancelling={status === "cancelando"}
+          onCancel={handleCancel}
+          onPix={handlePix}
+        />
       </Shell>
     );
   }
@@ -362,20 +444,149 @@ function Field({ label, children }) {
   );
 }
 
-function Confirmation({ t }) {
+// Onde o dinheiro está, em uma tela.
+//
+// A assinatura ser autorizada não é o mesmo que a cobrança ter passado, e essa
+// distinção é a fonte de toda a confusão: o Mercado Pago valida o cartão em
+// R$ 0,00 na criação e manda um e-mail que parece recibo. Cada estado abaixo
+// diz o que já aconteceu, o que falta, e o que a pessoa pode fazer a respeito.
+function describeSubscription({ t, language, subscription }) {
+  const { status, is_supporter, supporter_until, next_payment_date } =
+    subscription;
+
+  if (status === "cancelled") {
+    return {
+      tone: "neutral",
+      title: t("Assinatura cancelada"),
+      lines: [t("Texto assinatura cancelada")],
+    };
+  }
+
+  if (status === "paused") {
+    return {
+      tone: "alert",
+      title: t("Cobranca recusada"),
+      lines: [t("Texto cobranca recusada")],
+      offerPix: true,
+    };
+  }
+
+  if (status === "pending") {
+    return {
+      tone: "alert",
+      title: t("Assinatura pendente"),
+      lines: [t("Texto assinatura pendente")],
+    };
+  }
+
+  // Autorizada com benefício já concedido: alguma cobrança foi aprovada.
+  if (is_supporter) {
+    return {
+      tone: "success",
+      title: t("Apoio ao Pindorama ativo"),
+      lines: [
+        supporter_until &&
+          t("Texto beneficios ate", {
+            data: formatDate(supporter_until, language),
+          }),
+        next_payment_date &&
+          t("Texto proxima cobranca", {
+            data: formatDate(next_payment_date, language),
+          }),
+      ].filter(Boolean),
+    };
+  }
+
+  // Autorizada e ainda sem benefício: a primeira cobrança não saiu.
+  return {
+    tone: "success",
+    title: t("Aguardando a cobranca"),
+    lines: [t("Texto cobranca a caminho"), t("Texto validacao cartao")],
+  };
+}
+
+function SubscriptionState({
+  t,
+  state,
+  cancelled,
+  monthlyValue,
+  errorMessage,
+  busy,
+  cancelling,
+  onCancel,
+  onPix,
+}) {
+  const { tone, lines, offerPix } = state;
+
+  // Alinhado à esquerda e sem ícone: o cabeçalho do card já carrega o ícone e
+  // o estado. Aqui embaixo o que importa é o texto ser lido — e texto corrido
+  // centralizado, com três linhas de explicação, é justamente o que não se lê.
   return (
-    <div className="flex flex-col items-center text-center gap-3 py-4 animate-[fadeIn_0.3s_ease-out]">
-      <div className="w-12 h-12 rounded-full bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-200">
-        <CheckCircleFillIcon size={24} />
-      </div>
-      <p className="text-base text-white/90 font-semibold">
-        {t("Apoio confirmado")}
-      </p>
-      <p className="text-sm text-white/60 leading-snug">
-        {t("Texto apoio confirmado")}
-      </p>
+    <div className="flex flex-col gap-2 text-left animate-[fadeIn_0.3s_ease-out]">
+      {monthlyValue && !cancelled && (
+        <p className="text-xs uppercase tracking-widest text-white/40 font-semibold">
+          {t("Valor por mes", { valor: formatValue(monthlyValue) })}
+        </p>
+      )}
+
+      {lines.map((line) => (
+        <p
+          key={line}
+          className={`text-sm leading-snug ${
+            tone === "alert" ? "text-amber-200/90" : "text-white/60"
+          }`}
+        >
+          {line}
+        </p>
+      ))}
+
+      {errorMessage && (
+        <p className="text-red-300 text-xs flex items-start gap-2">
+          <AlertFillIcon size={14} className="mt-0.5 shrink-0" />
+          <span>{errorMessage}</span>
+        </p>
+      )}
+
+      {/* Cancelar é a saída que faltava: até aqui a assinatura só podia ser
+          desfeita pelo painel do Mercado Pago, que ninguém sabe que existe. */}
+      {!cancelled && (
+        <div className="flex flex-wrap gap-2 mt-2 w-full">
+          {offerPix && (
+            <button
+              type="button"
+              onClick={onPix}
+              disabled={busy}
+              className="cursor-pointer flex-1 min-w-[9rem] inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-400/40 hover:border-emerald-400/70 text-emerald-100 font-semibold text-sm transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <ZapIcon size={14} />
+              {t("Pagar com Pix")}
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={busy}
+            className="cursor-pointer flex-1 min-w-[9rem] inline-flex items-center justify-center px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white/70 font-semibold text-sm transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {cancelling ? t("Cancelando...") : t("Cancelar assinatura")}
+          </button>
+        </div>
+      )}
     </div>
   );
+}
+
+function formatDate(value, language) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return "";
+
+  return date.toLocaleDateString(language === "en" ? "en-US" : "pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 }
 
 function PixPayment({ t, pix, copied, onCopy }) {

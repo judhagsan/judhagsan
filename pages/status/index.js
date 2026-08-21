@@ -63,7 +63,7 @@ function UpdatedAt() {
   return (
     <CardNormal title={t("Visao Geral")} icon={PulseIcon}>
       <div className="flex flex-col gap-1.5 bg-black/20 p-4 rounded-xl border border-white/5 h-full justify-center">
-        <span className="text-white/40 uppercase text-[10px] font-sans tracking-wider">
+        <span className="text-white/40 uppercase text-[10px] tracking-wider">
           {t("Ultima Atualizacao")}
         </span>
         <span className="text-lg text-cyan-400 font-medium">
@@ -72,7 +72,7 @@ function UpdatedAt() {
 
         <div className="h-[1px] w-full bg-white/5 my-2"></div>
 
-        <span className="text-white/40 uppercase text-[10px] font-sans tracking-wider mt-1">
+        <span className="text-white/40 uppercase text-[10px] tracking-wider mt-1">
           {t("Status Report")}
         </span>
         <div className="flex items-center gap-2 mt-1">
@@ -94,9 +94,7 @@ function UpdatedAt() {
           </span>
           <span
             className={
-              isLoading
-                ? "text-yellow-400 font-sans text-sm"
-                : "text-emerald-400 font-sans text-sm"
+              isLoading ? "text-yellow-400 text-sm" : "text-emerald-400 text-sm"
             }
           >
             {isLoading
@@ -119,14 +117,14 @@ function DatabaseStatus() {
     <CardNormal title={t("Banco de Dados")} icon={DatabaseIcon}>
       {isLoading || !data ? (
         <div className="flex items-center justify-center h-full min-h-[140px] text-white/30 bg-black/20 rounded-xl border border-white/5">
-          <span className="animate-pulse font-sans text-sm">
+          <span className="animate-pulse text-sm">
             {t("Carregando metricas...")}
           </span>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3 h-full">
           <div className="flex flex-col gap-1 bg-black/20 p-3 rounded-xl border border-white/5 justify-center">
-            <span className="text-white/40 uppercase text-[10px] font-sans tracking-wider">
+            <span className="text-white/40 uppercase text-[10px] tracking-wider">
               {t("Versao (PostgreSQL)")}
             </span>
             <span
@@ -138,7 +136,7 @@ function DatabaseStatus() {
           </div>
 
           <div className="flex flex-col gap-1 bg-black/20 p-3 rounded-xl border border-white/5 justify-center">
-            <span className="text-white/40 uppercase text-[10px] font-sans tracking-wider">
+            <span className="text-white/40 uppercase text-[10px] tracking-wider">
               {t("Max Conexoes")}
             </span>
             <span className="text-base text-white/90">
@@ -148,7 +146,7 @@ function DatabaseStatus() {
 
           <div className="flex flex-col gap-1 bg-black/20 p-4 rounded-xl border border-white/5 col-span-2">
             <div className="flex justify-between items-end mb-1">
-              <span className="text-white/40 uppercase text-[10px] font-sans tracking-wider">
+              <span className="text-white/40 uppercase text-[10px] tracking-wider">
                 {t("Conexoes Ativas")}
               </span>
               <span className="text-cyan-400 font-bold text-xl leading-none">

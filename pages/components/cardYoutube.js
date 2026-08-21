@@ -148,7 +148,7 @@ export default function CardYoutube() {
                   href={`https://www.youtube.com/channel/${CHANNEL_ID}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hidden lg:flex items-center justify-center gap-2 p-2 rounded-2xl border border-dashed border-white/10 hover:border-white/25 text-white/30 hover:text-white/70 transition-all cursor-pointer text-xs font-mono uppercase tracking-widest"
+                  className="hidden lg:flex items-center justify-center gap-2 p-2 rounded-2xl border border-dashed border-white/10 hover:border-white/25 text-white/30 hover:text-white/70 transition-all cursor-pointer text-xs uppercase tracking-widest"
                 >
                   <PlayIcon size={16} />
                   {t("Ver o canal")}
