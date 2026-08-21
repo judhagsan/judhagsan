@@ -116,6 +116,64 @@ async function request(path, { method = "GET", body, idempotencyKey } = {}) {
   return responseBody;
 }
 
+// Resultado da validação da public key, guardado em memória. Ela só muda em
+// deploy, e ir ao Mercado Pago a cada abertura do card custaria latência à
+// toa. O valor da chave entra na comparação para o cache não sobreviver a uma
+// troca de credencial no mesmo processo.
+let publicKeyValidation = null;
+
+// Devolve a public key só se o Mercado Pago ainda a reconhecer, senão `null`.
+//
+// Checar presença não basta: regenerar as credenciais no painel **invalida a
+// anterior**, e a chave morta continua com o formato certo (`APP_USR-` + UUID).
+// Com ela, o SDK no browser leva 404 em `POST /v1/card_tokens` sem dizer o
+// motivo — o formulário monta, a pessoa digita o cartão inteiro e só descobre
+// no envio que nada funciona. Devolvendo `null` aqui, o card já nasce
+// declarando que o apoio está indisponível, e o servidor registra a razão.
+async function getValidPublicKey() {
+  const publicKey = process.env.MERCADOPAGO_PUBLIC_KEY;
+
+  if (!publicKey) {
+    return null;
+  }
+
+  if (publicKeyValidation?.publicKey === publicKey) {
+    return publicKeyValidation.valid ? publicKey : null;
+  }
+
+  let response;
+
+  try {
+    response = await fetch(
+      `${API_BASE_URL}/v1/payment_methods?public_key=${encodeURIComponent(publicKey)}`,
+    );
+  } catch (cause) {
+    // Rede fora não é chave inválida: não cacheia, para a próxima tentativa
+    // poder acertar.
+    console.error({
+      name: "MercadoPagoError",
+      request: "GET /v1/payment_methods",
+      response: cause?.message,
+    });
+    return null;
+  }
+
+  const valid = response.ok;
+
+  if (!valid) {
+    console.error({
+      name: "MercadoPagoError",
+      request: "GET /v1/payment_methods",
+      status: response.status,
+      response: await response.json().catch(() => null),
+    });
+  }
+
+  publicKeyValidation = { publicKey, valid };
+
+  return valid ? publicKey : null;
+}
+
 function buildExternalReference(userId) {
   return `${REFERENCE_PREFIX}:${userId}`;
 }
@@ -259,6 +317,7 @@ function isValidSignature({ signatureHeader, requestId, dataId }) {
 
 const mercadopago = {
   getBackUrl,
+  getValidPublicKey,
   buildExternalReference,
   parseExternalReference,
   createSubscription,
