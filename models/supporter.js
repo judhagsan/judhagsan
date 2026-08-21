@@ -1,4 +1,6 @@
 import database from "infra/database.js";
+import email from "infra/email.js";
+import webserver from "infra/webserver.js";
 import user from "models/user.js";
 import { ValidationError } from "infra/errors.js";
 
@@ -9,6 +11,11 @@ const FEATURE = "apoiador";
 // Valor do apoio mensal, em reais. Fica aqui porque é regra do apoio, não do
 // gateway: a tela, a assinatura e o Pix de reposição leem todos daqui.
 const MONTHLY_VALUE = 9.9;
+
+// Janela mínima entre dois avisos de cobrança recusada para a mesma pessoa. O
+// Mercado Pago retenta por até 10 dias e notifica cada tentativa; sem isto,
+// quem teve o cartão recusado receberia um e-mail por tentativa.
+const DECLINE_NOTICE_COOLDOWN_IN_DAYS = 7;
 
 async function listPublic() {
   const results = await database.query({
@@ -113,6 +120,9 @@ async function grantUntil(userId, until) {
         users
       SET
         supporter_until = $2,
+        -- Cobrança aprovada fecha o ciclo da recusa anterior: a próxima que
+        -- falhar volta a poder avisar.
+        supporter_declined_notified_at = NULL,
         updated_at = timezone('utc', now())
       WHERE
         id = $1
@@ -148,6 +158,79 @@ async function expireOverdue() {
   return results.rowCount;
 }
 
+// Avisa por e-mail que a cobrança do apoio não passou.
+//
+// Quem descobre a recusa é o webhook, uma hora ou um mês depois de a pessoa
+// ter assinado — ninguém está olhando a tela nesse momento, então nenhuma
+// interface resolve isto. O e-mail do Mercado Pago é recibo de transação; este
+// aqui diz o que acontece com o apoio e o que dá para fazer a respeito.
+//
+// O UPDATE condicional é o próprio trinco: quem não conseguir marcar é porque
+// outro avisou primeiro, e devolve `false` sem mandar nada.
+async function notifyChargeDeclined(userId) {
+  const results = await database.query({
+    text: `
+      UPDATE
+        users
+      SET
+        supporter_declined_notified_at = timezone('utc', now()),
+        updated_at = timezone('utc', now())
+      WHERE
+        id = $1
+        AND (
+          supporter_declined_notified_at IS NULL
+          OR supporter_declined_notified_at
+             < timezone('utc', now()) - $2::interval
+        )
+      RETURNING
+        *
+      ;`,
+    values: [userId, `${DECLINE_NOTICE_COOLDOWN_IN_DAYS} days`],
+  });
+
+  if (results.rowCount === 0) {
+    return false;
+  }
+
+  const notifiedUser = results.rows[0];
+
+  try {
+    await email.send({
+      from: "Judhagsan <contato@judhagsan.com>",
+      to: notifiedUser.email,
+      subject: "A cobrança do seu apoio ao Pindorama não foi aprovada",
+      text: `${notifiedUser.username}, a cobrança mensal do seu apoio ao Pindorama não passou desta vez.
+
+O Mercado Pago vai tentar de novo sozinho, por até 10 dias, e seu acesso de apoiador continua durante esse período. Você não precisa fazer nada agora.
+
+Se preferir resolver na hora, dá para pagar um mês com Pix — ou cancelar o apoio, se não quiser mais. Os dois estão em:
+
+${webserver.origin}/sessao
+
+Atenciosamente,
+Equipe Judhagsan`,
+    });
+  } catch (error) {
+    // Falhou o envio: desfaz a marca, senão a pessoa fica sete dias sem poder
+    // ser avisada por causa de um e-mail que nunca saiu.
+    await database.query({
+      text: `
+        UPDATE
+          users
+        SET
+          supporter_declined_notified_at = $2
+        WHERE
+          id = $1
+        ;`,
+      values: [userId, notifiedUser.supporter_declined_notified_at],
+    });
+
+    throw error;
+  }
+
+  return true;
+}
+
 async function setSubscription(userId, { preapprovalId, status }) {
   const results = await database.query({
     text: `
@@ -178,6 +261,7 @@ const supporter = {
   grantUntil,
   revoke,
   expireOverdue,
+  notifyChargeDeclined,
   setSubscription,
 };
 
