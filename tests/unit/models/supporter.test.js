@@ -27,24 +27,18 @@ describe("supporter.grant", () => {
       id: "u1",
       features: ["read:session"],
     });
-    user.addFeatures.mockResolvedValue({});
-    database.query.mockResolvedValue({
-      rows: [
-        {
-          id: "u1",
-          features: ["read:session", "apoiador"],
-          supporter_wall_opt_in: true,
-        },
-      ],
+    user.addFeatures.mockResolvedValue({
+      id: "u1",
+      features: ["read:session", "apoiador"],
     });
 
     const result = await supporter.grant("u1");
 
     expect(user.addFeatures).toHaveBeenCalledWith("u1", ["apoiador"]);
-    // setWallOptIn(userId, true): entra no mural por padrão.
-    expect(database.query).toHaveBeenCalledTimes(1);
-    expect(database.query.mock.calls[0][0].values).toEqual(["u1", true]);
-    expect(result.supporter_wall_opt_in).toBe(true);
+    // Conceder a feature é tudo: o mural não tem mais opt-in para ligar, então
+    // grant não toca no banco por conta própria.
+    expect(database.query).not.toHaveBeenCalled();
+    expect(result.features).toContain("apoiador");
   });
 
   test("is a no-op when the user is already a supporter", async () => {

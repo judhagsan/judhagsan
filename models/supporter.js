@@ -39,25 +39,6 @@ async function listPublic() {
   return results.rows;
 }
 
-async function setWallOptIn(userId, optIn) {
-  const results = await database.query({
-    text: `
-      UPDATE
-        users
-      SET
-        supporter_wall_opt_in = $2,
-        updated_at = timezone('utc', now())
-      WHERE
-        id = $1
-      RETURNING
-        *
-      ;`,
-    values: [userId, optIn],
-  });
-
-  return results.rows[0];
-}
-
 async function setDiscordId(userId, discordUserId) {
   try {
     const results = await database.query({
@@ -95,10 +76,7 @@ async function grant(userId) {
     return userFound;
   }
 
-  await user.addFeatures(userId, [FEATURE]);
-  // Ao virar apoiador pela primeira vez, entra no mural público por padrão.
-  // O apoiador pode desativar isso depois em /sessao.
-  return await setWallOptIn(userId, true);
+  return await user.addFeatures(userId, [FEATURE]);
 }
 
 async function revoke(userId) {
@@ -258,7 +236,6 @@ const supporter = {
   FEATURE,
   MONTHLY_VALUE,
   listPublic,
-  setWallOptIn,
   setDiscordId,
   grant,
   grantUntil,
