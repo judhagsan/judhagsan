@@ -10,7 +10,7 @@ beforeAll(async () => {
 
 describe("GET /api/v1/supporters", () => {
   describe("Anonymous user", () => {
-    test("Retrieving only opted-in supporters", async () => {
+    test("Listing every supporter, opted in or not", async () => {
       await orchestrator.createUser({
         username: "naoApoiador",
       });
@@ -35,8 +35,13 @@ describe("GET /api/v1/supporters", () => {
 
       const responseBody = await response.json();
 
+      // Os dois aparecem: só `apoiadorPublico` deu opt-in, e isso deixou de
+      // fazer diferença. Quem não tem a feature continua de fora.
       expect(responseBody).toEqual({
         supporters: [
+          {
+            username: "apoiadorPrivado",
+          },
           {
             username: "apoiadorPublico",
           },
@@ -44,7 +49,7 @@ describe("GET /api/v1/supporters", () => {
       });
     });
 
-    test("Opting out removes the supporter from the list", async () => {
+    test("Opting out no longer hides the supporter", async () => {
       const optOutSupporter = await orchestrator.createUser({
         username: "apoiadorArrependido",
       });
@@ -59,7 +64,9 @@ describe("GET /api/v1/supporters", () => {
       const responseBody = await response.json();
       const usernames = responseBody.supporters.map((row) => row.username);
 
-      expect(usernames).not.toContain("apoiadorArrependido");
+      // `setWallOptIn(false)` ainda grava a coluna, mas o mural não a consulta
+      // mais: a escolha de não aparecer deixou de existir como produto.
+      expect(usernames).toContain("apoiadorArrependido");
     });
 
     test("Revoking the feature removes the supporter from the list", async () => {

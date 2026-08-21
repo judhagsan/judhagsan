@@ -92,7 +92,7 @@ describe("supporter.revoke", () => {
 });
 
 describe("supporter.listPublic", () => {
-  test("returns only opted-in supporters (query filters by feature + opt-in)", async () => {
+  test("lists every supporter, without filtering by opt-in", async () => {
     database.query.mockResolvedValue({
       rows: [{ username: "ana" }, { username: "bruno" }],
     });
@@ -100,8 +100,10 @@ describe("supporter.listPublic", () => {
     const rows = await supporter.listPublic();
 
     const queried = database.query.mock.calls[0][0];
-    expect(queried.text).toContain("supporter_wall_opt_in = true");
     expect(queried.text).toContain("$1 = ANY(features)");
+    // O mural deixou de ser opt-in. Filtrar aqui esconderia para sempre quem
+    // desmarcou antes de a opção sumir da tela, sem interface para reverter.
+    expect(queried.text).not.toContain("supporter_wall_opt_in = true");
     expect(queried.values).toEqual(["apoiador"]);
     expect(rows).toEqual([{ username: "ana" }, { username: "bruno" }]);
   });
