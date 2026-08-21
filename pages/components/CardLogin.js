@@ -69,7 +69,7 @@ export default function CardLogin({ onCadastroClick, onBack }) {
 
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-4 text-white/70 font-mono text-sm relative z-10 flex-1"
+          className="flex flex-col gap-4 text-white/70 text-sm relative z-10 flex-1"
         >
           <label className="flex flex-col gap-1">
             <span className="text-xs uppercase tracking-widest text-white/50">

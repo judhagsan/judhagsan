@@ -147,7 +147,7 @@ export default function CardUsuario({ user }) {
         {isConfirming ? (
           <form
             onSubmit={handleDelete}
-            className="flex flex-col items-center justify-center text-center gap-4 text-white/70 font-mono text-sm relative z-10 flex-1 h-full animate-[fadeIn_0.18s_ease-out]"
+            className="flex flex-col items-center justify-center text-center gap-4 text-white/70 text-sm relative z-10 flex-1 h-full animate-[fadeIn_0.18s_ease-out]"
           >
             <div className="w-14 h-14 rounded-full bg-red-500/20 border border-red-400/40 flex items-center justify-center text-red-200">
               <AlertFillIcon size={28} />
@@ -200,7 +200,7 @@ export default function CardUsuario({ user }) {
             </div>
           </form>
         ) : (
-          <div className="flex flex-col gap-4 text-white/70 font-mono text-sm relative z-10 flex-1 h-full animate-[fadeIn_0.4s_ease-out]">
+          <div className="flex flex-col gap-4 text-white/70 text-sm relative z-10 flex-1 h-full animate-[fadeIn_0.4s_ease-out]">
             {/* Identidade — o selo no avatar é quem conta o status de apoiador */}
             <div className="flex items-center gap-4 text-left">
               <div className="relative shrink-0">
@@ -217,7 +217,7 @@ export default function CardUsuario({ user }) {
                 )}
               </div>
               <div className="flex flex-col gap-1 min-w-0">
-                <h2 className="font-outfit text-base lg:text-lg font-bold tracking-tight text-white/90">
+                <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
                   {t("Bem vindo", { username: user?.username })}
                 </h2>
                 <p className="text-xs text-white/50 break-all">{user?.email}</p>

@@ -1,6 +1,6 @@
 /* Custom Web Fonts — precisa vir antes do import do Tailwind, que é
    expandido em regras concretas antes da checagem de ordem dos @import */
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap");
 
 @import "tailwindcss";
 
@@ -10,6 +10,12 @@
 
 @theme {
   --font-outfit: "Outfit", sans-serif;
+  /* O site tem uma fonte só. `font-sans` e `font-mono` continuam existindo
+     como classes do Tailwind, e por padrão cairiam no stack do sistema — o que
+     colocava uma segunda e uma terceira fonte na tela sem ninguém pedir.
+     Apontadas para a Outfit, escrevê-las por hábito não quebra a unidade. */
+  --font-sans: "Outfit", sans-serif;
+  --font-mono: "Outfit", sans-serif;
   --font-size-xs: 0.8rem;
   --font-size-sm: 0.95rem;
   --font-size-base: 1.075rem;

@@ -33,7 +33,7 @@ export default function SupportersTicker() {
           <span className="w-7 h-7 rounded-full bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
             <HeartFillIcon size={12} />
           </span>
-          <span className="text-[10px] font-mono uppercase tracking-widest text-amber-300/80 whitespace-nowrap">
+          <span className="text-[10px] uppercase tracking-widest text-amber-300/80 whitespace-nowrap">
             {t("Apoiadores")}
           </span>
         </div>
@@ -46,7 +46,7 @@ export default function SupportersTicker() {
             {loop.map((supporterItem, index) => (
               <span
                 key={`${supporterItem.username}-${index}`}
-                className="inline-flex items-center gap-3 pr-6 text-sm font-mono text-amber-200/90"
+                className="inline-flex items-center gap-3 pr-6 text-sm text-amber-200/90"
               >
                 <span>{supporterItem.username}</span>
                 <HeartFillIcon
