@@ -231,6 +231,16 @@ async function handlePayment(paymentId) {
 
   await supporter.grantUntil(userId, await calculatePaidUntil(payment, userId));
 
+  // Pix pago desliga a cobrança automática. Sem isto, o Mercado Pago segue
+  // retentando o cartão por até 10 dias sem saber do Pix — e se uma tentativa
+  // passar, o mesmo mês é cobrado duas vezes.
+  //
+  // Depois da concessão, nunca antes: uma falha no cancelamento não pode
+  // custar o acesso que a pessoa acabou de pagar.
+  if (isPix(payment)) {
+    await cancelSubscriptionQuietly(userId);
+  }
+
   return { status: "apoio_concedido" };
 }
 
@@ -289,8 +299,19 @@ async function endSupportForReversal(userId, payment) {
     return;
   }
 
-  const chargedBackUser = await user.findOneById(userId);
-  const preapprovalId = chargedBackUser?.mercadopago_preapproval_id;
+  await cancelSubscriptionQuietly(userId);
+}
+
+// Cancela a assinatura de quem tem uma, sem deixar a falha derrubar o evento.
+//
+// O cancelamento é sempre consequência de algo que já foi resolvido — o acesso
+// concedido, o estorno registrado —, e falha por motivos que reentregar não
+// conserta: o Mercado Pago pode já ter cancelado sozinho, e cancelar o que já
+// está cancelado dá erro. Deixar esse erro subir prenderia a notificação em
+// retentativa eterna.
+async function cancelSubscriptionQuietly(userId) {
+  const subscribedUser = await user.findOneById(userId);
+  const preapprovalId = subscribedUser?.mercadopago_preapproval_id;
 
   if (!preapprovalId) {
     return;
