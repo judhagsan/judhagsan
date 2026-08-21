@@ -451,8 +451,13 @@ function Field({ label, children }) {
 // R$ 0,00 na criação e manda um e-mail que parece recibo. Cada estado abaixo
 // diz o que já aconteceu, o que falta, e o que a pessoa pode fazer a respeito.
 function describeSubscription({ t, language, subscription }) {
-  const { status, is_supporter, supporter_until, next_payment_date } =
-    subscription;
+  const {
+    status,
+    is_supporter,
+    last_charge_declined,
+    supporter_until,
+    next_payment_date,
+  } = subscription;
 
   if (status === "cancelled") {
     return {
@@ -476,6 +481,20 @@ function describeSubscription({ t, language, subscription }) {
       tone: "alert",
       title: t("Assinatura pendente"),
       lines: [t("Texto assinatura pendente")],
+    };
+  }
+
+  // Antes dos dois casos de assinatura autorizada, porque a recusa não aparece
+  // no status: o Mercado Pago mantém `authorized` durante os 10 dias de
+  // retentativa. Vale tanto para quem nunca teve a primeira cobrança aprovada
+  // quanto para quem está na carência com a renovação falhando — nos dois, o
+  // que a pessoa precisa saber é que a cobrança não passou.
+  if (last_charge_declined) {
+    return {
+      tone: "alert",
+      title: t("Cobranca recusada"),
+      lines: [t("Texto cobranca recusada")],
+      offerPix: true,
     };
   }
 
