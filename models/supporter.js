@@ -25,8 +25,11 @@ async function listPublic() {
       FROM
         users
       WHERE
+        -- Sem filtro de opt-in: o mural lista todo mundo que apoia. A escolha
+        -- de aparecer ou não deixou de existir junto com a caixa que a
+        -- oferecia, e manter o filtro aqui esconderia para sempre quem tivesse
+        -- desmarcado antes.
         $1 = ANY(features)
-        AND supporter_wall_opt_in = true
       ORDER BY
         LOWER(username)
       ;`,

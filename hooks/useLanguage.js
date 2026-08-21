@@ -132,16 +132,12 @@ const translations = {
     "Erro ao carregar apoiadores": "Não foi possível carregar os apoiadores.",
     "Entrar no Discord": "Entrar no Discord",
     "Discord conectado": "Discord conectado",
-    "Texto beneficio discord":
-      "Entre no servidor com o cargo exclusivo de apoiador.",
-    "Exibir meu nome no mural": "Exibir meu nome no mural de apoiadores",
     "Ver mural de apoiadores": "Ver mural de apoiadores",
     "Discord conectado com sucesso": "Discord conectado com sucesso!",
     "Erro ao conectar Discord":
       "Não foi possível conectar ao Discord. Tente novamente.",
     "Discord ja vinculado":
       "Esta conta do Discord já está vinculada a outro usuário.",
-    "Salvando...": "Salvando...",
     "Erro ao salvar": "Não foi possível salvar.",
     "Quero apoiar o Pindorama": "Quero apoiar o Pindorama",
 
@@ -342,15 +338,11 @@ const translations = {
     "Erro ao carregar apoiadores": "Could not load supporters.",
     "Entrar no Discord": "Join the Discord",
     "Discord conectado": "Discord connected",
-    "Texto beneficio discord":
-      "Join the server with the exclusive supporter role.",
-    "Exibir meu nome no mural": "Show my name on the supporters wall",
     "Ver mural de apoiadores": "View supporters wall",
     "Discord conectado com sucesso": "Discord connected successfully!",
     "Erro ao conectar Discord": "Could not connect to Discord. Try again.",
     "Discord ja vinculado":
       "This Discord account is already linked to another user.",
-    "Salvando...": "Saving...",
     "Erro ao salvar": "Could not save.",
     "Quero apoiar o Pindorama": "I want to support Pindorama",
 
