@@ -38,6 +38,10 @@ export default function CardApoiar() {
   const [copied, setCopied] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [subscription, setSubscription] = useState(null);
+  // O estado é guardado sempre; este flag decide se ele ocupa a tela. Quem já
+  // apoia mas não tem assinatura viva — pagou no Pix, cancelou, ou recebeu a
+  // feature à mão — precisa continuar vendo o formulário para poder assinar.
+  const [showPanel, setShowPanel] = useState(false);
   const fieldsRef = useRef(null);
 
   useEffect(() => {
@@ -65,8 +69,10 @@ export default function CardApoiar() {
         // Assinatura viva ocupa o lugar do formulário. Os Secure Fields nem
         // chegam a ser montados: os containers não existem nesse caminho, e
         // montar iframe em elemento ausente quebra o SDK.
+        setSubscription(state);
+
         if (state && LIVE_STATUSES.includes(state.status)) {
-          setSubscription(state);
+          setShowPanel(true);
           setStatus("assinatura");
           return;
         }
@@ -141,6 +147,7 @@ export default function CardApoiar() {
       // painel de estado diz isso com todas as letras, inclusive a validação
       // de R$ 0,00 que o Mercado Pago faz no cartão e que chega por e-mail
       // parecendo cobrança.
+      setShowPanel(true);
       setSubscription({
         status: body.status,
         is_supporter: false,
@@ -232,7 +239,7 @@ export default function CardApoiar() {
   // O título do estado sobe para o cabeçalho do card: ele já tem um ícone e um
   // <h2>, então repetir título e ícone dentro do corpo era dizer a mesma coisa
   // duas vezes, e empurrava o texto que importa para baixo da dobra.
-  if (subscription && status !== "pix") {
+  if (subscription && showPanel && status !== "pix") {
     const state = describeSubscription({ t, language, subscription });
 
     return (
@@ -278,6 +285,19 @@ export default function CardApoiar() {
         </p>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-3 mt-4">
+          {/* Quem já apoia e caiu aqui não tem assinatura viva. Sem esta linha,
+              o card ofereceria apoio a quem acabou de pagar no Pix, como se
+              nada tivesse acontecido. */}
+          {subscription?.is_supporter && (
+            <p className="text-xs text-amber-200/80 leading-snug">
+              {subscription.supporter_until
+                ? t("Texto apoiador sem assinatura", {
+                    data: formatDate(subscription.supporter_until, language),
+                  })
+                : t("Texto apoiador manual")}
+            </p>
+          )}
+
           {/* Os campos ficam sempre montados: os Secure Fields são iframes e
               precisam do container no DOM para medir a si mesmos — esconder
               com `display: none` os quebra. A revelação anima
@@ -451,8 +471,13 @@ function Field({ label, children }) {
 // R$ 0,00 na criação e manda um e-mail que parece recibo. Cada estado abaixo
 // diz o que já aconteceu, o que falta, e o que a pessoa pode fazer a respeito.
 function describeSubscription({ t, language, subscription }) {
-  const { status, is_supporter, supporter_until, next_payment_date } =
-    subscription;
+  const {
+    status,
+    is_supporter,
+    last_charge_declined,
+    supporter_until,
+    next_payment_date,
+  } = subscription;
 
   if (status === "cancelled") {
     return {
@@ -476,6 +501,20 @@ function describeSubscription({ t, language, subscription }) {
       tone: "alert",
       title: t("Assinatura pendente"),
       lines: [t("Texto assinatura pendente")],
+    };
+  }
+
+  // Antes dos dois casos de assinatura autorizada, porque a recusa não aparece
+  // no status: o Mercado Pago mantém `authorized` durante os 10 dias de
+  // retentativa. Vale tanto para quem nunca teve a primeira cobrança aprovada
+  // quanto para quem está na carência com a renovação falhando — nos dois, o
+  // que a pessoa precisa saber é que a cobrança não passou.
+  if (last_charge_declined) {
+    return {
+      tone: "alert",
+      title: t("Cobranca recusada"),
+      lines: [t("Texto cobranca recusada")],
+      offerPix: true,
     };
   }
 

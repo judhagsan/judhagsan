@@ -101,8 +101,9 @@ async function grantUntil(userId, until) {
         users
       SET
         supporter_until = $2,
-        -- Cobrança aprovada fecha o ciclo da recusa anterior: a próxima que
-        -- falhar volta a poder avisar.
+        -- Cobrança aprovada fecha o ciclo da recusa anterior: some o alerta
+        -- da tela e a próxima falha volta a poder avisar.
+        supporter_charge_declined_at = NULL,
         supporter_declined_notified_at = NULL,
         updated_at = timezone('utc', now())
       WHERE
@@ -111,6 +112,36 @@ async function grantUntil(userId, until) {
         *
       ;`,
     values: [userId, until],
+  });
+
+  return results.rows[0];
+}
+
+// Encerra o apoio na hora, sem esperar o prazo vencer. Usado quando o dinheiro
+// volta — estorno ou chargeback —, porque aí não há ciclo pago para honrar.
+//
+// Diferente de `revoke`, que só tira a feature: aqui o prazo também é zerado,
+// senão ficaria uma data futura no banco descrevendo um acesso que não existe
+// mais. As marcas de recusa saem junto, para a tela não alarmar sobre uma
+// cobrança de uma assinatura que acabou.
+async function revokeNow(userId) {
+  await revoke(userId);
+
+  const results = await database.query({
+    text: `
+      UPDATE
+        users
+      SET
+        supporter_until = NULL,
+        supporter_charge_declined_at = NULL,
+        supporter_declined_notified_at = NULL,
+        updated_at = timezone('utc', now())
+      WHERE
+        id = $1
+      RETURNING
+        *
+      ;`,
+    values: [userId],
   });
 
   return results.rows[0];
@@ -137,6 +168,29 @@ async function expireOverdue() {
   });
 
   return results.rowCount;
+}
+
+// Registra que a última cobrança foi recusada. É o que a tela lê para parar de
+// prometer uma cobrança que já falhou — o status do preapproval não serve,
+// porque o Mercado Pago o mantém `authorized` durante os 10 dias de
+// retentativa. Idempotente: cada tentativa recusada apenas atualiza a data.
+async function markChargeDeclined(userId) {
+  const results = await database.query({
+    text: `
+      UPDATE
+        users
+      SET
+        supporter_charge_declined_at = timezone('utc', now()),
+        updated_at = timezone('utc', now())
+      WHERE
+        id = $1
+      RETURNING
+        *
+      ;`,
+    values: [userId],
+  });
+
+  return results.rows[0];
 }
 
 // Avisa por e-mail que a cobrança do apoio não passou.
@@ -192,8 +246,9 @@ Atenciosamente,
 Equipe Judhagsan`,
     });
   } catch (error) {
-    // Falhou o envio: desfaz a marca, senão a pessoa fica sete dias sem poder
-    // ser avisada por causa de um e-mail que nunca saiu.
+    // Falhou o envio: desfaz só a marca de aviso, para a próxima tentativa
+    // poder avisar. A de recusa fica — a cobrança falhou de qualquer jeito, e
+    // a tela precisa continuar dizendo isso.
     await database.query({
       text: `
         UPDATE
@@ -240,7 +295,9 @@ const supporter = {
   grant,
   grantUntil,
   revoke,
+  revokeNow,
   expireOverdue,
+  markChargeDeclined,
   notifyChargeDeclined,
   setSubscription,
 };

@@ -172,6 +172,10 @@ const translations = {
     "Texto cobranca a caminho":
       "A primeira cobrança sai em até uma hora. Os benefícios entram na sua conta assim que ela for aprovada, e você não precisa fazer mais nada.",
     "Texto beneficios ate": "Benefícios liberados até {data}.",
+    "Texto apoiador sem assinatura":
+      "Você é apoiador até {data}. A cobrança automática está desligada — assine de novo abaixo se quiser retomá-la.",
+    "Texto apoiador manual":
+      "Você já é apoiador. A cobrança automática está desligada.",
     "Texto proxima cobranca": "Próxima cobrança em {data}.",
     "Texto cobranca recusada":
       "A última cobrança não passou. O Mercado Pago tenta de novo por até 10 dias e seu acesso continua nesse período. Se preferir resolver na hora, pague um mês com Pix.",
@@ -377,6 +381,10 @@ const translations = {
     "Texto cobranca a caminho":
       "The first charge goes out within the hour. The benefits land on your account as soon as it is approved, and there is nothing else for you to do.",
     "Texto beneficios ate": "Benefits active until {data}.",
+    "Texto apoiador sem assinatura":
+      "You're a supporter until {data}. Automatic charging is off — subscribe again below to turn it back on.",
+    "Texto apoiador manual":
+      "You're already a supporter. Automatic charging is off.",
     "Texto proxima cobranca": "Next charge on {data}.",
     "Texto cobranca recusada":
       "The last charge did not go through. Mercado Pago retries for up to 10 days and your access stays on during that window. To settle it now, pay one month with Pix.",

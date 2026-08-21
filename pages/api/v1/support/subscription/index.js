@@ -28,6 +28,15 @@ async function getHandler(request, response) {
   const state = {
     status: userTryingToRead.mercadopago_status || null,
     is_supporter: userTryingToRead.features.includes(supporter.FEATURE),
+    // Uma cobrança recusada NÃO muda o status do preapproval: o Mercado Pago
+    // retenta por até 10 dias e a assinatura segue `authorized`. Sem esta
+    // marca, recusada e "ainda não cobrada" ficam indistinguíveis, e a tela
+    // promete para sempre uma cobrança que já falhou. Quem a escreve é o
+    // webhook, e `grantUntil` a limpa quando alguma cobrança passa. Cobrança
+    // em andamento não a liga: só recusa de verdade.
+    last_charge_declined: Boolean(
+      userTryingToRead.supporter_charge_declined_at,
+    ),
     supporter_until: userTryingToRead.supporter_until || null,
     next_payment_date: null,
     monthly_value: supporter.MONTHLY_VALUE,
