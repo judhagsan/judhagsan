@@ -110,11 +110,38 @@ async function expireById(sessionId) {
   }
 }
 
+async function expireAllByUserId(userId, { exceptSessionId } = {}) {
+  const expiredSessions = await runUpdateQuery(userId, exceptSessionId);
+  return expiredSessions;
+
+  async function runUpdateQuery(userId, exceptSessionId) {
+    const results = await database.query({
+      text: `
+        UPDATE
+          sessions
+        SET
+          expires_at = expires_at - interval '1 year',
+          updated_at = NOW()
+        WHERE
+          user_id = $1
+          AND expires_at > NOW()
+          AND ($2::uuid IS NULL OR id <> $2::uuid)
+        RETURNING
+          *
+        ;`,
+      values: [userId, exceptSessionId || null],
+    });
+
+    return results.rows;
+  }
+}
+
 const session = {
   create,
   findOneValidByToken,
   renew,
   expireById,
+  expireAllByUserId,
   EXPIRATION_IN_MILLISECONDS,
 };
 

@@ -205,11 +205,11 @@ Base URL: `/api/v1`
 
 ### Usuários
 
-| Método  | Endpoint           | Descrição                  |
-| ------- | ------------------ | -------------------------- |
-| `POST`  | `/users`           | Cria um novo usuário       |
-| `GET`   | `/users/:username` | Busca usuário por username |
-| `PATCH` | `/users/:username` | Atualiza dados do usuário  |
+| Método  | Endpoint           | Descrição                                  |
+| ------- | ------------------ | ------------------------------------------ |
+| `POST`  | `/users`           | Cria um novo usuário                       |
+| `GET`   | `/users/:username` | Busca usuário por username                 |
+| `PATCH` | `/users/:username` | Atualiza dados do usuário (exceto a senha) |
 
 ### Sessões
 
@@ -220,10 +220,11 @@ Base URL: `/api/v1`
 
 ### Usuário Autenticado
 
-| Método  | Endpoint          | Descrição                                           |
-| ------- | ----------------- | --------------------------------------------------- |
-| `GET`   | `/user`           | Retorna dados do usuário logado                     |
-| `PATCH` | `/user/supporter` | Define exibição no mural de apoiadores (`apoiador`) |
+| Método  | Endpoint          | Descrição                                             |
+| ------- | ----------------- | ----------------------------------------------------- |
+| `GET`   | `/user`           | Retorna dados do usuário logado                       |
+| `PATCH` | `/user/supporter` | Define exibição no mural de apoiadores (`apoiador`)   |
+| `POST`  | `/user/password`  | Troca a senha do usuário logado (exige a senha atual) |
 
 ### Apoiadores
 
@@ -267,6 +268,31 @@ Base URL: `/api/v1`
 3. Um token de ativação é gerado e enviado por e-mail (expira em 15 minutos)
 4. Usuário clica no link de ativação (`/cadastro/ativar/:tokenId`)
 5. Após ativação, o usuário recebe as features: `create:session`, `read:session`, `update:user`
+
+### Alteração de Senha
+
+Trocar a senha exige confirmar a senha atual e acontece só em
+`POST /api/v1/user/password`. O `PATCH /api/v1/users/:username` rejeita o campo
+`password` com `400`: aceitá-lo ali deixava uma sessão roubada trocar a senha
+sem conhecer a atual, e o spread de `user.update()` gravaria a senha em texto
+puro se a guarda saísse.
+
+1. O usuário logado envia `current_password` e `new_password`
+2. `models/password.compare()` confere a senha atual — se não bate, volta
+   `400 ValidationError` (e não `401`, que faria o `onErrorHandler` limpar o
+   cookie e deslogar quem só errou a digitação)
+3. A nova senha passa pela mesma validação de complexidade do cadastro
+   (8 a 72 caracteres) e precisa ser diferente da atual
+4. Todas as outras sessões do usuário são expiradas
+   (`session.expireAllByUserId`); a sessão atual sobrevive e é renovada
+5. Fica registrado em `audit_logs` como `user.password_changed` — tentativas
+   com senha atual errada viram `user.password_change_failed`
+6. Um email avisa o dono da conta que a senha mudou. Como não existe
+   recuperação por email aqui, esse aviso é o único sinal que chega a quem foi
+   invadido — mas o envio é best-effort: falha de SMTP vira log, não erro na
+   resposta, já que a senha e as sessões nesse ponto já mudaram
+
+O endpoint tem rate limit de 5 tentativas por IP a cada 15 minutos.
 
 ### Features Disponíveis
 
