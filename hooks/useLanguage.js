@@ -111,6 +111,16 @@ const translations = {
     "Exportando...": "Exportando...",
     "Erro exportar": "Não foi possível exportar.",
     "Erro excluir conta": "Não foi possível excluir a conta.",
+    "Alterar senha": "Alterar senha",
+    "Texto alterar senha aviso":
+      "Ao trocar a senha, as outras sessões conectadas nesta conta são encerradas. Esta aqui continua ativa.",
+    "Senha atual": "Senha atual",
+    "Nova senha": "Nova senha",
+    "Confirmar nova senha": "Confirmar nova senha",
+    Salvar: "Salvar",
+    "Salvando...": "Salvando...",
+    "Senha alterada": "Senha alterada. As outras sessões foram encerradas.",
+    "Erro alterar senha": "Não foi possível alterar a senha.",
 
     // Session Card
     "Versao para platform em breve": "Versão para {platform} em breve.",
@@ -322,6 +332,16 @@ const translations = {
     "Exportando...": "Exporting...",
     "Erro exportar": "Could not export data.",
     "Erro excluir conta": "Could not delete account.",
+    "Alterar senha": "Change password",
+    "Texto alterar senha aviso":
+      "Changing your password signs out every other session on this account. This one stays active.",
+    "Senha atual": "Current password",
+    "Nova senha": "New password",
+    "Confirmar nova senha": "Confirm new password",
+    Salvar: "Save",
+    "Salvando...": "Saving...",
+    "Senha alterada": "Password changed. Your other sessions were signed out.",
+    "Erro alterar senha": "Could not change the password.",
 
     // Session Card
     "Versao para platform em breve": "Version for {platform} coming soon.",

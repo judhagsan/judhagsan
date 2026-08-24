@@ -168,6 +168,16 @@ function validatePasswordComplexity(password) {
 }
 
 async function update(username, userInputValues) {
+  // A senha não passa por aqui: trocá-la exige confirmar a senha atual, o que
+  // é responsabilidade de `updatePasswordById`. Sem esta guarda, um `password`
+  // no corpo seria gravado em texto puro pelo spread abaixo.
+  if ("password" in userInputValues) {
+    throw new ValidationError({
+      message: "A senha não pode ser alterada por este endpoint.",
+      action: "Utilize o endpoint de alteração de senha.",
+    });
+  }
+
   const currentUser = await findOneByUsername(username);
 
   if ("username" in userInputValues) {
@@ -176,11 +186,6 @@ async function update(username, userInputValues) {
 
   if ("email" in userInputValues) {
     await validateUniqueEmail(userInputValues.email);
-  }
-
-  if ("password" in userInputValues) {
-    validatePasswordComplexity(userInputValues.password);
-    await hashPasswordInObject(userInputValues);
   }
 
   const userWithNewValues = { ...currentUser, ...userInputValues };
@@ -210,6 +215,41 @@ async function update(username, userInputValues) {
         userWithNewValues.password,
       ],
     });
+
+    return results.rows[0];
+  }
+}
+
+async function updatePasswordById(userId, newPassword) {
+  validatePasswordComplexity(newPassword);
+
+  const hashedPassword = await password.hash(newPassword);
+  const updatedUser = await runUpdateQuery(userId, hashedPassword);
+
+  return updatedUser;
+
+  async function runUpdateQuery(userId, hashedPassword) {
+    const results = await database.query({
+      text: `
+        UPDATE
+          users
+        SET
+          password = $2,
+          updated_at = timezone('utc', now())
+        WHERE
+          id = $1
+        RETURNING
+          *
+        ;`,
+      values: [userId, hashedPassword],
+    });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "O id informado não foi encontrado no sistema.",
+        action: "Verifique se o id está digitado corretamente.",
+      });
+    }
 
     return results.rows[0];
   }
@@ -344,6 +384,7 @@ const user = {
   findOneByUsername,
   findOneByEmail,
   update,
+  updatePasswordById,
   remove,
   setFeatures,
   addFeatures,

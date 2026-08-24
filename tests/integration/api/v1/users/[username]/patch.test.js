@@ -270,7 +270,7 @@ describe("PATCH /api/v1/users/[username]", () => {
       expect(userInDatabase.email).toBe("uniqueEmail2@judhagsan.com");
     });
 
-    test("With new `password`", async () => {
+    test("With `password`", async () => {
       const createdUser = await orchestrator.createUser({
         password: "newPassword1",
       });
@@ -291,43 +291,27 @@ describe("PATCH /api/v1/users/[username]", () => {
         },
       );
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(400);
 
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
-        id: responseBody.id,
-        username: createdUser.username,
-        features: [
-          "create:session",
-          "read:session",
-          "update:user",
-          "delete:user",
-          "manage:device",
-        ],
-        created_at: responseBody.created_at,
-        updated_at: responseBody.updated_at,
+        name: "ValidationError",
+        message: "A senha não pode ser alterada por este endpoint.",
+        action: "Utilize o endpoint de alteração de senha.",
+        status_code: 400,
       });
 
-      expect(uuidVersion(responseBody.id)).toBe(4);
-      expect(Date.parse(responseBody.created_at)).not.toBeNaN();
-      expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
-
-      expect(responseBody.updated_at > responseBody.created_at).toBe(true);
-
+      // A senha só muda por POST /api/v1/user/password, que exige a senha
+      // atual. Aceitá-la aqui deixava uma sessão roubada trocar a senha.
       const userInDatabase = await user.findOneByUsername(createdUser.username);
-      const correctPasswordMatch = await password.compare(
-        "newPassword2",
-        userInDatabase.password,
-      );
 
-      const incorrectPasswordMatch = await password.compare(
-        "newPassword1",
-        userInDatabase.password,
-      );
-
-      expect(correctPasswordMatch).toBe(true);
-      expect(incorrectPasswordMatch).toBe(false);
+      expect(
+        await password.compare("newPassword1", userInDatabase.password),
+      ).toBe(true);
+      expect(
+        await password.compare("newPassword2", userInDatabase.password),
+      ).toBe(false);
     });
   });
 

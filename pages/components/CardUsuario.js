@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import {
   PersonFillIcon,
   PackageIcon,
+  KeyIcon,
   TrashIcon,
   AlertFillIcon,
   HeartFillIcon,
@@ -35,6 +36,13 @@ export default function CardUsuario({ user }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [isExporting, setIsExporting] = useState(false);
   const [exportError, setExportError] = useState("");
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [newPasswordConfirmation, setNewPasswordConfirmation] = useState("");
+  const [isSavingPassword, setIsSavingPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordChanged, setPasswordChanged] = useState(false);
   const isSupporter = user?.features?.includes("apoiador");
   const discordResult = router.query.discord;
   const discordReason = router.query.reason;
@@ -73,6 +81,59 @@ export default function CardUsuario({ user }) {
       setExportError(t("Erro de conexao"));
     } finally {
       setIsExporting(false);
+    }
+  }
+
+  function resetPasswordForm() {
+    setIsChangingPassword(false);
+    setCurrentPassword("");
+    setNewPassword("");
+    setNewPasswordConfirmation("");
+    setPasswordError("");
+  }
+
+  async function handleChangePassword(event) {
+    event.preventDefault();
+    if (isSavingPassword) return;
+
+    // Validação no cliente só para o que dá para responder na hora; o resto
+    // (senha atual, complexidade) é a API que decide.
+    if (newPassword.length < 8) {
+      setPasswordError(t("A senha deve ter no minimo 8 caracteres"));
+      return;
+    }
+
+    if (newPassword !== newPasswordConfirmation) {
+      setPasswordError(t("As senhas nao conferem"));
+      return;
+    }
+
+    setIsSavingPassword(true);
+    setPasswordError("");
+
+    try {
+      const response = await fetch("/api/v1/user/password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          current_password: currentPassword,
+          new_password: newPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        setPasswordError(body.message || t("Erro alterar senha"));
+        return;
+      }
+
+      resetPasswordForm();
+      setPasswordChanged(true);
+    } catch {
+      setPasswordError(t("Erro de conexao"));
+    } finally {
+      setIsSavingPassword(false);
     }
   }
 
@@ -160,6 +221,86 @@ export default function CardUsuario({ user }) {
               >
                 <TrashIcon size={14} />
                 {isDeleting ? t("Excluindo...") : t("Excluir")}
+              </button>
+            </div>
+          </form>
+        ) : isChangingPassword ? (
+          <form
+            onSubmit={handleChangePassword}
+            className="flex flex-col items-center justify-center text-center gap-4 text-white/70 text-sm relative z-10 flex-1 h-full animate-[fadeIn_0.18s_ease-out]"
+          >
+            <div className="w-14 h-14 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-200">
+              <KeyIcon size={24} />
+            </div>
+            <p className="text-lg text-white font-semibold">
+              {t("Alterar senha")}
+            </p>
+            <p className="text-xs leading-relaxed max-w-xs">
+              {t("Texto alterar senha aviso")}
+            </p>
+
+            <label className="flex flex-col gap-1 w-full max-w-xs text-left">
+              <span className="text-xs uppercase tracking-widest text-white/50">
+                {t("Senha atual")}
+              </span>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                autoComplete="current-password"
+                className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors"
+              />
+            </label>
+
+            <label className="flex flex-col gap-1 w-full max-w-xs text-left">
+              <span className="text-xs uppercase tracking-widest text-white/50">
+                {t("Nova senha")}{" "}
+                <span className="normal-case tracking-normal text-white/30">
+                  ({t("min_char")})
+                </span>
+              </span>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                autoComplete="new-password"
+                className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors"
+              />
+            </label>
+
+            <label className="flex flex-col gap-1 w-full max-w-xs text-left">
+              <span className="text-xs uppercase tracking-widest text-white/50">
+                {t("Confirmar nova senha")}
+              </span>
+              <input
+                type="password"
+                value={newPasswordConfirmation}
+                onChange={(e) => setNewPasswordConfirmation(e.target.value)}
+                autoComplete="new-password"
+                className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors"
+              />
+            </label>
+
+            {passwordError && (
+              <p className="text-red-300 text-xs">{passwordError}</p>
+            )}
+
+            <div className="flex gap-3 mt-2">
+              <button
+                type="button"
+                onClick={resetPasswordForm}
+                disabled={isSavingPassword}
+                className="cursor-pointer px-6 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white/70 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm"
+              >
+                {t("Cancelar")}
+              </button>
+              <button
+                type="submit"
+                disabled={isSavingPassword}
+                className="cursor-pointer px-6 py-2 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm inline-flex items-center gap-2"
+              >
+                <KeyIcon size={14} />
+                {isSavingPassword ? t("Salvando...") : t("Salvar")}
               </button>
             </div>
           </form>
@@ -260,6 +401,18 @@ export default function CardUsuario({ user }) {
 
                 <button
                   type="button"
+                  onClick={() => {
+                    setPasswordChanged(false);
+                    setIsChangingPassword(true);
+                  }}
+                  className="cursor-pointer inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-cyan-300 transition-colors"
+                >
+                  <KeyIcon size={12} />
+                  {t("Alterar senha")}
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => setIsConfirming(true)}
                   className="cursor-pointer inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-red-300 transition-colors"
                 >
@@ -270,6 +423,12 @@ export default function CardUsuario({ user }) {
 
               {exportError && (
                 <p className="text-red-300 text-xs">{exportError}</p>
+              )}
+
+              {passwordChanged && (
+                <p className="text-emerald-300 text-xs animate-[fadeIn_0.3s_ease-out]">
+                  {t("Senha alterada")}
+                </p>
               )}
             </div>
           </div>
