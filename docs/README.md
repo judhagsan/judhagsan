@@ -123,7 +123,8 @@ nvm use
 npm install
 
 # 4. Inicie o ambiente de desenvolvimento
-#    (sobe containers, aguarda o banco, roda migrações e inicia o Next.js)
+#    (sobe containers, aguarda o banco, roda migrações, semeia as contas
+#     de teste e inicia o Next.js)
 npm run dev
 ```
 
@@ -137,6 +138,32 @@ A aplicação estará disponível em `http://localhost:3000`.
 | MailCatcher | `mailcatcher-dev` | `1025` (SMTP), `1080` (Web UI) |
 
 Acesse a interface web do MailCatcher em `http://localhost:1080` para visualizar e-mails enviados em desenvolvimento.
+
+### Contas de Teste (Desenvolvimento)
+
+Todo `npm run dev` semeia duas contas fixas, logo depois das migrações. Elas já
+nascem ativadas — dá para logar direto, sem passar pelo email de ativação.
+
+| Email             | Senha      | Papel                                       |
+| ----------------- | ---------- | ------------------------------------------- |
+| `admin@teste.com` | `12345678` | Administrador (inclui `*:user:others`)      |
+| `user@teste.com`  | `12345678` | Usuário comum (mesmas features da ativação) |
+
+O seed é idempotente e **autoritativo**: se a senha ou as features de uma dessas
+contas forem alteradas, o próximo `npm run dev` as devolve ao estado acima. Vale
+para conserto — mexeu demais na conta de teste, é só reiniciar o servidor.
+
+Nenhuma das duas nasce com a feature `apoiador`: apoio é estado de pagamento, e
+concedê-lo aqui colocaria o admin na interface de apoiador sem nunca ter
+assinado. Para testar essa parte, use `models/supporter.js` → `grant`.
+
+`infra/scripts/seed-dev.js` se recusa a rodar fora da máquina do desenvolvedor —
+sai sem fazer nada se detectar Vercel, CI, `NODE_ENV=production` ou um
+`POSTGRES_HOST` que não seja local. A última checagem é a que importa: é a única
+que pega um `npm run dev` local com o `.env` apontando para um banco remoto.
+Semear estas contas em qualquer lugar público seria entregar um admin de senha
+conhecida. O script também nunca derruba o `npm run dev`: falha vira log, e o
+servidor sobe assim mesmo.
 
 ### Variáveis de Ambiente
 
@@ -186,6 +213,7 @@ Integração Discord (benefício de apoiador — valores fake em dev, reais só 
 | `npm run services:down`       | Remove containers Docker                                 |
 | `npm run migrations:create`   | Cria um novo arquivo de migração                         |
 | `npm run migrations:up`       | Executa migrações pendentes                              |
+| `npm run seed:dev`            | Semeia as contas de teste locais (só em ambiente local)  |
 | `npm run lint:prettier:check` | Verifica formatação com Prettier                         |
 | `npm run lint:prettier:fix`   | Corrige formatação com Prettier                          |
 | `npm run lint:eslint:check`   | Verifica linting com ESLint                              |
