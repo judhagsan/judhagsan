@@ -21,9 +21,15 @@ function formatDate(iso, language) {
   if (!iso) return "—";
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "—";
+  /*
+   * Numérica, não por extenso: "24 de ago. de 26" gasta uns 112px numa linha
+   * que tem 310 no celular, e essa coluna disputa espaço com o username e os
+   * selos. "24/08/26" cabe em metade disso e, com `tabular-nums`, alinha em
+   * coluna — que é o que se quer de uma data numa lista de dados.
+   */
   return date.toLocaleDateString(language === "pt" ? "pt-BR" : "en-US", {
     day: "2-digit",
-    month: "short",
+    month: "2-digit",
     year: "2-digit",
   });
 }
@@ -298,8 +304,13 @@ export default function CardAdminUsuarios() {
             precisa continuar na tela, senão não há como corrigir o termo. */}
         {!error && (users.length > 0 || searchTerm) && (
           <div className="relative z-10 mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+            {/* `min-w-0` em vez de `shrink-0`: a legenda tem quebra própria,
+                e com `shrink-0` ela reivindicava a largura de tudo numa linha
+                só — transbordava em vez de quebrar quando as contagens
+                ganhassem dígito. Podendo encolher, ela quebra internamente e a
+                busca mantém seu piso. */}
             {!isLoading && users.length > 0 && (
-              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm shrink-0">
+              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm min-w-0">
                 {supporterCount > 0 && (
                   <Count
                     value={supporterCount}
@@ -401,7 +412,16 @@ export default function CardAdminUsuarios() {
                     />
 
                     <div className="flex flex-col min-w-0 flex-1 gap-0.5">
-                      <div className="flex items-center gap-2 min-w-0">
+                      {/* `flex-wrap`: com os dois selos, a linha pede ~150px
+                          só para eles, e num celular sobram ~128px para tudo.
+                          Sem quebrar, o username (que encolhe) sumia e os
+                          selos (que não encolhem) eram cortados pelo
+                          `overflow-hidden` do card. Descer de linha custa
+                          altura, que é justamente o que sobra no celular.
+
+                          Ícone com rótulo em vez de só ícone de propósito:
+                          tooltip não existe em toque. */}
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
                         <span className="font-semibold truncate text-white/90">
                           {userFound.username}
                         </span>
