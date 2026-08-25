@@ -147,7 +147,68 @@ async function remove(deviceId, ownerUserId) {
   return device;
 }
 
+/*
+ * Telemetria agregada do parque inteiro, para o painel.
+ *
+ * Uma query só, com UNION ALL por dimensão, em vez de seis idas ao banco. Cada
+ * linha vem etiquetada com a dimensão a que pertence, e quem chama separa —
+ * agrupar aqui evita seis round-trips para montar um card.
+ *
+ * `ram_bytes` vira faixa de GB arredondada: 16.0 e 15.9 GB são a mesma
+ * configuração para quem lê, e contá-las separado espalharia a moda em duas
+ * linhas quase iguais.
+ */
+const STATS_DIMENSIONS = ["os", "cpu", "gpu", "ram", "tablet", "monitor"];
+
+async function stats({ limit } = {}) {
+  const safeLimit = Number.isInteger(Number.parseInt(limit, 10))
+    ? Math.min(Math.max(Number.parseInt(limit, 10), 1), 20)
+    : 5;
+
+  const results = await database.query({
+    text: `
+      SELECT 'os' AS dimension, os AS value, count(*)::int AS count
+        FROM user_devices WHERE os IS NOT NULL AND os <> '' GROUP BY os
+      UNION ALL
+      SELECT 'cpu', cpu, count(*)::int
+        FROM user_devices WHERE cpu IS NOT NULL AND cpu <> '' GROUP BY cpu
+      UNION ALL
+      SELECT 'gpu', gpu, count(*)::int
+        FROM user_devices WHERE gpu IS NOT NULL AND gpu <> '' GROUP BY gpu
+      UNION ALL
+      SELECT 'ram',
+             round(ram_bytes / 1073741824.0)::text || ' GB',
+             count(*)::int
+        FROM user_devices WHERE ram_bytes IS NOT NULL AND ram_bytes > 0
+        GROUP BY round(ram_bytes / 1073741824.0)
+      UNION ALL
+      SELECT 'tablet', tablet, count(*)::int
+        FROM user_devices WHERE tablet IS NOT NULL AND tablet <> '' GROUP BY tablet
+      UNION ALL
+      SELECT 'monitor', monitor, count(*)::int
+        FROM user_devices WHERE monitor IS NOT NULL AND monitor <> '' GROUP BY monitor
+      ORDER BY count DESC, value ASC
+      ;`,
+  });
+
+  const totalResult = await database.query({
+    text: `SELECT count(*)::int AS total FROM user_devices`,
+  });
+  const total = totalResult.rows[0].total;
+
+  const dimensions = {};
+  for (const dimension of STATS_DIMENSIONS) {
+    dimensions[dimension] = results.rows
+      .filter((row) => row.dimension === dimension)
+      .slice(0, safeLimit)
+      .map((row) => ({ value: row.value, count: row.count }));
+  }
+
+  return { total, limit: safeLimit, dimensions };
+}
+
 const userDevice = {
+  stats,
   findAllByUserId,
   findOneById,
   upsert,

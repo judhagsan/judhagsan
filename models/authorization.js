@@ -1,10 +1,25 @@
 import { InternalServerError } from "infra/errors.js";
 
 const availableFeatures = [
+  // ADMIN
+  // Marcador explícito, gravado em `users.features`, de quem enxerga o painel
+  // administrativo. Não concede nada por si: cada ação continua exigindo a sua
+  // feature granular (`update:user:others` e companhia). A separação é de
+  // propósito — "vê o painel" e "pode mexer em outro usuário" são perguntas
+  // diferentes, e antes o painel inferia a primeira a partir da segunda.
+  "admin",
+
   // USER
   "create:user",
+  // Chave de formatação do `filterOutput`, não permissão: nenhum endpoint
+  // exige esta feature, e concedê-la a alguém não muda nada. Fica na lista
+  // porque `validateFeature()` recusa nome desconhecido.
   "read:user",
   "read:user:self",
+  // Listar todos os usuários cadastrados. Segue o par `read:status` /
+  // `read:status:all`: o singular é o dado público de um usuário, o `:all` é a
+  // visão administrativa da base inteira.
+  "read:user:all",
   "update:user",
   "update:user:others",
   "delete:user",
@@ -27,9 +42,18 @@ const availableFeatures = [
 
   // DEVICES (telemetria de hardware do Pindorama)
   "manage:device",
+  // Ler a telemetria agregada de todo mundo, para o painel. Separada de
+  // `manage:device`, que é sobre os próprios aparelhos: ver o parque inteiro
+  // e mexer no que é seu são poderes diferentes.
+  "read:device:all",
 
   // APOIADOR (apoio recorrente ao Pindorama)
   "apoiador",
+  // Conceder e revogar `apoiador` na conta de outra pessoa, pelo painel.
+  // Separada de `update:user:others` de propósito: editar username de alguém e
+  // dar benefício pago de graça são poderes diferentes, e quem tem um não
+  // precisa herdar o outro.
+  "manage:supporter",
 ];
 
 function can(user, feature, resource) {
@@ -67,10 +91,16 @@ function filterOutput(user, feature, resource) {
   validateResource(resource);
 
   if (feature === "read:user") {
+    // Sem `features`: esta é a visão de um usuário sobre outro, e a lista de
+    // features é o mapa de privilégios da conta. Exposta, dizia a qualquer um
+    // qual username tem `admin`, `manage:supporter` ou `create:migration` —
+    // ou seja, em quem mirar antes de tentar qualquer coisa.
+    //
+    // Quem precisa das features tem ramo próprio: `read:user:self` para a
+    // própria conta e `read:user:all` para o painel administrativo.
     return {
       id: resource.id,
       username: resource.username,
-      features: resource.features,
       created_at: resource.created_at,
       updated_at: resource.updated_at,
     };
@@ -88,6 +118,23 @@ function filterOutput(user, feature, resource) {
         updated_at: resource.updated_at,
       };
     }
+  }
+
+  if (feature === "read:user:all") {
+    // Recebe a lista inteira e devolve mapeada. O email entra porque é a visão
+    // administrativa da base — mas a senha e os identificadores de pagamento
+    // (`mercadopago_*`) ficam de fora: o painel não precisa deles, e o que não
+    // sai daqui não vaza por descuido na tela.
+    return resource.map((userFound) => {
+      return {
+        id: userFound.id,
+        username: userFound.username,
+        email: userFound.email,
+        features: userFound.features,
+        created_at: userFound.created_at,
+        updated_at: userFound.updated_at,
+      };
+    });
   }
 
   if (feature === "read:session") {

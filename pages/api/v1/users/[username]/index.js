@@ -7,7 +7,10 @@ import { ForbiddenError } from "infra/errors.js";
 
 export default createRouter()
   .use(controller.injectAnonymousOrUser)
-  .get(getHandler)
+  // Exige sessão: sem isso, qualquer anônimo confirmava a existência de um
+  // username (200 contra 404) e lia o resto do perfil. Nenhum consumidor
+  // público chama esta rota — o site só usa o DELETE irmão, já autenticado.
+  .get(controller.canRequest("read:session"), getHandler)
   .patch(controller.canRequest("update:user"), patchHandler)
   .delete(controller.canRequest("delete:user"), deleteHandler)
   .handler(controller.errorHandlers);

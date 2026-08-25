@@ -3,6 +3,7 @@ import controller from "infra/controller.js";
 import user from "models/user.js";
 import activation from "models/activation.js";
 import auditLog from "models/auditLog.js";
+import authorization from "models/authorization.js";
 import { ValidationError } from "infra/errors.js";
 
 const GENERIC_SIGNUP_RESPONSE = {
@@ -12,8 +13,11 @@ const GENERIC_SIGNUP_RESPONSE = {
 
 const DUPLICATE_EMAIL_MESSAGE = "O email informado já está sendo utilizado.";
 
+const NO_STORE = "no-store, no-cache, max-age=0, must-revalidate";
+
 export default createRouter()
   .use(controller.injectAnonymousOrUser)
+  .get(controller.canRequest("read:user:all"), getHandler)
   .post(
     controller.rateLimit({
       key: "signup",
@@ -24,6 +28,33 @@ export default createRouter()
     postHandler,
   )
   .handler(controller.errorHandlers);
+
+async function getHandler(request, response) {
+  const userTryingToList = request.context.user;
+
+  const listing = await user.listAll({
+    limit: request.query.limit,
+    offset: request.query.offset,
+    search: request.query.search,
+  });
+
+  const secureOutputValues = authorization.filterOutput(
+    userTryingToList,
+    "read:user:all",
+    listing.users,
+  );
+
+  // Listagem da base inteira não pode encostar em cache de CDN nem de browser.
+  response.setHeader("Cache-Control", NO_STORE);
+
+  return response.status(200).json({
+    total: listing.total,
+    limit: listing.limit,
+    offset: listing.offset,
+    search: listing.search,
+    users: secureOutputValues,
+  });
+}
 
 async function postHandler(request, response) {
   const userInputValues = request.body;

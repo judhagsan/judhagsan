@@ -4,7 +4,7 @@
   "description": ":D",
   "main": "index.js",
   "scripts": {
-    "dev": "npm run services:up && npm run services:wait:database && npm run migrations:up:dev && next dev",
+    "dev": "npm run services:up && npm run services:wait:database && npm run migrations:up:dev && npm run seed:dev && next dev",
     "vercel-build": "npm run migrations:up && next build",
     "test": "npm run services:up && concurrently -n next,jest --hide next -k -s command-jest \"next dev\" \"jest --runInBand --verbose\"",
     "posttest": "npm run services:stop",
@@ -16,6 +16,7 @@
     "migrations:create": "node-pg-migrate -m infra/migrations create",
     "migrations:up": "node infra/scripts/migrate.js",
     "migrations:up:dev": "node-pg-migrate -m infra/migrations --envPath .env.development up",
+    "seed:dev": "node infra/scripts/seed-dev.js",
     "lint:prettier:check": "prettier --check .",
     "lint:prettier:fix": "prettier --write .",
     "lint:eslint:check": "eslint . --max-warnings 0",

@@ -123,7 +123,8 @@ nvm use
 npm install
 
 # 4. Inicie o ambiente de desenvolvimento
-#    (sobe containers, aguarda o banco, roda migrações e inicia o Next.js)
+#    (sobe containers, aguarda o banco, roda migrações, semeia as contas
+#     de teste e inicia o Next.js)
 npm run dev
 ```
 
@@ -137,6 +138,47 @@ A aplicação estará disponível em `http://localhost:3000`.
 | MailCatcher | `mailcatcher-dev` | `1025` (SMTP), `1080` (Web UI) |
 
 Acesse a interface web do MailCatcher em `http://localhost:1080` para visualizar e-mails enviados em desenvolvimento.
+
+### Contas de Teste (Desenvolvimento)
+
+Todo `npm run dev` semeia duas contas fixas, logo depois das migrações. Elas já
+nascem ativadas — dá para logar direto, sem passar pelo email de ativação.
+
+| Email                | Senha      | Papel                                       |
+| -------------------- | ---------- | ------------------------------------------- |
+| `admin@teste.com`    | `12345678` | Administrador (`admin` + `*:user:others`)   |
+| `user@teste.com`     | `12345678` | Usuário comum (mesmas features da ativação) |
+| `apoiador@teste.com` | `12345678` | Apoiador (usuário comum + `apoiador`)       |
+| `pendente@teste.com` | `12345678` | Cadastro nunca ativado — **não faz login**  |
+
+As quatro existem para cobrir os estados que o painel administrativo sabe
+mostrar. Sem elas, admin e usuário comum apareceriam como duas linhas iguais, e
+não haveria como ver se o selo de apoiador ou o de pendente renderizam.
+
+A conta pendente carrega só `read:activation_token`, exatamente como uma conta
+recém-criada antes do clique no email — por isso **o login dela devolve 403**.
+Não é defeito do seed: é o que a conta representa.
+
+A apoiadora recebe `apoiador` sem `supporter_until`. É o caso que
+`supporter.expireOverdue()` ignora de propósito ("apoiador concedido à mão nunca
+expira sozinho"); com prazo, o cron diário revogaria a feature e o seed teria que
+devolvê-la a cada subida.
+
+O seed é idempotente e **autoritativo**: se a senha ou as features de uma dessas
+contas forem alteradas, o próximo `npm run dev` as devolve ao estado acima. Vale
+para conserto — mexeu demais na conta de teste, é só reiniciar o servidor.
+
+Nenhuma das duas nasce com a feature `apoiador`: apoio é estado de pagamento, e
+concedê-lo aqui colocaria o admin na interface de apoiador sem nunca ter
+assinado. Para testar essa parte, use `models/supporter.js` → `grant`.
+
+`infra/scripts/seed-dev.js` se recusa a rodar fora da máquina do desenvolvedor —
+sai sem fazer nada se detectar Vercel, CI, `NODE_ENV=production` ou um
+`POSTGRES_HOST` que não seja local. A última checagem é a que importa: é a única
+que pega um `npm run dev` local com o `.env` apontando para um banco remoto.
+Semear estas contas em qualquer lugar público seria entregar um admin de senha
+conhecida. O script também nunca derruba o `npm run dev`: falha vira log, e o
+servidor sobe assim mesmo.
 
 ### Variáveis de Ambiente
 
@@ -186,6 +228,7 @@ Integração Discord (benefício de apoiador — valores fake em dev, reais só 
 | `npm run services:down`       | Remove containers Docker                                 |
 | `npm run migrations:create`   | Cria um novo arquivo de migração                         |
 | `npm run migrations:up`       | Executa migrações pendentes                              |
+| `npm run seed:dev`            | Semeia as contas de teste locais (só em ambiente local)  |
 | `npm run lint:prettier:check` | Verifica formatação com Prettier                         |
 | `npm run lint:prettier:fix`   | Corrige formatação com Prettier                          |
 | `npm run lint:eslint:check`   | Verifica linting com ESLint                              |
@@ -205,11 +248,14 @@ Base URL: `/api/v1`
 
 ### Usuários
 
-| Método  | Endpoint           | Descrição                                  |
-| ------- | ------------------ | ------------------------------------------ |
-| `POST`  | `/users`           | Cria um novo usuário                       |
-| `GET`   | `/users/:username` | Busca usuário por username                 |
-| `PATCH` | `/users/:username` | Atualiza dados do usuário (exceto a senha) |
+| Método   | Endpoint                     | Descrição                                      |
+| -------- | ---------------------------- | ---------------------------------------------- |
+| `POST`   | `/users`                     | Cria um novo usuário                           |
+| `GET`    | `/users`                     | Lista usuários, com `search` (`read:user:all`) |
+| `GET`    | `/users/:username`           | Busca usuário por username (exige sessão)      |
+| `PATCH`  | `/users/:username`           | Atualiza `username` e `email` (só esses dois)  |
+| `PUT`    | `/users/:username/supporter` | Concede `apoiador` (`manage:supporter`)        |
+| `DELETE` | `/users/:username/supporter` | Revoga `apoiador` (`manage:supporter`)         |
 
 ### Sessões
 
@@ -225,6 +271,7 @@ Base URL: `/api/v1`
 | `GET`   | `/user`           | Retorna dados do usuário logado                       |
 | `PATCH` | `/user/supporter` | Define exibição no mural de apoiadores (`apoiador`)   |
 | `POST`  | `/user/password`  | Troca a senha do usuário logado (exige a senha atual) |
+| `GET`   | `/devices/stats`  | Telemetria agregada de hardware (`read:device:all`)   |
 
 ### Apoiadores
 
@@ -277,6 +324,11 @@ Trocar a senha exige confirmar a senha atual e acontece só em
 sem conhecer a atual, e o spread de `user.update()` gravaria a senha em texto
 puro se a guarda saísse.
 
+Esse PATCH só escreve `username` e `email`; qualquer outro campo no corpo volta
+`400`. Antes eram descartados em silêncio com resposta `200` — `features` e `id`
+nunca chegaram ao SQL, então ninguém se promovia por ali, mas a API dizia "ok"
+para um pedido que não atendeu.
+
 1. O usuário logado envia `current_password` e `new_password`
 2. `models/password.compare()` confere a senha atual — se não bate, volta
    `400 ValidationError` (e não `401`, que faria o `onErrorHandler` limpar o
@@ -294,13 +346,41 @@ puro se a guarda saísse.
 
 O endpoint tem rate limit de 5 tentativas por IP a cada 15 minutos.
 
+### O que cada visão de usuário devolve
+
+`filterOutput()` tem um ramo por visão, e a diferença entre eles é deliberada:
+
+| Ramo             | Quem usa                      | Devolve                                      |
+| ---------------- | ----------------------------- | -------------------------------------------- |
+| `read:user`      | `GET /users/:username`, PATCH | `id`, `username`, `created_at`, `updated_at` |
+| `read:user:self` | `GET /user`                   | o anterior + `email`, `features`, Discord    |
+| `read:user:all`  | `GET /users` (painel)         | o anterior + `email` e `features` de todos   |
+
+`read:user` **não devolve `features`**. A lista de features é o mapa de
+privilégios da conta: exposta, dizia a qualquer um qual username tem `admin`,
+`manage:supporter` ou `create:migration` — ou seja, em quem mirar antes de
+tentar qualquer coisa. Quem precisa dela lê a própria conta (`read:user:self`)
+ou tem `read:user:all`.
+
+E `GET /users/:username` exige sessão. Aberto, ele respondia `200` para quem
+existe e `404` para quem não existe, o que basta para levantar a lista de
+cadastrados. Nenhum consumidor público chamava a rota.
+
+A feature `read:user` existe só como chave de formatação do `filterOutput` —
+nenhum endpoint a exige, e concedê-la a alguém não muda nada. Fica na lista
+porque `validateFeature()` recusa nome desconhecido.
+
 ### Features Disponíveis
 
 | Feature                 | Descrição                                     |
 | ----------------------- | --------------------------------------------- |
+| `admin`                 | Enxerga o painel administrativo em `/sessao`  |
 | `create:user`           | Criar novos usuários                          |
 | `read:user`             | Visualizar dados públicos de usuários         |
 | `read:user:self`        | Visualizar dados próprios (inclui e-mail)     |
+| `read:user:all`         | Listar todos os usuários cadastrados          |
+| `manage:supporter`      | Conceder e revogar `apoiador` de outra conta  |
+| `read:device:all`       | Ler a telemetria de hardware de todo mundo    |
 | `update:user`           | Atualizar dados do próprio usuário            |
 | `update:user:others`    | Atualizar dados de outros usuários (admin)    |
 | `create:session`        | Criar sessão (login)                          |
@@ -312,6 +392,83 @@ O endpoint tem rate limit de 5 tentativas por IP a cada 15 minutos.
 | `read:status:all`       | Visualizar status completo (inclui versão DB) |
 | `manage:device`         | Gerenciar dispositivos (telemetria Pindorama) |
 | `apoiador`              | Benefícios de apoiador do Pindorama           |
+
+### Painel Administrativo
+
+Quem enxerga o painel em `/sessao` é quem tem a feature `admin` gravada em
+`users.features` — lida do banco pelo `GET /api/v1/user` e exposta pelo hook
+`useUser()` como `isAdmin`.
+
+A feature **não concede nada sozinha**. Cada ação do painel continua exigindo a
+sua feature granular no servidor (`update:user:others` e companhia): o cliente
+esconde a interface, não é ele que autoriza. Separar as duas coisas é o ponto —
+"vê o painel" e "pode mexer em outro usuário" são perguntas diferentes, e a
+primeira era deduzida da segunda antes da migration `add-admin-feature-to-users`.
+Quem ganhasse `update:user:others` por um motivo pontual herdava o painel sem
+ninguém ter decidido isso.
+
+Essa migration faz o backfill de quem já tinha `update:user:others`, para
+ninguém perder o acesso ao subir. Concessão nova é manual, via
+`user.addFeatures(id, ["admin"])`.
+
+**Layout.** Para quem é admin, `/sessao` troca de arranjo: o card do Pindorama
+desce para a coluna da esquerda em modo `compact` (sem o texto de divulgação,
+só título e botões), o card de apoio e o de últimos vídeos saem, e a área
+central fica para os cards do painel.
+
+**Usuários cadastrados** (`CardAdminUsuarios`) é o primeiro deles. Lê
+`GET /api/v1/users`, protegido por `read:user:all` — feature própria, concedida
+por migration a quem tem `admin`, e não um efeito colateral de `admin`. A
+listagem é paginada desde o início (padrão 50, teto 200): hoje são poucas
+contas, mas listagem sem limite é problema que só aparece quando já é tarde.
+
+O `SELECT` não traz `password`, e o `filterOutput` recorta de novo o que sai na
+resposta. As duas barreiras são de propósito — se um dia o SELECT virar
+`SELECT *`, o filtro ainda segura o hash, e há teste para isso.
+
+**Busca.** O campo do card manda `?search=` para o servidor, que casa em
+`username` **ou** `email`, sem diferenciar maiúsculas, em qualquer posição. Não
+é filtro sobre a lista já carregada: com a paginação de 50, filtrar no cliente
+diria "nenhum resultado" para quem existe mas ficou fora da página — errado de
+um jeito que parece certo. O `total` da resposta reflete o filtro, então o
+rodapé continua honesto.
+
+`%` e `_` são escapados antes de virar padrão do `ILIKE`. Sem isso, digitar `%`
+devolveria a base inteira e `a_min` casaria com `admin`. O campo tem atraso de
+300ms para não consultar a cada tecla, e `keepPreviousData` segura a lista
+anterior enquanto a nova chega.
+
+**Conceder e revogar apoio.** Cada linha da lista tem um botão de coração que
+alterna `apoiador` na conta, por `PUT`/`DELETE` em `/users/:username/supporter`.
+A permissão é `manage:supporter`, separada de `update:user:others`: editar o
+username de alguém e dar de graça um benefício pago são poderes diferentes.
+
+O botão não aparece em cadastro pendente — dar benefício a quem nunca confirmou
+o email é conceder acesso a uma conta que ainda não se provou de ninguém.
+
+E a revogação **recusa agir sobre um ciclo pago em andamento** (`400`). Tirar a
+feature não cancela nada no Mercado Pago: a cobrança seguiria, o próximo webhook
+devolveria o acesso, e no intervalo alguém que paga teria ficado sem. Como
+`supporter_until` só é gravado por `grantUntil()`, um prazo futuro é exatamente
+o sinal de "ciclo pago rodando"; concessão manual deixa nulo. Cancelamento de
+assinatura continua sendo fluxo da própria pessoa, em `/sessao`.
+
+**Hardware dos usuários** (`CardAdminHardware`) lê `GET /api/v1/devices/stats`,
+protegido por `read:device:all` — separada de `manage:device`, que todo usuário
+ativado tem para mexer nos próprios aparelhos.
+
+A rota devolve contagem por valor em seis dimensões (SO, CPU, GPU, RAM, mesa,
+monitor), sem `user_id` e sem `hardware_uuid`: é agregado, não listagem de quem
+tem o quê. `ram_bytes` é arredondado para GB, senão 16.0 e 15.9 espalhariam a
+moda em duas linhas quase iguais.
+
+O card lidera com o **perfil mais comum**, que junta o primeiro colocado de cada
+categoria — e diz isso na tela, porque essa combinação pode descrever uma
+máquina que ninguém tem. Abaixo, barras horizontais de uma cor só: a série é
+uma (contagem de dispositivos), e sombrear por posição pintaria a ordenação, não
+o dado. A escala é relativa ao líder, não ao total, senão com poucos aparelhos
+todas as barras ficariam curtas demais para comparar. A contagem é rótulo
+visível, não tooltip — tooltip não existe em toque.
 
 ### Apoiadores (apoio ao Pindorama)
 

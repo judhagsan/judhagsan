@@ -122,6 +122,38 @@ const translations = {
     "Senha alterada": "Senha alterada. As outras sessões foram encerradas.",
     "Erro alterar senha": "Não foi possível alterar a senha.",
 
+    // Painel administrativo
+    "Usuarios cadastrados": "Usuários cadastrados",
+    "Nenhum usuario cadastrado": "Nenhum usuário cadastrado ainda.",
+    "Erro ao carregar usuarios": "Não foi possível carregar os usuários.",
+    Admin: "Admin",
+    Pendente: "Pendente",
+    "Mostrando n de total": "Mostrando {n} de {total}",
+    "Buscar por nome ou email": "Buscar por nome ou email",
+    "Limpar busca": "Limpar busca",
+    "Nenhum usuario encontrado":
+      "Nenhum usuário encontrado para \u201c{termo}\u201d.",
+
+    // Card de hardware
+    "Hardware dos usuarios": "Hardware dos usuários",
+    "Perfil mais comum": "Perfil mais comum",
+    "O mais frequente entre n dispositivos":
+      "O mais frequente em cada categoria, entre {n} dispositivos",
+    "Erro ao carregar hardware": "Não foi possível carregar o hardware.",
+    "Nenhum dispositivo registrado ainda":
+      "Nenhum dispositivo registrado ainda.",
+    "Sem dados nesta categoria": "Sem dados nesta categoria.",
+    apoiadores: "apoiadores",
+    confirmados: "confirmados",
+    pendentes: "pendentes",
+    "Tornar apoiador": "Tornar apoiador",
+    "Revogar apoio": "Revogar apoio",
+    "Erro ao alterar apoio": "Não foi possível alterar o apoio.",
+    "Texto tornar apoiador":
+      "{username} passa a ter os benefícios de apoiador, sem cobrança.",
+    "Texto revogar apoio":
+      "{username} perde os benefícios de apoiador imediatamente.",
+
     // Session Card
     "Versao para platform em breve": "Versão para {platform} em breve.",
 
@@ -342,6 +374,35 @@ const translations = {
     "Salvando...": "Saving...",
     "Senha alterada": "Password changed. Your other sessions were signed out.",
     "Erro alterar senha": "Could not change the password.",
+
+    // Admin panel
+    "Usuarios cadastrados": "Registered users",
+    "Nenhum usuario cadastrado": "No registered users yet.",
+    "Erro ao carregar usuarios": "Could not load users.",
+    Admin: "Admin",
+    Pendente: "Pending",
+    "Mostrando n de total": "Showing {n} of {total}",
+    "Buscar por nome ou email": "Search by name or email",
+    "Limpar busca": "Clear search",
+    "Nenhum usuario encontrado": "No users found for \u201c{termo}\u201d.",
+
+    // Hardware card
+    "Hardware dos usuarios": "User hardware",
+    "Perfil mais comum": "Most common profile",
+    "O mais frequente entre n dispositivos":
+      "The most frequent in each category, across {n} devices",
+    "Erro ao carregar hardware": "Could not load hardware data.",
+    "Nenhum dispositivo registrado ainda": "No devices registered yet.",
+    "Sem dados nesta categoria": "No data in this category.",
+    apoiadores: "supporters",
+    confirmados: "confirmed",
+    pendentes: "pending",
+    "Tornar apoiador": "Make supporter",
+    "Revogar apoio": "Revoke support",
+    "Erro ao alterar apoio": "Could not change supporter status.",
+    "Texto tornar apoiador":
+      "{username} gets supporter benefits, with no charge.",
+    "Texto revogar apoio": "{username} loses supporter benefits immediately.",
 
     // Session Card
     "Versao para platform em breve": "Version for {platform} coming soon.",
