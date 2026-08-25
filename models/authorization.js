@@ -11,6 +11,9 @@ const availableFeatures = [
 
   // USER
   "create:user",
+  // Chave de formatação do `filterOutput`, não permissão: nenhum endpoint
+  // exige esta feature, e concedê-la a alguém não muda nada. Fica na lista
+  // porque `validateFeature()` recusa nome desconhecido.
   "read:user",
   "read:user:self",
   // Listar todos os usuários cadastrados. Segue o par `read:status` /
@@ -84,10 +87,16 @@ function filterOutput(user, feature, resource) {
   validateResource(resource);
 
   if (feature === "read:user") {
+    // Sem `features`: esta é a visão de um usuário sobre outro, e a lista de
+    // features é o mapa de privilégios da conta. Exposta, dizia a qualquer um
+    // qual username tem `admin`, `manage:supporter` ou `create:migration` —
+    // ou seja, em quem mirar antes de tentar qualquer coisa.
+    //
+    // Quem precisa das features tem ramo próprio: `read:user:self` para a
+    // própria conta e `read:user:all` para o painel administrativo.
     return {
       id: resource.id,
       username: resource.username,
-      features: resource.features,
       created_at: resource.created_at,
       updated_at: resource.updated_at,
     };

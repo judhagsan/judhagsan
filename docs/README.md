@@ -252,7 +252,7 @@ Base URL: `/api/v1`
 | -------- | ---------------------------- | --------------------------------------------- |
 | `POST`   | `/users`                     | Cria um novo usuário                          |
 | `GET`    | `/users`                     | Lista todos os usuários (`read:user:all`)     |
-| `GET`    | `/users/:username`           | Busca usuário por username                    |
+| `GET`    | `/users/:username`           | Busca usuário por username (exige sessão)     |
 | `PATCH`  | `/users/:username`           | Atualiza `username` e `email` (só esses dois) |
 | `PUT`    | `/users/:username/supporter` | Concede `apoiador` (`manage:supporter`)       |
 | `DELETE` | `/users/:username/supporter` | Revoga `apoiador` (`manage:supporter`)        |
@@ -344,6 +344,30 @@ para um pedido que não atendeu.
    resposta, já que a senha e as sessões nesse ponto já mudaram
 
 O endpoint tem rate limit de 5 tentativas por IP a cada 15 minutos.
+
+### O que cada visão de usuário devolve
+
+`filterOutput()` tem um ramo por visão, e a diferença entre eles é deliberada:
+
+| Ramo             | Quem usa                      | Devolve                                      |
+| ---------------- | ----------------------------- | -------------------------------------------- |
+| `read:user`      | `GET /users/:username`, PATCH | `id`, `username`, `created_at`, `updated_at` |
+| `read:user:self` | `GET /user`                   | o anterior + `email`, `features`, Discord    |
+| `read:user:all`  | `GET /users` (painel)         | o anterior + `email` e `features` de todos   |
+
+`read:user` **não devolve `features`**. A lista de features é o mapa de
+privilégios da conta: exposta, dizia a qualquer um qual username tem `admin`,
+`manage:supporter` ou `create:migration` — ou seja, em quem mirar antes de
+tentar qualquer coisa. Quem precisa dela lê a própria conta (`read:user:self`)
+ou tem `read:user:all`.
+
+E `GET /users/:username` exige sessão. Aberto, ele respondia `200` para quem
+existe e `404` para quem não existe, o que basta para levantar a lista de
+cadastrados. Nenhum consumidor público chamava a rota.
+
+A feature `read:user` existe só como chave de formatação do `filterOutput` —
+nenhum endpoint a exige, e concedê-la a alguém não muda nada. Fica na lista
+porque `validateFeature()` recusa nome desconhecido.
 
 ### Features Disponíveis
 

@@ -171,10 +171,32 @@ describe("models/authorization.js", () => {
       expect(result).toEqual({
         id: 1,
         username: "resource",
-        features: ["read:user"],
         created_at: "2026-01-01T00:00:00.000Z",
         updated_at: "2026-01-01T00:00:00.000Z",
       });
+    });
+
+    // `features` é o mapa de privilégios da conta, e esta é a visão de um
+    // usuário sobre outro. Exposta, dizia a qualquer um qual username tem
+    // `admin` ou `manage:supporter`.
+    test("`read:user` never exposes features, email or password", () => {
+      const result = authorization.filterOutput(
+        { features: ["read:user"] },
+        "read:user",
+        {
+          id: 1,
+          username: "resource",
+          features: ["admin", "manage:supporter"],
+          email: "resource@resource.com",
+          password: "$2a$hash",
+          created_at: "2026-01-01T00:00:00.000Z",
+          updated_at: "2026-01-01T00:00:00.000Z",
+        },
+      );
+
+      expect(result).not.toHaveProperty("features");
+      expect(result).not.toHaveProperty("email");
+      expect(result).not.toHaveProperty("password");
     });
   });
 });

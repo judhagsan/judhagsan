@@ -90,8 +90,12 @@ describe("PUT/DELETE /api/v1/users/[username]/supporter", () => {
 
       expect(response.status).toBe(200);
 
+      // A resposta é a visão pública do usuário — sem `features`, que é o
+      // mapa de privilégios. Quem confere se a concessão pegou é o banco,
+      // logo abaixo; o card do painel relê a lista em vez de usar isto.
       const responseBody = await response.json();
-      expect(responseBody.features).toContain("apoiador");
+      expect(responseBody.username).toBe(targetUser.username);
+      expect(responseBody).not.toHaveProperty("features");
       expect(responseBody).not.toHaveProperty("password");
 
       const userInDatabase = await user.findOneById(targetUser.id);

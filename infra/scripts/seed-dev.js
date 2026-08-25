@@ -31,7 +31,6 @@ const ADMIN_FEATURES = [
   // Marcador do painel. Separado das permissões abaixo de propósito: `admin`
   // diz quem enxerga o painel, elas dizem o que ele pode fazer lá dentro.
   "admin",
-  "read:user",
   "read:user:all",
   "update:user:others",
   "delete:user:others",
