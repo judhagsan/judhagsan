@@ -79,6 +79,11 @@ describe("seed-dev: accounts", () => {
     );
   });
 
+  test("Only the admin receives the `admin` feature", () => {
+    expect(ADMIN_FEATURES).toContain("admin");
+    expect(USER_FEATURES).not.toContain("admin");
+  });
+
   test("The admin has every feature of a regular user, plus more", () => {
     for (const feature of USER_FEATURES) {
       expect(ADMIN_FEATURES).toContain(feature);

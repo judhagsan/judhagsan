@@ -36,6 +36,26 @@ describe("models/authorization.js", () => {
 
       expect(authorization.can(createdUser, "create:user")).toBe(true);
     });
+
+    test("with `admin` feature", () => {
+      const adminUser = {
+        features: ["admin"],
+      };
+
+      expect(authorization.can(adminUser, "admin")).toBe(true);
+    });
+
+    // `admin` marca quem enxerga o painel, e só. Se um dia ela passar a
+    // conceder permissão por tabela, é aqui que quebra primeiro.
+    test("`admin` does not grant privileged features by itself", () => {
+      const adminUser = {
+        features: ["admin"],
+      };
+
+      expect(authorization.can(adminUser, "update:user:others")).toBe(false);
+      expect(authorization.can(adminUser, "delete:user:others")).toBe(false);
+      expect(authorization.can(adminUser, "read:status:all")).toBe(false);
+    });
   });
 
   describe(".filterOutput()", () => {

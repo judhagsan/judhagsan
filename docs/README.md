@@ -146,7 +146,7 @@ nascem ativadas — dá para logar direto, sem passar pelo email de ativação.
 
 | Email             | Senha      | Papel                                       |
 | ----------------- | ---------- | ------------------------------------------- |
-| `admin@teste.com` | `12345678` | Administrador (inclui `*:user:others`)      |
+| `admin@teste.com` | `12345678` | Administrador (`admin` + `*:user:others`)   |
 | `user@teste.com`  | `12345678` | Usuário comum (mesmas features da ativação) |
 
 O seed é idempotente e **autoritativo**: se a senha ou as features de uma dessas
@@ -326,6 +326,7 @@ O endpoint tem rate limit de 5 tentativas por IP a cada 15 minutos.
 
 | Feature                 | Descrição                                     |
 | ----------------------- | --------------------------------------------- |
+| `admin`                 | Enxerga o painel administrativo em `/sessao`  |
 | `create:user`           | Criar novos usuários                          |
 | `read:user`             | Visualizar dados públicos de usuários         |
 | `read:user:self`        | Visualizar dados próprios (inclui e-mail)     |
@@ -340,6 +341,24 @@ O endpoint tem rate limit de 5 tentativas por IP a cada 15 minutos.
 | `read:status:all`       | Visualizar status completo (inclui versão DB) |
 | `manage:device`         | Gerenciar dispositivos (telemetria Pindorama) |
 | `apoiador`              | Benefícios de apoiador do Pindorama           |
+
+### Painel Administrativo
+
+Quem enxerga o painel em `/sessao` é quem tem a feature `admin` gravada em
+`users.features` — lida do banco pelo `GET /api/v1/user` e exposta pelo hook
+`useUser()` como `isAdmin`.
+
+A feature **não concede nada sozinha**. Cada ação do painel continua exigindo a
+sua feature granular no servidor (`update:user:others` e companhia): o cliente
+esconde a interface, não é ele que autoriza. Separar as duas coisas é o ponto —
+"vê o painel" e "pode mexer em outro usuário" são perguntas diferentes, e a
+primeira era deduzida da segunda antes da migration `add-admin-feature-to-users`.
+Quem ganhasse `update:user:others` por um motivo pontual herdava o painel sem
+ninguém ter decidido isso.
+
+Essa migration faz o backfill de quem já tinha `update:user:others`, para
+ninguém perder o acesso ao subir. Concessão nova é manual, via
+`user.addFeatures(id, ["admin"])`.
 
 ### Apoiadores (apoio ao Pindorama)
 

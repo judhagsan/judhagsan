@@ -15,7 +15,7 @@ import useLanguage from "hooks/useLanguage";
 
 export default function SessaoPage() {
   const router = useRouter();
-  const { user, isLoading, isLoggedIn } = useUser();
+  const { user, isLoading, isLoggedIn, isAdmin } = useUser();
   const { activePanel, close: closeSidePanel } = useSidePanel();
   const { t } = useLanguage();
 
@@ -108,10 +108,15 @@ export default function SessaoPage() {
             </div>
           </div>
 
-          <div className="lg:mt-auto flex flex-col w-full shrink-0 gap-4">
-            {/* Bottom Section - YouTube Card */}
-            <CardYoutube />
-          </div>
+          {/* Bottom Section — YouTube Card. Fora para o admin: o painel usa
+              esta faixa, e divulgação de canal não é ferramenta de operação.
+              Preso ao `!isLoading` de propósito — sem isso o card aparece no
+              primeiro render e some quando o usuário chega, com uma piscada. */}
+          {!isLoading && !isAdmin && (
+            <div className="lg:mt-auto flex flex-col w-full shrink-0 gap-4">
+              <CardYoutube />
+            </div>
+          )}
         </div>
       </div>
     </MainFrame>

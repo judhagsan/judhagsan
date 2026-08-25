@@ -28,6 +28,9 @@ const USER_FEATURES = [
 // apoiador sem nunca ter assinado.
 const ADMIN_FEATURES = [
   ...USER_FEATURES,
+  // Marcador do painel. Separado das permissões abaixo de propósito: `admin`
+  // diz quem enxerga o painel, elas dizem o que ele pode fazer lá dentro.
+  "admin",
   "read:user",
   "update:user:others",
   "delete:user:others",

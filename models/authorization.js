@@ -1,6 +1,14 @@
 import { InternalServerError } from "infra/errors.js";
 
 const availableFeatures = [
+  // ADMIN
+  // Marcador explícito, gravado em `users.features`, de quem enxerga o painel
+  // administrativo. Não concede nada por si: cada ação continua exigindo a sua
+  // feature granular (`update:user:others` e companhia). A separação é de
+  // propósito — "vê o painel" e "pode mexer em outro usuário" são perguntas
+  // diferentes, e antes o painel inferia a primeira a partir da segunda.
+  "admin",
+
   // USER
   "create:user",
   "read:user",
