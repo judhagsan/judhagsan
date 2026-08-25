@@ -41,7 +41,7 @@ export default function SessaoPage() {
             {/* User + Dispositivos column — full-width on mobile, sidebar on desktop */}
             {/* top-8 compensa o -mt-8 da seção para os cards não entrarem
                 por baixo da borda superior do MainFrame */}
-            <div className="w-full lg:absolute lg:top-8 lg:left-0 lg:w-1/4 lg:max-h-[calc(100%-2rem)] flex flex-col gap-4 lg:overflow-y-auto lg:pr-2">
+            <div className="w-full lg:absolute lg:top-8 lg:left-0 lg:w-1/4 lg:max-h-[calc(100%-2rem)] flex flex-col gap-4 lg:overflow-y-auto lg:pr-4">
               {isLoggedIn && <CardUsuario user={user} />}
               {/* Sem condição de propósito: o card decide sozinho o que
                   mostrar. Quem não apoia vê o formulário; quem tem assinatura
@@ -56,7 +56,7 @@ export default function SessaoPage() {
                 para não sobrepor. */}
             {isLoggedIn && (
               <div
-                className={`w-full lg:absolute lg:top-8 lg:right-0 lg:w-1/4 lg:max-h-[calc(100%-2rem)] flex-col gap-4 lg:overflow-y-auto lg:pl-2 ${
+                className={`w-full lg:absolute lg:top-8 lg:right-0 lg:w-1/4 lg:max-h-[calc(100%-2rem)] flex-col gap-4 lg:overflow-y-auto lg:pl-4 ${
                   activePanel ? "hidden lg:flex" : "flex"
                 }`}
               >
@@ -67,7 +67,7 @@ export default function SessaoPage() {
             {/* Sessão + Side panel as centered flex group */}
             {/* my-auto + overflow-y-auto = centralização segura: com pouca
                 altura o card rola em vez de estourar por cima do MainFrame */}
-            <div className="w-full lg:h-full lg:min-h-0 flex flex-col lg:flex-row items-center justify-center gap-6 lg:overflow-y-auto lg:pt-8">
+            <div className="w-full lg:h-full lg:min-h-0 flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-0 lg:overflow-y-auto lg:pt-8">
               {/* Pindorama — no desktop dá lugar ao painel quando um está aberto,
                   que passa a ocupar toda a área central */}
               {isLoggedIn && (
