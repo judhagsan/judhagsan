@@ -233,11 +233,11 @@ Base URL: `/api/v1`
 
 ### Usuários
 
-| Método  | Endpoint           | Descrição                                  |
-| ------- | ------------------ | ------------------------------------------ |
-| `POST`  | `/users`           | Cria um novo usuário                       |
-| `GET`   | `/users/:username` | Busca usuário por username                 |
-| `PATCH` | `/users/:username` | Atualiza dados do usuário (exceto a senha) |
+| Método  | Endpoint           | Descrição                                     |
+| ------- | ------------------ | --------------------------------------------- |
+| `POST`  | `/users`           | Cria um novo usuário                          |
+| `GET`   | `/users/:username` | Busca usuário por username                    |
+| `PATCH` | `/users/:username` | Atualiza `username` e `email` (só esses dois) |
 
 ### Sessões
 
@@ -304,6 +304,11 @@ Trocar a senha exige confirmar a senha atual e acontece só em
 `password` com `400`: aceitá-lo ali deixava uma sessão roubada trocar a senha
 sem conhecer a atual, e o spread de `user.update()` gravaria a senha em texto
 puro se a guarda saísse.
+
+Esse PATCH só escreve `username` e `email`; qualquer outro campo no corpo volta
+`400`. Antes eram descartados em silêncio com resposta `200` — `features` e `id`
+nunca chegaram ao SQL, então ninguém se promovia por ali, mas a API dizia "ok"
+para um pedido que não atendeu.
 
 1. O usuário logado envia `current_password` e `new_password`
 2. `models/password.compare()` confere a senha atual — se não bate, volta

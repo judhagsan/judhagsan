@@ -3,6 +3,8 @@ import password from "models/password.js";
 import emailValidation from "infra/emailValidation.js";
 import { ValidationError, NotFoundError } from "infra/errors.js";
 
+const UPDATABLE_FIELDS = ["username", "email"];
+
 async function findOneById(id) {
   const userFound = await runSelectQuery(id);
 
@@ -168,27 +170,34 @@ function validatePasswordComplexity(password) {
 }
 
 async function update(username, userInputValues) {
+  // Um PATCH sem corpo chega aqui como `undefined`, e o `in` abaixo estourava
+  // TypeError — 500 numa requisição que é só malformada. Normalizar para `{}`
+  // faz esse caso terminar igual ao corpo vazio, que já respondia 200.
+  const inputValues = userInputValues || {};
+
   // A senha não passa por aqui: trocá-la exige confirmar a senha atual, o que
   // é responsabilidade de `updatePasswordById`. Sem esta guarda, um `password`
   // no corpo seria gravado em texto puro pelo spread abaixo.
-  if ("password" in userInputValues) {
+  if ("password" in inputValues) {
     throw new ValidationError({
       message: "A senha não pode ser alterada por este endpoint.",
       action: "Utilize o endpoint de alteração de senha.",
     });
   }
 
+  validateOnlyUpdatableFields(inputValues);
+
   const currentUser = await findOneByUsername(username);
 
-  if ("username" in userInputValues) {
-    await validateUniqueUsername(userInputValues.username);
+  if ("username" in inputValues) {
+    await validateUniqueUsername(inputValues.username);
   }
 
-  if ("email" in userInputValues) {
-    await validateUniqueEmail(userInputValues.email);
+  if ("email" in inputValues) {
+    await validateUniqueEmail(inputValues.email);
   }
 
-  const userWithNewValues = { ...currentUser, ...userInputValues };
+  const userWithNewValues = { ...currentUser, ...inputValues };
 
   const updatedUser = await runUpdateQuery(userWithNewValues);
   return updatedUser;
@@ -252,6 +261,27 @@ async function updatePasswordById(userId, newPassword) {
     }
 
     return results.rows[0];
+  }
+}
+
+/*
+ * O UPDATE abaixo escreve username, email e password — e password tem guarda
+ * própria. Qualquer outro campo do corpo era descartado em silêncio, com a
+ * resposta 200 dizendo que deu certo. Não era brecha (`features` e `id` nunca
+ * chegaram ao SQL, então ninguém se promovia por aqui), mas é contrato
+ * mentiroso: quem manda `features: ["admin"]` merece ouvir que este endpoint
+ * não faz isso, em vez de um "ok" que não aconteceu.
+ */
+function validateOnlyUpdatableFields(userInputValues) {
+  const unknownFields = Object.keys(userInputValues).filter(
+    (field) => !UPDATABLE_FIELDS.includes(field),
+  );
+
+  if (unknownFields.length > 0) {
+    throw new ValidationError({
+      message: `Não é possível atualizar: ${unknownFields.join(", ")}.`,
+      action: `Este endpoint atualiza apenas: ${UPDATABLE_FIELDS.join(", ")}.`,
+    });
   }
 }
 
