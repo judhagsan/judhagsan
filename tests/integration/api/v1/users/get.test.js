@@ -153,6 +153,108 @@ describe("GET /api/v1/users", () => {
       expect(firstIds).not.toContain(secondPageBody.users[0].id);
     });
 
+    test("With `search` matching a username", async () => {
+      const { sessionObject } = await createAdmin();
+      const target = await orchestrator.createUser({ username: "Encontravel" });
+      await orchestrator.createUser({ username: "Invisivel" });
+
+      const response = await listUsers({
+        sessionToken: sessionObject.token,
+        query: "?search=contrav",
+      });
+      const responseBody = await response.json();
+
+      expect(responseBody.total).toBe(1);
+      expect(responseBody.search).toBe("contrav");
+      expect(responseBody.users).toHaveLength(1);
+      expect(responseBody.users[0].username).toBe(target.username);
+    });
+
+    test("With `search` matching an email", async () => {
+      const { sessionObject } = await createAdmin();
+      await orchestrator.createUser({ email: "achavel@judhagsan.com" });
+      await orchestrator.createUser({ email: "outro@judhagsan.com" });
+
+      const response = await listUsers({
+        sessionToken: sessionObject.token,
+        query: "?search=achavel@",
+      });
+      const responseBody = await response.json();
+
+      expect(responseBody.total).toBe(1);
+      expect(responseBody.users[0].email).toBe("achavel@judhagsan.com");
+    });
+
+    test("`search` ignores case", async () => {
+      const { sessionObject } = await createAdmin();
+      await orchestrator.createUser({ username: "CaseNaBusca" });
+
+      const response = await listUsers({
+        sessionToken: sessionObject.token,
+        query: "?search=casenabusca",
+      });
+      const responseBody = await response.json();
+
+      expect(responseBody.total).toBe(1);
+      expect(responseBody.users[0].username).toBe("CaseNaBusca");
+    });
+
+    /*
+     * `%` e `_` são curingas do ILIKE. Sem escapar, "%" devolveria a base
+     * inteira e "a_min" casaria com "admin" — resultado plausível e errado,
+     * que é pior do que resultado nenhum.
+     */
+    test("`search` treats ILIKE wildcards as literal characters", async () => {
+      const { sessionObject } = await createAdmin();
+      await orchestrator.createUser({ username: "admin" });
+      await orchestrator.createUser({ username: "outro" });
+
+      const percent = await listUsers({
+        sessionToken: sessionObject.token,
+        query: "?search=%25",
+      });
+      expect((await percent.json()).total).toBe(0);
+
+      const underscore = await listUsers({
+        sessionToken: sessionObject.token,
+        query: "?search=a_min",
+      });
+      expect((await underscore.json()).total).toBe(0);
+    });
+
+    test("`search` with no match returns an empty list", async () => {
+      const { sessionObject } = await createAdmin();
+
+      const response = await listUsers({
+        sessionToken: sessionObject.token,
+        query: "?search=naoexistemesmo",
+      });
+      const responseBody = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(responseBody.total).toBe(0);
+      expect(responseBody.users).toEqual([]);
+    });
+
+    // O total precisa refletir o filtro, não a base: é ele que decide se o
+    // rodapé diz "mostrando 2 de 5".
+    test("`search` combines with pagination", async () => {
+      const { sessionObject } = await createAdmin();
+      await orchestrator.createUser({ username: "BuscaUm" });
+      await orchestrator.createUser({ username: "BuscaDois" });
+      await orchestrator.createUser({ username: "BuscaTres" });
+      await orchestrator.createUser({ username: "ForaDoFiltro" });
+
+      const response = await listUsers({
+        sessionToken: sessionObject.token,
+        query: "?search=Busca&limit=2",
+      });
+      const responseBody = await response.json();
+
+      expect(responseBody.total).toBe(3);
+      expect(responseBody.users).toHaveLength(2);
+    });
+
     // Um `limit` absurdo vindo da query não pode virar um SELECT sem teto.
     test("Clamps an out-of-range `limit`", async () => {
       const { sessionObject } = await createAdmin();

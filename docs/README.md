@@ -248,14 +248,14 @@ Base URL: `/api/v1`
 
 ### Usuários
 
-| Método   | Endpoint                     | Descrição                                     |
-| -------- | ---------------------------- | --------------------------------------------- |
-| `POST`   | `/users`                     | Cria um novo usuário                          |
-| `GET`    | `/users`                     | Lista todos os usuários (`read:user:all`)     |
-| `GET`    | `/users/:username`           | Busca usuário por username (exige sessão)     |
-| `PATCH`  | `/users/:username`           | Atualiza `username` e `email` (só esses dois) |
-| `PUT`    | `/users/:username/supporter` | Concede `apoiador` (`manage:supporter`)       |
-| `DELETE` | `/users/:username/supporter` | Revoga `apoiador` (`manage:supporter`)        |
+| Método   | Endpoint                     | Descrição                                      |
+| -------- | ---------------------------- | ---------------------------------------------- |
+| `POST`   | `/users`                     | Cria um novo usuário                           |
+| `GET`    | `/users`                     | Lista usuários, com `search` (`read:user:all`) |
+| `GET`    | `/users/:username`           | Busca usuário por username (exige sessão)      |
+| `PATCH`  | `/users/:username`           | Atualiza `username` e `email` (só esses dois)  |
+| `PUT`    | `/users/:username/supporter` | Concede `apoiador` (`manage:supporter`)        |
+| `DELETE` | `/users/:username/supporter` | Revoga `apoiador` (`manage:supporter`)         |
 
 ### Sessões
 
@@ -423,6 +423,18 @@ contas, mas listagem sem limite é problema que só aparece quando já é tarde.
 O `SELECT` não traz `password`, e o `filterOutput` recorta de novo o que sai na
 resposta. As duas barreiras são de propósito — se um dia o SELECT virar
 `SELECT *`, o filtro ainda segura o hash, e há teste para isso.
+
+**Busca.** O campo do card manda `?search=` para o servidor, que casa em
+`username` **ou** `email`, sem diferenciar maiúsculas, em qualquer posição. Não
+é filtro sobre a lista já carregada: com a paginação de 50, filtrar no cliente
+diria "nenhum resultado" para quem existe mas ficou fora da página — errado de
+um jeito que parece certo. O `total` da resposta reflete o filtro, então o
+rodapé continua honesto.
+
+`%` e `_` são escapados antes de virar padrão do `ILIKE`. Sem isso, digitar `%`
+devolveria a base inteira e `a_min` casaria com `admin`. O campo tem atraso de
+300ms para não consultar a cada tecla, e `keepPreviousData` segura a lista
+anterior enquanto a nova chega.
 
 **Conceder e revogar apoio.** Cada linha da lista tem um botão de coração que
 alterna `apoiador` na conta, por `PUT`/`DELETE` em `/users/:username/supporter`.

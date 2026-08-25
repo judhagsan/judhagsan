@@ -238,7 +238,17 @@ async function update(username, userInputValues) {
 const LIST_DEFAULT_LIMIT = 50;
 const LIST_MAX_LIMIT = 200;
 
-async function listAll({ limit, offset } = {}) {
+/*
+ * `%` e `_` são curingas do ILIKE. Sem escapar, alguém digitando "%" na busca
+ * casaria com a base inteira e "a_min" casaria com "admin" — resultado
+ * plausível e errado, que é pior do que resultado nenhum. A barra invertida é
+ * o escape padrão do LIKE, e precisa ser escapada antes das outras.
+ */
+function escapeLikeWildcards(term) {
+  return term.replace(/[\\%_]/g, (char) => `\\${char}`);
+}
+
+async function listAll({ limit, offset, search } = {}) {
   // Qualquer coisa que não seja inteiro positivo cai no padrão, em vez de ser
   // "corrigida" para o mínimo: `limit=-5` virando 1 devolveria uma página de
   // um item e pareceria que a base tem um usuário só. Entrada inválida merece
@@ -253,6 +263,11 @@ async function listAll({ limit, offset } = {}) {
   const safeOffset =
     Number.isInteger(parsedOffset) && parsedOffset > 0 ? parsedOffset : 0;
 
+  // Busca casa em username OU email, sem diferenciar maiúsculas, em qualquer
+  // posição: quem procura uma conta raramente lembra o começo exato dela.
+  const term = typeof search === "string" ? search.trim().slice(0, 100) : "";
+  const pattern = term ? `%${escapeLikeWildcards(term)}%` : null;
+
   const results = await database.query({
     text: `
       SELECT
@@ -265,6 +280,10 @@ async function listAll({ limit, offset } = {}) {
         count(*) OVER () AS total
       FROM
         users
+      WHERE
+        $3::text IS NULL
+        OR username ILIKE $3 ESCAPE '\\'
+        OR email ILIKE $3 ESCAPE '\\'
       ORDER BY
         created_at DESC
       LIMIT
@@ -272,7 +291,7 @@ async function listAll({ limit, offset } = {}) {
       OFFSET
         $2
       ;`,
-    values: [safeLimit, safeOffset],
+    values: [safeLimit, safeOffset, pattern],
   });
 
   // `count(*) OVER ()` traz o total junto no mesmo round-trip. Com zero linhas
@@ -283,6 +302,7 @@ async function listAll({ limit, offset } = {}) {
     total,
     limit: safeLimit,
     offset: safeOffset,
+    search: term,
     // O `total` da função de janela é detalhe da query, não do usuário: sai
     // aqui em vez de vazar para quem chama.
     users: results.rows.map((row) => ({

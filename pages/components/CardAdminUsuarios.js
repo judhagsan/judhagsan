@@ -7,6 +7,8 @@ import {
   HeartFillIcon,
   HeartIcon,
   ClockIcon,
+  SearchIcon,
+  XCircleFillIcon,
 } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
 
@@ -173,8 +175,29 @@ function ConfirmDialog({
 
 export default function CardAdminUsuarios() {
   const { language, t } = useLanguage();
-  const { data, error, isLoading, mutate } = useSWR("/api/v1/users", fetcher, {
+
+  // Dois estados para a busca: o que se digita e o que vira requisição. Sem o
+  // atraso, cada tecla dispara uma consulta à base inteira.
+  const [searchInput, setSearchInput] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => setSearchTerm(searchInput.trim()), 300);
+    return () => clearTimeout(timeoutId);
+  }, [searchInput]);
+
+  // A busca roda no servidor, não sobre a lista já carregada: com a paginação
+  // de 50, filtrar no cliente diria "nenhum resultado" para quem existe mas
+  // ficou fora da página — errado de um jeito que parece certo.
+  const listKey = searchTerm
+    ? `/api/v1/users?search=${encodeURIComponent(searchTerm)}`
+    : "/api/v1/users";
+
+  const { data, error, isLoading, mutate } = useSWR(listKey, fetcher, {
     revalidateOnFocus: false,
+    // Segura a lista anterior enquanto a busca nova chega, em vez de piscar
+    // vazio a cada letra.
+    keepPreviousData: true,
     // Mesmo critério do card de dispositivos: 4xx é determinístico (sessão
     // expirada ou conta sem a feature), re-tentar só martela o servidor.
     onErrorRetry: (err, _key, _config, revalidate, { retryCount }) => {
@@ -266,32 +289,69 @@ export default function CardAdminUsuarios() {
           )}
         </div>
 
-        {/* Legenda: os mesmos três estados da barra, em número e por extenso.
-            É ela que dá nome às cores lá de cima. */}
-        {!isLoading && !error && users.length > 0 && (
-          <div className="relative z-10 mt-3">
-            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm">
-              {supporterCount > 0 && (
+        {/* Legenda e busca dividem a linha: à esquerda os três estados da
+            barra em número e por extenso — é a legenda que dá nome às cores
+            lá de cima —, à direita o campo de busca.
+
+            A condição de fora é a da busca, mais ampla que a da legenda de
+            propósito: numa busca sem resultado a legenda some, mas o campo
+            precisa continuar na tela, senão não há como corrigir o termo. */}
+        {!error && (users.length > 0 || searchTerm) && (
+          <div className="relative z-10 mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+            {!isLoading && users.length > 0 && (
+              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm shrink-0">
+                {supporterCount > 0 && (
+                  <Count
+                    value={supporterCount}
+                    label={t("apoiadores")}
+                    dotClassName="bg-amber-300/80"
+                    valueClassName="text-amber-100"
+                  />
+                )}
                 <Count
-                  value={supporterCount}
-                  label={t("apoiadores")}
-                  dotClassName="bg-amber-300/80"
-                  valueClassName="text-amber-100"
+                  value={confirmedCount}
+                  label={t("confirmados")}
+                  dotClassName="bg-violet-400/70"
+                  valueClassName="text-white/90"
                 />
+                <Count
+                  value={pendingCount}
+                  label={t("pendentes")}
+                  dotClassName="bg-white/15"
+                  valueClassName="text-white/60"
+                />
+              </div>
+            )}
+
+            {/* `flex-1` sem teto: o campo toma toda a sobra da linha e se
+                reajusta sozinho quando a legenda muda de tamanho — o que
+                acontece o tempo todo, porque as contagens crescem de dígito e
+                a de apoiadores só aparece quando existe algum.
+
+                `min-w-[8rem]` é o piso: abaixo disso o campo deixa de ser
+                utilizável, e aí o `flex-wrap` do contêiner joga ele para a
+                própria linha, onde volta a ocupar a largura inteira. */}
+            <label className="flex-1 min-w-[8rem] flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 focus-within:border-violet-400/50 focus-within:bg-white/10 transition-colors">
+              <SearchIcon size={14} className="text-white/30 shrink-0" />
+              <input
+                type="search"
+                value={searchInput}
+                onChange={(event) => setSearchInput(event.target.value)}
+                placeholder={t("Buscar por nome ou email")}
+                aria-label={t("Buscar por nome ou email")}
+                className="flex-1 min-w-0 bg-transparent outline-none text-white placeholder-white/30 text-sm"
+              />
+              {searchInput && (
+                <button
+                  type="button"
+                  onClick={() => setSearchInput("")}
+                  aria-label={t("Limpar busca")}
+                  className="cursor-pointer text-white/30 hover:text-white/70 transition-colors shrink-0"
+                >
+                  <XCircleFillIcon size={14} />
+                </button>
               )}
-              <Count
-                value={confirmedCount}
-                label={t("confirmados")}
-                dotClassName="bg-violet-400/70"
-                valueClassName="text-white/90"
-              />
-              <Count
-                value={pendingCount}
-                label={t("pendentes")}
-                dotClassName="bg-white/15"
-                valueClassName="text-white/60"
-              />
-            </div>
+            </label>
           </div>
         )}
 
@@ -310,7 +370,9 @@ export default function CardAdminUsuarios() {
 
           {!isLoading && !error && users.length === 0 && (
             <p className="text-white/40 text-center py-4 text-sm">
-              {t("Nenhum usuario cadastrado")}
+              {searchTerm
+                ? t("Nenhum usuario encontrado", { termo: searchTerm })
+                : t("Nenhum usuario cadastrado")}
             </p>
           )}
 

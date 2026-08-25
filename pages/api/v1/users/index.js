@@ -35,6 +35,7 @@ async function getHandler(request, response) {
   const listing = await user.listAll({
     limit: request.query.limit,
     offset: request.query.offset,
+    search: request.query.search,
   });
 
   const secureOutputValues = authorization.filterOutput(
@@ -50,6 +51,7 @@ async function getHandler(request, response) {
     total: listing.total,
     limit: listing.limit,
     offset: listing.offset,
+    search: listing.search,
     users: secureOutputValues,
   });
 }
