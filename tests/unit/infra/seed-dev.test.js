@@ -1,17 +1,17 @@
 import {
-  motivoParaNaoSemear,
-  CONTAS,
-  FEATURES_ADMIN,
-  FEATURES_USUARIO,
+  reasonToSkipSeeding,
+  ACCOUNTS,
+  ADMIN_FEATURES,
+  USER_FEATURES,
 } from "infra/scripts/seed-dev.js";
 
 // A guarda é o que separa "duas contas de conveniência" de "conta de admin com
 // senha publicada em repositório aberto". Cada caminho dela tem teste.
-describe("seed-dev: motivoParaNaoSemear()", () => {
-  const envOriginal = process.env;
+describe("seed-dev: reasonToSkipSeeding()", () => {
+  const originalEnv = process.env;
 
   beforeEach(() => {
-    process.env = { ...envOriginal };
+    process.env = { ...originalEnv };
     delete process.env.VERCEL;
     delete process.env.CI;
     process.env.NODE_ENV = "development";
@@ -19,77 +19,79 @@ describe("seed-dev: motivoParaNaoSemear()", () => {
   });
 
   afterAll(() => {
-    process.env = envOriginal;
+    process.env = originalEnv;
   });
 
-  test("Libera com banco local e ambiente de desenvolvimento", () => {
-    expect(motivoParaNaoSemear()).toBeNull();
+  test("With local database and development environment", () => {
+    expect(reasonToSkipSeeding()).toBeNull();
   });
 
   test.each(["localhost", "127.0.0.1", "::1", "host.docker.internal"])(
-    "Libera com POSTGRES_HOST=%s",
+    "With POSTGRES_HOST=%s",
     (host) => {
       process.env.POSTGRES_HOST = host;
-      expect(motivoParaNaoSemear()).toBeNull();
+      expect(reasonToSkipSeeding()).toBeNull();
     },
   );
 
-  test("Bloqueia banco remoto", () => {
+  test("With remote database", () => {
     process.env.POSTGRES_HOST = "db.aws.exemplo.com";
-    expect(motivoParaNaoSemear()).toBe(
+    expect(reasonToSkipSeeding()).toBe(
       "POSTGRES_HOST=db.aws.exemplo.com não é um banco local",
     );
   });
 
-  test("Bloqueia sem POSTGRES_HOST", () => {
+  test("Without POSTGRES_HOST", () => {
     delete process.env.POSTGRES_HOST;
-    expect(motivoParaNaoSemear()).toBe("POSTGRES_HOST não definido");
+    expect(reasonToSkipSeeding()).toBe("POSTGRES_HOST não definido");
   });
 
-  test("Bloqueia em produção", () => {
+  test("In production", () => {
     process.env.NODE_ENV = "production";
-    expect(motivoParaNaoSemear()).toBe("NODE_ENV=production");
+    expect(reasonToSkipSeeding()).toBe("NODE_ENV=production");
   });
 
-  test("Bloqueia na Vercel", () => {
+  test("On Vercel", () => {
     process.env.VERCEL = "1";
-    expect(motivoParaNaoSemear()).toBe("rodando na Vercel");
+    expect(reasonToSkipSeeding()).toBe("rodando na Vercel");
   });
 
-  test("Bloqueia em CI", () => {
+  test("On CI", () => {
     process.env.CI = "true";
-    expect(motivoParaNaoSemear()).toBe("rodando em CI");
+    expect(reasonToSkipSeeding()).toBe("rodando em CI");
   });
 
-  test("A plataforma vence o host local", () => {
+  test("Platform wins over local host", () => {
     process.env.VERCEL = "1";
     process.env.POSTGRES_HOST = "localhost";
-    expect(motivoParaNaoSemear()).toBe("rodando na Vercel");
+    expect(reasonToSkipSeeding()).toBe("rodando na Vercel");
   });
 });
 
-describe("seed-dev: contas", () => {
-  test("Semeia admin@teste.com e user@teste.com", () => {
-    expect(CONTAS.map((conta) => conta.email)).toEqual([
+describe("seed-dev: accounts", () => {
+  test("Seeds admin@teste.com and user@teste.com", () => {
+    expect(ACCOUNTS.map((account) => account.email)).toEqual([
       "admin@teste.com",
       "user@teste.com",
     ]);
-    expect(CONTAS.every((conta) => conta.password === "12345678")).toBe(true);
+    expect(ACCOUNTS.every((account) => account.password === "12345678")).toBe(
+      true,
+    );
   });
 
-  test("O admin tem as features do usuário comum e mais", () => {
-    for (const feature of FEATURES_USUARIO) {
-      expect(FEATURES_ADMIN).toContain(feature);
+  test("The admin has every feature of a regular user, plus more", () => {
+    for (const feature of USER_FEATURES) {
+      expect(ADMIN_FEATURES).toContain(feature);
     }
 
-    expect(FEATURES_ADMIN).toContain("update:user:others");
-    expect(FEATURES_ADMIN).toContain("delete:user:others");
-    expect(FEATURES_ADMIN.length).toBeGreaterThan(FEATURES_USUARIO.length);
+    expect(ADMIN_FEATURES).toContain("update:user:others");
+    expect(ADMIN_FEATURES).toContain("delete:user:others");
+    expect(ADMIN_FEATURES.length).toBeGreaterThan(USER_FEATURES.length);
   });
 
-  test("Nenhuma conta nasce apoiadora", () => {
-    for (const conta of CONTAS) {
-      expect(conta.features).not.toContain("apoiador");
+  test("No account is seeded as a supporter", () => {
+    for (const account of ACCOUNTS) {
+      expect(account.features).not.toContain("apoiador");
     }
   });
 });

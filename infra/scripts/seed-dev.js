@@ -14,7 +14,7 @@ dotenv.config({ path: ".env.development" });
 
 // Espelha o que `activation.activateUserByUserId()` concede a uma conta
 // recém-ativada: é o usuário comum de verdade, não uma aproximação.
-const FEATURES_USUARIO = [
+const USER_FEATURES = [
   "create:session",
   "read:session",
   "update:user",
@@ -26,8 +26,8 @@ const FEATURES_USUARIO = [
 // `models/authorization.js`. Fora `apoiador`, de propósito: apoio é estado de
 // pagamento, não permissão, e concedê-lo aqui faria o admin cair na UI de
 // apoiador sem nunca ter assinado.
-const FEATURES_ADMIN = [
-  ...FEATURES_USUARIO,
+const ADMIN_FEATURES = [
+  ...USER_FEATURES,
   "read:user",
   "update:user:others",
   "delete:user:others",
@@ -37,24 +37,24 @@ const FEATURES_ADMIN = [
   "read:migration",
 ];
 
-const CONTAS = [
+const ACCOUNTS = [
   {
     username: "admin",
     email: "admin@teste.com",
     password: "12345678",
-    features: FEATURES_ADMIN,
-    rotulo: "administrador",
+    features: ADMIN_FEATURES,
+    label: "administrador",
   },
   {
     username: "usuario",
     email: "user@teste.com",
     password: "12345678",
-    features: FEATURES_USUARIO,
-    rotulo: "usuário comum",
+    features: USER_FEATURES,
+    label: "usuário comum",
   },
 ];
 
-const HOSTS_LOCAIS = [
+const LOCAL_HOSTS = [
   "localhost",
   "127.0.0.1",
   "::1",
@@ -72,7 +72,7 @@ const HOSTS_LOCAIS = [
  * de rodar `npm run dev` na sua máquina com o .env apontando para um banco
  * remoto.
  */
-function motivoParaNaoSemear() {
+function reasonToSkipSeeding() {
   if (process.env.VERCEL) {
     return "rodando na Vercel";
   }
@@ -91,18 +91,18 @@ function motivoParaNaoSemear() {
     return "POSTGRES_HOST não definido";
   }
 
-  if (!HOSTS_LOCAIS.includes(host)) {
+  if (!LOCAL_HOSTS.includes(host)) {
     return `POSTGRES_HOST=${host} não é um banco local`;
   }
 
   return null;
 }
 
-async function semear(client, conta) {
+async function seedAccount(client, account) {
   // Custo 1 como em `models/password.js` fora de produção: o hash carrega o
   // próprio custo, então `compare()` funciona igual e o `npm run dev` não
   // paga meio segundo de bcrypt a cada subida.
-  const hash = await bcryptjs.hash(conta.password, 1);
+  const hashedPassword = await bcryptjs.hash(account.password, 1);
 
   const results = await client.query({
     text: `
@@ -117,19 +117,19 @@ async function semear(client, conta) {
         features = EXCLUDED.features,
         updated_at = timezone('utc', now())
       RETURNING
-        (xmax = 0) AS criado
+        (xmax = 0) AS created
       ;`,
-    values: [conta.username, conta.email, hash, conta.features],
+    values: [account.username, account.email, hashedPassword, account.features],
   });
 
-  return results.rows[0].criado;
+  return results.rows[0].created;
 }
 
 async function main() {
-  const motivo = motivoParaNaoSemear();
+  const skipReason = reasonToSkipSeeding();
 
-  if (motivo) {
-    console.log(`⚪ Contas de teste não semeadas (${motivo}).`);
+  if (skipReason) {
+    console.log(`⚪ Contas de teste não semeadas (${skipReason}).`);
     return;
   }
 
@@ -145,19 +145,19 @@ async function main() {
   try {
     await client.connect();
 
-    for (const conta of CONTAS) {
+    for (const account of ACCOUNTS) {
       try {
-        const criado = await semear(client, conta);
-        const verbo = criado ? "criada" : "atualizada";
+        const created = await seedAccount(client, account);
+        const verb = created ? "criada" : "atualizada";
         console.log(
-          `🟢 Conta de teste ${verbo}: ${conta.email} (${conta.rotulo}, senha ${conta.password})`,
+          `🟢 Conta de teste ${verb}: ${account.email} (${account.label}, senha ${account.password})`,
         );
       } catch (error) {
         // Uma conta que falha não derruba a outra. O caso comum é já existir
         // alguém com o mesmo username e outro email — aí o ON CONFLICT (email)
         // não pega e a constraint de username estoura.
         console.error(
-          `🔴 Não foi possível semear ${conta.email}: ${error.message}`,
+          `🔴 Não foi possível semear ${account.email}: ${error.message}`,
         );
       }
     }
@@ -180,8 +180,8 @@ if (require.main === module) {
 }
 
 module.exports = {
-  motivoParaNaoSemear,
-  CONTAS,
-  FEATURES_ADMIN,
-  FEATURES_USUARIO,
+  reasonToSkipSeeding,
+  ACCOUNTS,
+  ADMIN_FEATURES,
+  USER_FEATURES,
 };
