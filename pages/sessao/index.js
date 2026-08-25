@@ -9,6 +9,7 @@ import CardSessao from "../components/CardSessao";
 import CardPrivacidade from "../components/CardPrivacidade";
 import CardContato from "../components/CardContato";
 import CardAdminUsuarios from "../components/CardAdminUsuarios";
+import CardAdminHardware from "../components/CardAdminHardware";
 import MainFrame from "../components/MainFrame";
 import useUser from "hooks/useUser";
 import useSidePanel from "hooks/useSidePanel";
@@ -89,11 +90,12 @@ export default function SessaoPage() {
                   espaço no desktop. */}
               {isLoggedIn && isAdmin && (
                 <div
-                  className={`w-full lg:w-1/2 shrink-0 lg:self-start ${
+                  className={`w-full lg:w-1/2 shrink-0 lg:self-start flex flex-col gap-4 ${
                     activePanel ? "lg:hidden" : ""
                   }`}
                 >
                   <CardAdminUsuarios />
+                  <CardAdminHardware />
                 </div>
               )}
 

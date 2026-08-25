@@ -271,6 +271,7 @@ Base URL: `/api/v1`
 | `GET`   | `/user`           | Retorna dados do usuário logado                       |
 | `PATCH` | `/user/supporter` | Define exibição no mural de apoiadores (`apoiador`)   |
 | `POST`  | `/user/password`  | Troca a senha do usuário logado (exige a senha atual) |
+| `GET`   | `/devices/stats`  | Telemetria agregada de hardware (`read:device:all`)   |
 
 ### Apoiadores
 
@@ -379,6 +380,7 @@ porque `validateFeature()` recusa nome desconhecido.
 | `read:user:self`        | Visualizar dados próprios (inclui e-mail)     |
 | `read:user:all`         | Listar todos os usuários cadastrados          |
 | `manage:supporter`      | Conceder e revogar `apoiador` de outra conta  |
+| `read:device:all`       | Ler a telemetria de hardware de todo mundo    |
 | `update:user`           | Atualizar dados do próprio usuário            |
 | `update:user:others`    | Atualizar dados de outros usuários (admin)    |
 | `create:session`        | Criar sessão (login)                          |
@@ -450,6 +452,23 @@ devolveria o acesso, e no intervalo alguém que paga teria ficado sem. Como
 `supporter_until` só é gravado por `grantUntil()`, um prazo futuro é exatamente
 o sinal de "ciclo pago rodando"; concessão manual deixa nulo. Cancelamento de
 assinatura continua sendo fluxo da própria pessoa, em `/sessao`.
+
+**Hardware dos usuários** (`CardAdminHardware`) lê `GET /api/v1/devices/stats`,
+protegido por `read:device:all` — separada de `manage:device`, que todo usuário
+ativado tem para mexer nos próprios aparelhos.
+
+A rota devolve contagem por valor em seis dimensões (SO, CPU, GPU, RAM, mesa,
+monitor), sem `user_id` e sem `hardware_uuid`: é agregado, não listagem de quem
+tem o quê. `ram_bytes` é arredondado para GB, senão 16.0 e 15.9 espalhariam a
+moda em duas linhas quase iguais.
+
+O card lidera com o **perfil mais comum**, que junta o primeiro colocado de cada
+categoria — e diz isso na tela, porque essa combinação pode descrever uma
+máquina que ninguém tem. Abaixo, barras horizontais de uma cor só: a série é
+uma (contagem de dispositivos), e sombrear por posição pintaria a ordenação, não
+o dado. A escala é relativa ao líder, não ao total, senão com poucos aparelhos
+todas as barras ficariam curtas demais para comparar. A contagem é rótulo
+visível, não tooltip — tooltip não existe em toque.
 
 ### Apoiadores (apoio ao Pindorama)
 

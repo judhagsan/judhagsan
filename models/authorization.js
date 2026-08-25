@@ -42,6 +42,10 @@ const availableFeatures = [
 
   // DEVICES (telemetria de hardware do Pindorama)
   "manage:device",
+  // Ler a telemetria agregada de todo mundo, para o painel. Separada de
+  // `manage:device`, que é sobre os próprios aparelhos: ver o parque inteiro
+  // e mexer no que é seu são poderes diferentes.
+  "read:device:all",
 
   // APOIADOR (apoio recorrente ao Pindorama)
   "apoiador",

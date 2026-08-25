@@ -32,6 +32,7 @@ const ADMIN_FEATURES = [
   // diz quem enxerga o painel, elas dizem o que ele pode fazer lá dentro.
   "admin",
   "read:user:all",
+  "read:device:all",
   "update:user:others",
   "delete:user:others",
   "read:status",
@@ -146,12 +147,119 @@ async function seedAccount(client, account) {
         features = EXCLUDED.features,
         updated_at = timezone('utc', now())
       RETURNING
+        id,
         (xmax = 0) AS created
       ;`,
     values: [account.username, account.email, hashedPassword, account.features],
   });
 
-  return results.rows[0].created;
+  return results.rows[0];
+}
+
+/*
+ * Hardware de mentira, mas plausível, para o card de dispositivos do painel
+ * ter distribuição de verdade no ambiente local. Com a base vazia ele mostra
+ * "nenhum dispositivo" e não há como ver se as barras, a moda e o seletor de
+ * dimensão funcionam.
+ *
+ * `hardware_uuid` é fixo por linha de propósito: o índice único é
+ * (user_id, hardware_uuid), então rodar o seed de novo atualiza a mesma
+ * máquina em vez de inventar uma nova a cada `npm run dev`.
+ *
+ * A conta pendente fica de fora: quem nunca ativou o cadastro nunca entrou no
+ * app para mandar telemetria.
+ */
+const GB = 1024 * 1024 * 1024;
+
+const DEVICES = {
+  "admin@teste.com": [
+    {
+      hardware_uuid: "seed-admin-desktop",
+      os: "Windows 11",
+      cpu: "AMD Ryzen 7 5800X",
+      ram_bytes: 32 * GB,
+      gpu: "NVIDIA GeForce RTX 4070",
+      tablet: "Wacom Intuos Pro M",
+      monitor: "Dell U2723QE",
+    },
+    {
+      hardware_uuid: "seed-admin-linux",
+      os: "Linux",
+      cpu: "AMD Ryzen 5 5600",
+      ram_bytes: 16 * GB,
+      gpu: "NVIDIA GeForce RTX 3060",
+      tablet: "Wacom Intuos Pro M",
+      monitor: "LG 27UP850",
+    },
+  ],
+  "user@teste.com": [
+    {
+      hardware_uuid: "seed-user-desktop",
+      os: "Windows 11",
+      cpu: "Intel Core i5-12400F",
+      ram_bytes: 16 * GB,
+      gpu: "NVIDIA GeForce RTX 3060",
+      tablet: "Wacom Intuos Pro M",
+      monitor: "Dell U2723QE",
+    },
+  ],
+  "apoiador@teste.com": [
+    {
+      hardware_uuid: "seed-apoiador-mac",
+      os: "macOS 15",
+      cpu: "Apple M2 Pro",
+      ram_bytes: 16 * GB,
+      gpu: "Apple M2 Pro",
+      tablet: "iPad Pro 11",
+      monitor: "Apple Studio Display",
+    },
+    {
+      hardware_uuid: "seed-apoiador-note",
+      os: "Windows 11",
+      cpu: "Intel Core i7-11800H",
+      ram_bytes: 16 * GB,
+      gpu: "NVIDIA GeForce GTX 1660 Ti",
+      tablet: "Wacom One",
+      monitor: "LG 27UP850",
+    },
+  ],
+};
+
+async function seedDevices(client, userId, devices) {
+  for (const device of devices) {
+    await client.query({
+      text: `
+        INSERT INTO
+          user_devices
+          (user_id, hardware_uuid, os, cpu, ram_bytes, gpu, tablet, monitor,
+           pindorama_version)
+        VALUES
+          ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        ON CONFLICT (user_id, hardware_uuid) DO UPDATE
+        SET
+          os = EXCLUDED.os,
+          cpu = EXCLUDED.cpu,
+          ram_bytes = EXCLUDED.ram_bytes,
+          gpu = EXCLUDED.gpu,
+          tablet = EXCLUDED.tablet,
+          monitor = EXCLUDED.monitor,
+          last_seen_at = timezone('utc', now())
+        ;`,
+      values: [
+        userId,
+        device.hardware_uuid,
+        device.os,
+        device.cpu,
+        device.ram_bytes,
+        device.gpu,
+        device.tablet,
+        device.monitor,
+        "0.1.0",
+      ],
+    });
+  }
+
+  return devices.length;
 }
 
 async function main() {
@@ -176,10 +284,15 @@ async function main() {
 
     for (const account of ACCOUNTS) {
       try {
-        const created = await seedAccount(client, account);
-        const verb = created ? "criada" : "atualizada";
+        const seeded = await seedAccount(client, account);
+        const verb = seeded.created ? "criada" : "atualizada";
+
+        const devices = DEVICES[account.email] || [];
+        const deviceCount = await seedDevices(client, seeded.id, devices);
+        const deviceNote = deviceCount ? `, ${deviceCount} dispositivo(s)` : "";
+
         console.log(
-          `🟢 Conta de teste ${verb}: ${account.email} (${account.label}, senha ${account.password})`,
+          `🟢 Conta de teste ${verb}: ${account.email} (${account.label}, senha ${account.password}${deviceNote})`,
         );
       } catch (error) {
         // Uma conta que falha não derruba a outra. O caso comum é já existir
@@ -211,6 +324,7 @@ if (require.main === module) {
 module.exports = {
   reasonToSkipSeeding,
   ACCOUNTS,
+  DEVICES,
   ADMIN_FEATURES,
   USER_FEATURES,
   SUPPORTER_FEATURES,

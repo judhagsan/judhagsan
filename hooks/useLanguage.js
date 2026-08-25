@@ -133,6 +133,16 @@ const translations = {
     "Limpar busca": "Limpar busca",
     "Nenhum usuario encontrado":
       "Nenhum usuário encontrado para \u201c{termo}\u201d.",
+
+    // Card de hardware
+    "Hardware dos usuarios": "Hardware dos usuários",
+    "Perfil mais comum": "Perfil mais comum",
+    "O mais frequente entre n dispositivos":
+      "O mais frequente em cada categoria, entre {n} dispositivos",
+    "Erro ao carregar hardware": "Não foi possível carregar o hardware.",
+    "Nenhum dispositivo registrado ainda":
+      "Nenhum dispositivo registrado ainda.",
+    "Sem dados nesta categoria": "Sem dados nesta categoria.",
     apoiadores: "apoiadores",
     confirmados: "confirmados",
     pendentes: "pendentes",
@@ -375,6 +385,15 @@ const translations = {
     "Buscar por nome ou email": "Search by name or email",
     "Limpar busca": "Clear search",
     "Nenhum usuario encontrado": "No users found for \u201c{termo}\u201d.",
+
+    // Hardware card
+    "Hardware dos usuarios": "User hardware",
+    "Perfil mais comum": "Most common profile",
+    "O mais frequente entre n dispositivos":
+      "The most frequent in each category, across {n} devices",
+    "Erro ao carregar hardware": "Could not load hardware data.",
+    "Nenhum dispositivo registrado ainda": "No devices registered yet.",
+    "Sem dados nesta categoria": "No data in this category.",
     apoiadores: "supporters",
     confirmados: "confirmed",
     pendentes: "pending",
