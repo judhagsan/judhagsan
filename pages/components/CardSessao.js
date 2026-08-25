@@ -53,14 +53,27 @@ function detectPlatform() {
   return null;
 }
 
-function PlatformButton({ platformKey, primary }) {
+function PlatformButton({ platformKey, primary, compact }) {
   const info = PLATFORMS[platformKey];
   const available = info.available;
   const href = available ? `/api/v1/download/${platformKey}` : "#";
 
-  const sizeClasses = primary
-    ? "px-8 py-3 text-base gap-3 font-semibold"
-    : "px-4 py-2 text-xs gap-2 font-medium";
+  /*
+   * No modo compacto os três precisam caber em uma linha só dentro da coluna
+   * de 1/4 de largura. `flex-1 min-w-0` divide o espaço em partes iguais e o
+   * `truncate` do rótulo absorve o que faltar, então a linha nunca quebra —
+   * em vez de encolher até estourar numa largura de tela específica.
+   *
+   * O destaque da plataforma detectada vira um anel em vez de tamanho maior:
+   * aumentar um dos três é exatamente o que impedia a linha única.
+   */
+  const sizeClasses = compact
+    ? `flex-1 min-w-0 justify-center px-2 py-2 text-[11px] gap-1.5 font-medium${
+        primary ? " ring-1 ring-white/25" : ""
+      }`
+    : primary
+      ? "px-8 py-3 text-base gap-3 font-semibold"
+      : "px-4 py-2 text-xs gap-2 font-medium";
 
   const colorClasses = available
     ? `${info.classes} cursor-pointer hover:scale-105 active:scale-95`
@@ -70,23 +83,28 @@ function PlatformButton({ platformKey, primary }) {
     <a
       href={href}
       aria-disabled={!available}
+      title={compact ? info.label : undefined}
       onClick={(e) => {
         if (!available) e.preventDefault();
       }}
       className={`inline-flex items-center border rounded-xl transition-all duration-300 group ${sizeClasses} ${colorClasses}`}
     >
       <DownloadIcon
-        size={primary ? 20 : 14}
-        className={
-          available ? `${info.iconHover} transition-colors` : undefined
-        }
+        size={primary && !compact ? 20 : 14}
+        className={`shrink-0 ${available ? `${info.iconHover} transition-colors` : ""}`}
       />
-      <span>{info.label}</span>
+      <span className={compact ? "truncate" : undefined}>{info.label}</span>
     </a>
   );
 }
 
-export default function CardSessao() {
+/*
+ * `compact` é o modo do painel administrativo: sem o parágrafo de descrição,
+ * só título e botões. O card sai da área central larga e vai para a coluna
+ * estreita da esquerda, onde o texto de divulgação não cabe nem faz sentido —
+ * quem está no painel já conhece o produto.
+ */
+export default function CardSessao({ compact = false }) {
   const { t } = useLanguage();
   const [platform, setPlatform] = useState(null);
   const { data: versionData } = useSWR("/api/v1/version", versionFetcher, {
@@ -129,9 +147,11 @@ export default function CardSessao() {
 
         {/* Content */}
         <div className="flex-1 flex flex-col items-center justify-center text-center mb-2">
-          <p className="text-zinc-300 mb-6 max-w-2xl leading-relaxed text-base lg:text-lg font-medium">
-            {t("pindorama_desc")}
-          </p>
+          {!compact && (
+            <p className="text-zinc-300 mb-6 max-w-2xl leading-relaxed text-base lg:text-lg font-medium">
+              {t("pindorama_desc")}
+            </p>
+          )}
 
           {platform && !PLATFORMS[platform].available && (
             <div className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-sm animate-[fadeIn_0.3s_ease-out]">
@@ -142,12 +162,19 @@ export default function CardSessao() {
             </div>
           )}
 
-          <div className="flex flex-wrap items-center justify-center gap-3">
+          <div
+            className={`flex items-center ${
+              compact
+                ? "w-full flex-nowrap gap-2"
+                : "flex-wrap justify-center gap-3"
+            }`}
+          >
             {Object.keys(PLATFORMS).map((key) => (
               <PlatformButton
                 key={key}
                 platformKey={key}
                 primary={key === platform}
+                compact={compact}
               />
             ))}
           </div>

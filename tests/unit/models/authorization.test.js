@@ -58,6 +58,58 @@ describe("models/authorization.js", () => {
     });
   });
 
+  describe(".filterOutput() with `read:user:all`", () => {
+    const adminUser = { features: ["read:user:all"] };
+
+    const storedUsers = [
+      {
+        id: "id-1",
+        username: "alguem",
+        email: "alguem@judhagsan.com",
+        features: ["create:session"],
+        created_at: "2026-01-01T00:00:00.000Z",
+        updated_at: "2026-01-02T00:00:00.000Z",
+        // Colunas que existem na tabela e não podem sair na listagem.
+        password: "$2a$hash",
+        mercadopago_preapproval_id: "preapproval-123",
+      },
+    ];
+
+    test("maps the list to the public shape", () => {
+      expect(
+        authorization.filterOutput(adminUser, "read:user:all", storedUsers),
+      ).toEqual([
+        {
+          id: "id-1",
+          username: "alguem",
+          email: "alguem@judhagsan.com",
+          features: ["create:session"],
+          created_at: "2026-01-01T00:00:00.000Z",
+          updated_at: "2026-01-02T00:00:00.000Z",
+        },
+      ]);
+    });
+
+    // O filtro é a última barreira antes da resposta HTTP: se um dia alguém
+    // trocar o SELECT por `SELECT *`, é este teste que segura o hash da senha.
+    test("never leaks password or payment identifiers", () => {
+      const [output] = authorization.filterOutput(
+        adminUser,
+        "read:user:all",
+        storedUsers,
+      );
+
+      expect(output).not.toHaveProperty("password");
+      expect(output).not.toHaveProperty("mercadopago_preapproval_id");
+    });
+
+    test("with an empty list", () => {
+      expect(
+        authorization.filterOutput(adminUser, "read:user:all", []),
+      ).toEqual([]);
+    });
+  });
+
   describe(".filterOutput()", () => {
     test("without `user`", () => {
       expect(() => {

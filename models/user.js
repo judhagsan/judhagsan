@@ -229,6 +229,73 @@ async function update(username, userInputValues) {
   }
 }
 
+/*
+ * Visão administrativa da base. Paginada desde o começo — hoje são poucas
+ * contas, mas uma listagem sem limite é o tipo de coisa que só dá problema
+ * quando já é tarde. `password` fica de fora do SELECT: o hash não tem nada
+ * que fazer numa listagem, e o que não sai do banco não vaza mais adiante.
+ */
+const LIST_DEFAULT_LIMIT = 50;
+const LIST_MAX_LIMIT = 200;
+
+async function listAll({ limit, offset } = {}) {
+  // Qualquer coisa que não seja inteiro positivo cai no padrão, em vez de ser
+  // "corrigida" para o mínimo: `limit=-5` virando 1 devolveria uma página de
+  // um item e pareceria que a base tem um usuário só. Entrada inválida merece
+  // o comportamento padrão, não um resultado plausível e errado.
+  const parsedLimit = Number.parseInt(limit, 10);
+  const safeLimit =
+    Number.isInteger(parsedLimit) && parsedLimit > 0
+      ? Math.min(parsedLimit, LIST_MAX_LIMIT)
+      : LIST_DEFAULT_LIMIT;
+
+  const parsedOffset = Number.parseInt(offset, 10);
+  const safeOffset =
+    Number.isInteger(parsedOffset) && parsedOffset > 0 ? parsedOffset : 0;
+
+  const results = await database.query({
+    text: `
+      SELECT
+        id,
+        username,
+        email,
+        features,
+        created_at,
+        updated_at,
+        count(*) OVER () AS total
+      FROM
+        users
+      ORDER BY
+        created_at DESC
+      LIMIT
+        $1
+      OFFSET
+        $2
+      ;`,
+    values: [safeLimit, safeOffset],
+  });
+
+  // `count(*) OVER ()` traz o total junto no mesmo round-trip. Com zero linhas
+  // a janela não existe, e o total é zero mesmo — nenhum caso especial.
+  const total = results.rowCount > 0 ? Number(results.rows[0].total) : 0;
+
+  return {
+    total,
+    limit: safeLimit,
+    offset: safeOffset,
+    // O `total` da função de janela é detalhe da query, não do usuário: sai
+    // aqui em vez de vazar para quem chama.
+    users: results.rows.map((row) => ({
+      id: row.id,
+      username: row.username,
+      email: row.email,
+      features: row.features,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+    })),
+  };
+}
+
 async function updatePasswordById(userId, newPassword) {
   validatePasswordComplexity(newPassword);
 
@@ -415,6 +482,7 @@ const user = {
   findOneByEmail,
   update,
   updatePasswordById,
+  listAll,
   remove,
   setFeatures,
   addFeatures,

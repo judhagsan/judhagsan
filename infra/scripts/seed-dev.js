@@ -32,13 +32,26 @@ const ADMIN_FEATURES = [
   // diz quem enxerga o painel, elas dizem o que ele pode fazer lá dentro.
   "admin",
   "read:user",
+  "read:user:all",
   "update:user:others",
   "delete:user:others",
   "read:status",
   "read:status:all",
   "create:migration",
   "read:migration",
+  "manage:supporter",
 ];
+
+// Apoiador concedido à mão: a feature entra sem `supporter_until`, que é
+// justamente o caso que `supporter.expireOverdue()` ignora ("apoiador
+// concedido à mão nunca expira sozinho"). Sem isso o cron diário revogaria a
+// conta e o seed teria que devolvê-la a cada `npm run dev`.
+const SUPPORTER_FEATURES = [...USER_FEATURES, "apoiador"];
+
+// Cadastro que nunca foi ativado. É literalmente o que `user.create()` grava
+// antes do clique no email — `activation.activateUserByUserId()` é quem troca
+// isto pelas features de verdade.
+const PENDING_FEATURES = ["read:activation_token"];
 
 const ACCOUNTS = [
   {
@@ -54,6 +67,20 @@ const ACCOUNTS = [
     password: "12345678",
     features: USER_FEATURES,
     label: "usuário comum",
+  },
+  {
+    username: "apoiador",
+    email: "apoiador@teste.com",
+    password: "12345678",
+    features: SUPPORTER_FEATURES,
+    label: "apoiador",
+  },
+  {
+    username: "pendente",
+    email: "pendente@teste.com",
+    password: "12345678",
+    features: PENDING_FEATURES,
+    label: "cadastro não ativado",
   },
 ];
 
@@ -187,4 +214,6 @@ module.exports = {
   ACCOUNTS,
   ADMIN_FEATURES,
   USER_FEATURES,
+  SUPPORTER_FEATURES,
+  PENDING_FEATURES,
 };

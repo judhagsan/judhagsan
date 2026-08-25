@@ -13,6 +13,10 @@ const availableFeatures = [
   "create:user",
   "read:user",
   "read:user:self",
+  // Listar todos os usuários cadastrados. Segue o par `read:status` /
+  // `read:status:all`: o singular é o dado público de um usuário, o `:all` é a
+  // visão administrativa da base inteira.
+  "read:user:all",
   "update:user",
   "update:user:others",
   "delete:user",
@@ -38,6 +42,11 @@ const availableFeatures = [
 
   // APOIADOR (apoio recorrente ao Pindorama)
   "apoiador",
+  // Conceder e revogar `apoiador` na conta de outra pessoa, pelo painel.
+  // Separada de `update:user:others` de propósito: editar username de alguém e
+  // dar benefício pago de graça são poderes diferentes, e quem tem um não
+  // precisa herdar o outro.
+  "manage:supporter",
 ];
 
 function can(user, feature, resource) {
@@ -96,6 +105,23 @@ function filterOutput(user, feature, resource) {
         updated_at: resource.updated_at,
       };
     }
+  }
+
+  if (feature === "read:user:all") {
+    // Recebe a lista inteira e devolve mapeada. O email entra porque é a visão
+    // administrativa da base — mas a senha e os identificadores de pagamento
+    // (`mercadopago_*`) ficam de fora: o painel não precisa deles, e o que não
+    // sai daqui não vaza por descuido na tela.
+    return resource.map((userFound) => {
+      return {
+        id: userFound.id,
+        username: userFound.username,
+        email: userFound.email,
+        features: userFound.features,
+        created_at: userFound.created_at,
+        updated_at: userFound.updated_at,
+      };
+    });
   }
 
   if (feature === "read:session") {

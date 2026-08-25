@@ -144,10 +144,25 @@ Acesse a interface web do MailCatcher em `http://localhost:1080` para visualizar
 Todo `npm run dev` semeia duas contas fixas, logo depois das migrações. Elas já
 nascem ativadas — dá para logar direto, sem passar pelo email de ativação.
 
-| Email             | Senha      | Papel                                       |
-| ----------------- | ---------- | ------------------------------------------- |
-| `admin@teste.com` | `12345678` | Administrador (`admin` + `*:user:others`)   |
-| `user@teste.com`  | `12345678` | Usuário comum (mesmas features da ativação) |
+| Email                | Senha      | Papel                                       |
+| -------------------- | ---------- | ------------------------------------------- |
+| `admin@teste.com`    | `12345678` | Administrador (`admin` + `*:user:others`)   |
+| `user@teste.com`     | `12345678` | Usuário comum (mesmas features da ativação) |
+| `apoiador@teste.com` | `12345678` | Apoiador (usuário comum + `apoiador`)       |
+| `pendente@teste.com` | `12345678` | Cadastro nunca ativado — **não faz login**  |
+
+As quatro existem para cobrir os estados que o painel administrativo sabe
+mostrar. Sem elas, admin e usuário comum apareceriam como duas linhas iguais, e
+não haveria como ver se o selo de apoiador ou o de pendente renderizam.
+
+A conta pendente carrega só `read:activation_token`, exatamente como uma conta
+recém-criada antes do clique no email — por isso **o login dela devolve 403**.
+Não é defeito do seed: é o que a conta representa.
+
+A apoiadora recebe `apoiador` sem `supporter_until`. É o caso que
+`supporter.expireOverdue()` ignora de propósito ("apoiador concedido à mão nunca
+expira sozinho"); com prazo, o cron diário revogaria a feature e o seed teria que
+devolvê-la a cada subida.
 
 O seed é idempotente e **autoritativo**: se a senha ou as features de uma dessas
 contas forem alteradas, o próximo `npm run dev` as devolve ao estado acima. Vale
@@ -233,11 +248,14 @@ Base URL: `/api/v1`
 
 ### Usuários
 
-| Método  | Endpoint           | Descrição                                     |
-| ------- | ------------------ | --------------------------------------------- |
-| `POST`  | `/users`           | Cria um novo usuário                          |
-| `GET`   | `/users/:username` | Busca usuário por username                    |
-| `PATCH` | `/users/:username` | Atualiza `username` e `email` (só esses dois) |
+| Método   | Endpoint                     | Descrição                                     |
+| -------- | ---------------------------- | --------------------------------------------- |
+| `POST`   | `/users`                     | Cria um novo usuário                          |
+| `GET`    | `/users`                     | Lista todos os usuários (`read:user:all`)     |
+| `GET`    | `/users/:username`           | Busca usuário por username                    |
+| `PATCH`  | `/users/:username`           | Atualiza `username` e `email` (só esses dois) |
+| `PUT`    | `/users/:username/supporter` | Concede `apoiador` (`manage:supporter`)       |
+| `DELETE` | `/users/:username/supporter` | Revoga `apoiador` (`manage:supporter`)        |
 
 ### Sessões
 
@@ -335,6 +353,8 @@ O endpoint tem rate limit de 5 tentativas por IP a cada 15 minutos.
 | `create:user`           | Criar novos usuários                          |
 | `read:user`             | Visualizar dados públicos de usuários         |
 | `read:user:self`        | Visualizar dados próprios (inclui e-mail)     |
+| `read:user:all`         | Listar todos os usuários cadastrados          |
+| `manage:supporter`      | Conceder e revogar `apoiador` de outra conta  |
 | `update:user`           | Atualizar dados do próprio usuário            |
 | `update:user:others`    | Atualizar dados de outros usuários (admin)    |
 | `create:session`        | Criar sessão (login)                          |
@@ -364,6 +384,36 @@ ninguém ter decidido isso.
 Essa migration faz o backfill de quem já tinha `update:user:others`, para
 ninguém perder o acesso ao subir. Concessão nova é manual, via
 `user.addFeatures(id, ["admin"])`.
+
+**Layout.** Para quem é admin, `/sessao` troca de arranjo: o card do Pindorama
+desce para a coluna da esquerda em modo `compact` (sem o texto de divulgação,
+só título e botões), o card de apoio e o de últimos vídeos saem, e a área
+central fica para os cards do painel.
+
+**Usuários cadastrados** (`CardAdminUsuarios`) é o primeiro deles. Lê
+`GET /api/v1/users`, protegido por `read:user:all` — feature própria, concedida
+por migration a quem tem `admin`, e não um efeito colateral de `admin`. A
+listagem é paginada desde o início (padrão 50, teto 200): hoje são poucas
+contas, mas listagem sem limite é problema que só aparece quando já é tarde.
+
+O `SELECT` não traz `password`, e o `filterOutput` recorta de novo o que sai na
+resposta. As duas barreiras são de propósito — se um dia o SELECT virar
+`SELECT *`, o filtro ainda segura o hash, e há teste para isso.
+
+**Conceder e revogar apoio.** Cada linha da lista tem um botão de coração que
+alterna `apoiador` na conta, por `PUT`/`DELETE` em `/users/:username/supporter`.
+A permissão é `manage:supporter`, separada de `update:user:others`: editar o
+username de alguém e dar de graça um benefício pago são poderes diferentes.
+
+O botão não aparece em cadastro pendente — dar benefício a quem nunca confirmou
+o email é conceder acesso a uma conta que ainda não se provou de ninguém.
+
+E a revogação **recusa agir sobre um ciclo pago em andamento** (`400`). Tirar a
+feature não cancela nada no Mercado Pago: a cobrança seguiria, o próximo webhook
+devolveria o acesso, e no intervalo alguém que paga teria ficado sem. Como
+`supporter_until` só é gravado por `grantUntil()`, um prazo futuro é exatamente
+o sinal de "ciclo pago rodando"; concessão manual deixa nulo. Cancelamento de
+assinatura continua sendo fluxo da própria pessoa, em `/sessao`.
 
 ### Apoiadores (apoio ao Pindorama)
 

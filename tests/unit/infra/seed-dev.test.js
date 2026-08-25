@@ -3,6 +3,8 @@ import {
   ACCOUNTS,
   ADMIN_FEATURES,
   USER_FEATURES,
+  SUPPORTER_FEATURES,
+  PENDING_FEATURES,
 } from "infra/scripts/seed-dev.js";
 
 // A guarda é o que separa "duas contas de conveniência" de "conta de admin com
@@ -69,10 +71,12 @@ describe("seed-dev: reasonToSkipSeeding()", () => {
 });
 
 describe("seed-dev: accounts", () => {
-  test("Seeds admin@teste.com and user@teste.com", () => {
+  test("Seeds one account per state the panel can show", () => {
     expect(ACCOUNTS.map((account) => account.email)).toEqual([
       "admin@teste.com",
       "user@teste.com",
+      "apoiador@teste.com",
+      "pendente@teste.com",
     ]);
     expect(ACCOUNTS.every((account) => account.password === "12345678")).toBe(
       true,
@@ -94,9 +98,36 @@ describe("seed-dev: accounts", () => {
     expect(ADMIN_FEATURES.length).toBeGreaterThan(USER_FEATURES.length);
   });
 
-  test("No account is seeded as a supporter", () => {
-    for (const account of ACCOUNTS) {
-      expect(account.features).not.toContain("apoiador");
+  test("Only the supporter account carries `apoiador`", () => {
+    const withSupporterFeature = ACCOUNTS.filter((account) =>
+      account.features.includes("apoiador"),
+    );
+
+    expect(withSupporterFeature.map((account) => account.email)).toEqual([
+      "apoiador@teste.com",
+    ]);
+    // O admin fora da lista é de propósito: apoio é estado de pagamento, e
+    // concedê-lo ao admin o jogaria na UI de apoiador sem nunca ter assinado.
+    expect(ADMIN_FEATURES).not.toContain("apoiador");
+  });
+
+  // O painel decide "pendente" pela presença de `read:activation_token`, que é
+  // o que uma conta carrega antes de clicar no email. Uma conta semeada com
+  // qualquer outra feature junto não representaria esse estado.
+  test("The pending account has only the activation feature", () => {
+    expect(PENDING_FEATURES).toEqual(["read:activation_token"]);
+
+    const pendingAccount = ACCOUNTS.find(
+      (account) => account.email === "pendente@teste.com",
+    );
+    expect(pendingAccount.features).toEqual(["read:activation_token"]);
+  });
+
+  test("The supporter is a regular user plus `apoiador`", () => {
+    for (const feature of USER_FEATURES) {
+      expect(SUPPORTER_FEATURES).toContain(feature);
     }
+    expect(SUPPORTER_FEATURES).toContain("apoiador");
+    expect(SUPPORTER_FEATURES).toHaveLength(USER_FEATURES.length + 1);
   });
 });
