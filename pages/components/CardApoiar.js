@@ -18,8 +18,7 @@ const SDK_URL = "https://sdk.mercadopago.com/js/v2";
 // formulário no próximo carregamento.
 const LIVE_STATUSES = ["authorized", "paused", "pending"];
 
-const INPUT_CLASS =
-  "w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-amber-400/50 outline-none text-sm text-white/90 transition-colors";
+const INPUT_CLASS = "win-input w-full text-xs font-mono";
 
 // Apoio mensal ao Pindorama, cobrado pelo Mercado Pago.
 //
@@ -280,7 +279,7 @@ export default function CardApoiar() {
       <Advantages t={t} />
 
       {status === "indisponivel" ? (
-        <p className="text-sm text-white/60 leading-snug mt-4">
+        <p className="text-sm text-zinc-400 leading-snug mt-4">
           {t("Texto apoio indisponivel")}
         </p>
       ) : (
@@ -289,7 +288,7 @@ export default function CardApoiar() {
               o card ofereceria apoio a quem acabou de pagar no Pix, como se
               nada tivesse acontecido. */}
           {subscription?.is_supporter && (
-            <p className="text-xs text-amber-200/80 leading-snug">
+            <p className="text-xs text-amber-200 leading-snug">
               {subscription.supporter_until
                 ? t("Texto apoiador sem assinatura", {
                     data: formatDate(subscription.supporter_until, language),
@@ -374,31 +373,30 @@ export default function CardApoiar() {
               type={expanded ? "submit" : "button"}
               onClick={expanded ? undefined : () => setExpanded(true)}
               disabled={status !== "pronto"}
-              className="cursor-pointer flex-1 min-w-[9rem] inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/30 border border-cyan-400/40 hover:border-cyan-400/70 text-cyan-100 font-semibold text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="win-btn-primary flex-1 min-w-[9rem] py-2.5 text-xs"
             >
               <CreditCardIcon size={14} />
-              {status === "processando"
-                ? t("Processando...")
-                : t("Pagar com cartao")}
+              <span>
+                {status === "processando"
+                  ? t("Processando...")
+                  : t("Pagar com cartao")}
+              </span>
             </button>
 
-            {/* Saída para quem teve o cartão recusado e não quer esperar a
-              retentativa automática do Mercado Pago. Fica acima da explicação
-              da recorrência porque é ação, e a explicação é rodapé. */}
             <button
               type="button"
               onClick={handlePix}
               disabled={status !== "pronto"}
-              className="cursor-pointer flex-1 min-w-[9rem] inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-400/40 hover:border-emerald-400/70 text-emerald-100 font-semibold text-sm transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="win-btn flex-1 min-w-[9rem] py-2.5 text-xs"
             >
               <ZapIcon size={14} />
-              {t("Pagar com Pix")}
+              <span>{t("Pagar com Pix")}</span>
             </button>
           </div>
 
           {/* Uma frase por linha: a quebra sai do ponto final, não da largura
               do card, então ela é a mesma em qualquer tela e nos dois idiomas. */}
-          <p className="text-xs text-white/40 leading-snug text-left">
+          <p className="text-xs text-zinc-500 leading-snug text-left">
             {splitSentences(t("Texto cobranca recorrente")).map((sentence) => (
               <span key={sentence} className="block">
                 {sentence}
@@ -456,7 +454,7 @@ function loadScript() {
 function Field({ label, children }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="text-[10px] uppercase tracking-widest text-white/50 font-semibold">
+      <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold">
         {label}
       </span>
       {children}
@@ -563,7 +561,7 @@ function SubscriptionState({
   return (
     <div className="flex flex-col gap-2 text-left animate-[fadeIn_0.3s_ease-out]">
       {monthlyValue && !cancelled && (
-        <p className="text-xs uppercase tracking-widest text-white/40 font-semibold">
+        <p className="text-xs uppercase tracking-widest text-zinc-500 font-semibold">
           {t("Valor por mes", { valor: formatValue(monthlyValue) })}
         </p>
       )}
@@ -572,7 +570,7 @@ function SubscriptionState({
         <p
           key={line}
           className={`text-sm leading-snug ${
-            tone === "alert" ? "text-amber-200/90" : "text-white/60"
+            tone === "alert" ? "text-amber-200" : "text-zinc-400"
           }`}
         >
           {line}
@@ -595,10 +593,10 @@ function SubscriptionState({
               type="button"
               onClick={onPix}
               disabled={busy}
-              className="cursor-pointer flex-1 min-w-[9rem] inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-400/40 hover:border-emerald-400/70 text-emerald-100 font-semibold text-sm transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="win-btn-primary flex-1 min-w-[9rem] py-2.5 text-xs"
             >
               <ZapIcon size={14} />
-              {t("Pagar com Pix")}
+              <span>{t("Pagar com Pix")}</span>
             </button>
           )}
 
@@ -606,9 +604,11 @@ function SubscriptionState({
             type="button"
             onClick={onCancel}
             disabled={busy}
-            className="cursor-pointer flex-1 min-w-[9rem] inline-flex items-center justify-center px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white/70 font-semibold text-sm transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="win-btn flex-1 min-w-[9rem] py-2.5 text-xs text-zinc-400 hover:text-white"
           >
-            {cancelling ? t("Cancelando...") : t("Cancelar assinatura")}
+            <span>
+              {cancelling ? t("Cancelando...") : t("Cancelar assinatura")}
+            </span>
           </button>
         </div>
       )}
@@ -631,7 +631,7 @@ function formatDate(value, language) {
 function PixPayment({ t, pix, copied, onCopy }) {
   return (
     <div className="flex flex-col items-center text-center gap-3 py-2 animate-[fadeIn_0.3s_ease-out]">
-      <p className="text-base text-white/90 font-semibold">
+      <p className="text-base text-white font-semibold">
         {t("Escaneie o QR Code")}
       </p>
 
@@ -646,13 +646,13 @@ function PixPayment({ t, pix, copied, onCopy }) {
       <button
         type="button"
         onClick={onCopy}
-        className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white/80 transition-colors"
+        className="cursor-pointer flex items-center gap-2 px-5 py-2 rounded-full bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 text-xs text-white transition-colors active:scale-95"
       >
         <CopyIcon size={14} />
         {copied ? t("Codigo copiado") : t("Copiar codigo pix")}
       </button>
 
-      <p className="text-[11px] text-white/40 leading-snug">
+      <p className="text-[11px] text-zinc-500 leading-snug">
         {t("Texto pix pontual")}
       </p>
     </div>
@@ -669,12 +669,9 @@ function Advantages({ t }) {
         {ADVANTAGES.map((key) => (
           <li
             key={key}
-            className="flex items-center gap-1.5 text-sm leading-tight text-white/85 whitespace-nowrap"
+            className="flex items-center gap-1.5 text-xs font-mono leading-tight text-white whitespace-nowrap"
           >
-            <CheckCircleFillIcon
-              size={14}
-              className="text-amber-400/70 shrink-0"
-            />
+            <CheckCircleFillIcon size={12} className="text-white shrink-0" />
             {t(key)}
           </li>
         ))}
@@ -685,22 +682,26 @@ function Advantages({ t }) {
 
 function Shell({ title, children }) {
   return (
-    <div className="w-full">
-      <div className="glass-card group rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col animate-[fadeIn_0.3s_ease-out]">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
-        <div className="shrink-0 mb-3 flex items-start gap-3 relative z-10">
-          <div className="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
-            <HeartFillIcon size={16} />
+    <div className="w-full font-mono">
+      <div className="rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col relative animate-[fadeIn_0.2s_ease-out]">
+        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
+          <div className="flex items-center gap-2.5 shrink-0">
+            <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
           </div>
-          {/* Sem nowrap: este card aparece com max-w-md em /apoiar e numa coluna
-              estreita em /sessao — largura fixa de texto corta em um dos dois.
-              `min-w-0` porque filho de flex não encolhe abaixo do conteúdo por
-              conta própria, que é o que fazia o título passar da borda. */}
-          <h2 className="min-w-0 text-base lg:text-lg font-bold tracking-tight leading-snug text-balance text-white/90">
-            {title}
-          </h2>
+          <div className="flex items-center gap-2 min-w-0 mx-2">
+            <HeartFillIcon size={17} className="shrink-0 text-black" />
+            <h2 className="min-w-0 text-sm lg:text-base font-mono font-bold tracking-wider uppercase truncate text-black">
+              {title}
+            </h2>
+          </div>
+          <div
+            className="w-20 shrink-0 pointer-events-none"
+            aria-hidden="true"
+          />
         </div>
-        <div className="relative z-10">{children}</div>
+        <div className="p-4 lg:p-5 relative z-10 font-mono">{children}</div>
       </div>
     </div>
   );

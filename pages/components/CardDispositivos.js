@@ -41,9 +41,6 @@ function formatRelative(iso, language) {
 
 function osLabel(os) {
   if (!os) return "Dispositivo";
-  // O `sw_vers` no macOS devolve "macOS 26.5" com inicial minúscula
-  // (branding oficial da Apple). Capitalizamos pra deixar consistente com o
-  // restante das linhas, que começam com a label do componente em maiúscula.
   return os.charAt(0).toUpperCase() + os.slice(1);
 }
 
@@ -54,9 +51,6 @@ export default function CardDispositivos() {
     fetcher,
     {
       revalidateOnFocus: false,
-      // 4xx é determinístico (sessão expirada ou conta sem a feature) —
-      // re-tentar só martela o servidor e polui o console. Erros de rede
-      // e 5xx mantêm retry com backoff, limitado a 3 tentativas.
       onErrorRetry: (err, _key, _config, revalidate, { retryCount }) => {
         if (err?.status >= 400 && err?.status < 500) return;
         if (retryCount >= 3) return;
@@ -97,35 +91,45 @@ export default function CardDispositivos() {
   }
 
   return (
-    <div className="w-full">
-      <div className="glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col group animate-[fadeIn_0.4s_ease-out]">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
-
-        {/* Header */}
-        <div className="shrink-0 mb-3 flex items-center gap-3 relative z-10">
-          <div className="w-8 h-8 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
-            <DevicesIcon size={16} />
+    <div className="w-full font-mono">
+      <div className="rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col relative animate-[fadeIn_0.2s_ease-out]">
+        {/* Barra de Título Branca com Texto Preto */}
+        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
+          <div className="flex items-center gap-2.5 shrink-0">
+            <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
           </div>
-          <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
-            {t("Dispositivos")}
-          </h2>
+
+          <div className="flex items-center gap-2 min-w-0 mx-2">
+            <DevicesIcon size={17} className="shrink-0 text-black" />
+            <h2 className="text-sm lg:text-base font-mono font-bold tracking-wider uppercase text-black truncate">
+              {t("Dispositivos")}
+            </h2>
+          </div>
+
+          <div
+            className="w-20 shrink-0 pointer-events-none"
+            aria-hidden="true"
+          />
         </div>
 
-        <div className="relative z-10 flex flex-col gap-3 text-white/70 text-sm">
+        {/* Lista de Dispositivos */}
+        <div className="p-4 flex flex-col gap-3 text-white text-sm">
           {isLoading && (
-            <p className="text-white/40 text-center py-2">
-              {t("Carregando...")}
+            <p className="text-zinc-500 text-center py-2 text-xs">
+              [{t("Carregando...")}]
             </p>
           )}
 
           {error && (
-            <p className="text-red-300 text-center py-2">
-              {t("Erro ao carregar dispositivos")}
+            <p className="text-white border border-white p-2 text-center text-xs">
+              [!] {t("Erro ao carregar dispositivos")}
             </p>
           )}
 
           {!isLoading && !error && data?.length === 0 && (
-            <p className="text-white/40 text-center py-4 leading-relaxed">
+            <p className="text-zinc-500 text-center py-4 text-xs leading-relaxed">
               {t("Nenhum dispositivo registrado")}
             </p>
           )}
@@ -133,78 +137,83 @@ export default function CardDispositivos() {
           {data?.map((device) => (
             <div
               key={device.id}
-              className={`rounded-xl bg-white/5 border border-white/10 p-2 flex flex-col gap-3 transition-opacity ${
-                device.upload_paused ? "opacity-60" : ""
+              className={`border border-white p-3 flex flex-col gap-3 bg-black ${
+                device.upload_paused ? "text-zinc-400 border-zinc-700" : ""
               }`}
             >
               <div className="flex items-start gap-3">
                 <DeviceDesktopIcon
                   size={18}
-                  className="text-cyan-300 mt-0.5 shrink-0"
+                  className="text-white mt-0.5 shrink-0"
                 />
                 <div className="flex-1 min-w-0">
-                  {/* Specs: uma linha por campo, todas com mesma cor, peso
-                      e tamanho — inclui o SO como mais um item da lista.
-                      A versão do Pindorama + relative time fica numa fonte
-                      mais discreta pra agir como rodapé. */}
-                  <div className="flex flex-col gap-0.5 text-white text-sm leading-relaxed">
-                    <p className="break-all">
-                      {t("SO")}: {osLabel(device.os)}
-                    </p>
+                  <div className="flex items-center justify-between gap-2 border-b border-zinc-800 pb-1.5 mb-2">
+                    <span className="font-bold text-xs uppercase tracking-wider text-white">
+                      {osLabel(device.os)}
+                    </span>
+                    {device.upload_paused && (
+                      <span className="border border-white px-1 text-[10px] text-zinc-400">
+                        {t("pausado")}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-0.5 text-xs text-white leading-relaxed font-mono">
                     {device.cpu && (
                       <p className="break-all">
-                        {t("CPU")}: {device.cpu}
+                        <span className="text-zinc-500">{t("CPU")}:</span>{" "}
+                        {device.cpu}
                       </p>
                     )}
                     {device.ram_bytes != null && (
                       <p>
-                        {t("RAM")}: {formatRam(device.ram_bytes)}
+                        <span className="text-zinc-500">{t("RAM")}:</span>{" "}
+                        {formatRam(device.ram_bytes)}
                       </p>
                     )}
                     {device.gpu && (
                       <p className="break-all">
-                        {t("GPU")}: {device.gpu}
+                        <span className="text-zinc-500">{t("GPU")}:</span>{" "}
+                        {device.gpu}
                       </p>
                     )}
                     {device.monitor && (
                       <p className="break-all">
-                        {t("Monitor")}: {device.monitor}
+                        <span className="text-zinc-500">{t("Monitor")}:</span>{" "}
+                        {device.monitor}
                       </p>
                     )}
                     {device.tablet && (
                       <p className="break-all">
-                        {t("Mesa")}: {device.tablet}
+                        <span className="text-zinc-500">{t("Mesa")}:</span>{" "}
+                        {device.tablet}
                       </p>
                     )}
                   </div>
-                  <p className="text-white/40 text-xs mt-2">
+
+                  <p className="text-zinc-500 text-[11px] mt-2 pt-1 border-t border-zinc-800">
                     Pindorama v{device.pindorama_version || "?"} ·{" "}
                     {formatRelative(device.last_seen_at, language)}
-                    {device.upload_paused && (
-                      <span className="text-amber-300 ml-1">
-                        ({t("pausado")})
-                      </span>
-                    )}
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-2 pt-1">
                 <button
                   type="button"
                   onClick={() => togglePause(device)}
                   disabled={busyId === device.id}
-                  className="cursor-pointer inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-cyan-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="win-btn text-[11px] flex-1 inline-flex items-center justify-center gap-1.5"
                 >
                   {device.upload_paused ? (
                     <>
                       <PlayIcon size={12} />
-                      {t("Retomar")}
+                      <span>{t("Retomar")}</span>
                     </>
                   ) : (
                     <>
                       <PauseIcon size={12} />
-                      {t("Pausar")}
+                      <span>{t("Pausar")}</span>
                     </>
                   )}
                 </button>
@@ -212,10 +221,10 @@ export default function CardDispositivos() {
                   type="button"
                   onClick={() => deleteDevice(device)}
                   disabled={busyId === device.id}
-                  className="cursor-pointer inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-red-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="win-btn text-[11px] flex-1 inline-flex items-center justify-center gap-1.5 text-zinc-400 hover:text-white"
                 >
                   <TrashIcon size={12} />
-                  {t("Excluir")}
+                  <span>{t("Excluir")}</span>
                 </button>
               </div>
             </div>

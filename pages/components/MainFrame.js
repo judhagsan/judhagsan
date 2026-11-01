@@ -40,37 +40,25 @@ export default function MainFrame({ children }) {
   }
 
   return (
-    <div className="h-[100dvh] lg:h-screen bg-[#050505] pt-11 lg:pt-10 px-1 lg:px-2 pb-1 lg:pb-2 flex items-stretch lg:items-center justify-center font-outfit text-white selection:bg-cyan-500/30 overflow-x-hidden relative">
+    <div className="h-[100dvh] lg:h-screen bg-black pt-12 lg:pt-12 px-2 lg:px-4 pb-2 lg:pb-3 flex items-stretch lg:items-center justify-center font-mono text-white overflow-x-hidden relative">
       <PerspectiveGrid />
 
-      {/* Glass Frame Overlay — hidden on mobile/tablet for performance */}
-      <div className="absolute inset-0 z-0 pointer-events-none hidden lg:block">
-        <div
-          className="absolute inset-0 bg-white/5 backdrop-blur-sm 
-    [mask-image:linear-gradient(to_bottom,black_4%,transparent_4.8%,transparent_80%,black_100%),linear-gradient(to_right,black_0%,transparent_0.8%,transparent_80%,black_100%)]
-    [mask-composite:add]"
-        ></div>
+      {/* ======= BARRA SUPERIOR DESKTOP ======= */}
 
-        {/* Borda decorativa opcional (mantive para dar o acabamento) */}
-        <div className="absolute inset-0 border-[1px] border-white/10 pointer-events-none"></div>
-      </div>
-
-      {/* ======= DESKTOP NAVBAR ======= */}
-
-      {/* Top-left Links - Privacidade + Contato (desktop only) */}
-      <div className="absolute top-2 left-[3%] z-50 hidden lg:flex items-end gap-6 h-6 leading-none">
+      {/* Links do topo esquerdo - Termos de Uso + Contato */}
+      <div className="absolute top-2 left-[3%] z-50 hidden lg:flex items-center gap-3 h-7">
         {hasSidePanel ? (
           <button
             type="button"
             onClick={() => setActivePanel("privacy")}
-            className="cursor-pointer inline-flex items-end text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px] p-0 border-0 bg-transparent outline-none"
+            className="cursor-pointer px-3.5 py-1 rounded-full border border-white hover:bg-white hover:text-black text-xs uppercase tracking-wider text-white transition-colors bg-black"
           >
             {t("Termos de Uso")}
           </button>
         ) : (
           <Link
             href="/privacidade"
-            className="inline-flex items-end text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px]"
+            className="px-3.5 py-1 rounded-full border border-white hover:bg-white hover:text-black text-xs uppercase tracking-wider text-white transition-colors bg-black"
           >
             {t("Termos de Uso")}
           </Link>
@@ -79,227 +67,259 @@ export default function MainFrame({ children }) {
           <button
             type="button"
             onClick={() => setActivePanel("contact")}
-            className="cursor-pointer inline-flex items-end text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px] p-0 border-0 bg-transparent outline-none"
+            className="cursor-pointer px-3.5 py-1 rounded-full border border-white hover:bg-white hover:text-black text-xs uppercase tracking-wider text-white transition-colors bg-black"
           >
             {t("Contato")}
           </button>
         ) : (
           <Link
             href="/contato"
-            className="inline-flex items-end text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px]"
+            className="px-3.5 py-1 rounded-full border border-white hover:bg-white hover:text-black text-xs uppercase tracking-wider text-white transition-colors bg-black"
           >
             {t("Contato")}
           </Link>
         )}
       </div>
 
-      {/* External Logo (always visible, perfectly centered) */}
-      <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 flex items-end justify-center h-6 leading-none">
+      {/* Identidade Central - Logo */}
+      <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center h-7">
         <Link
           href={isLoggedIn ? "/sessao" : "/"}
           onClick={resetActiveCard}
-          className="cursor-pointer shrink-0 flex items-end justify-center"
+          className="cursor-pointer shrink-0 flex items-center justify-center filter brightness-100 contrast-125"
         >
-          <img
-            src="/Logo.png"
-            alt="Pindorama"
-            className="h-5 lg:h-6 w-auto opacity-90 hover:opacity-100 transition-opacity"
-          />
+          <img src="/Logo.png" alt="Pindorama" className="h-5 lg:h-6 w-auto" />
         </Link>
       </div>
 
-      {/* Auth Actions (desktop only) */}
-      <div className="absolute top-2 right-[3%] z-50 hidden lg:flex items-center gap-6 h-6 leading-none">
-        <div className="flex items-center gap-1.5 font-bold text-xs tracking-widest uppercase bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/10 select-none mr-2">
+      {/* Ações de Autenticação e Idioma no topo direito */}
+      <div className="absolute top-2 right-[3%] z-50 hidden lg:flex items-center gap-3 h-7">
+        {/* Seletor de Idioma em Pílula */}
+        <div className="flex items-center gap-1.5 text-xs tracking-wider uppercase bg-black px-3 py-1 rounded-full border border-white select-none">
           <button
             type="button"
             onClick={() => setLanguage("pt")}
             className={`cursor-pointer transition-colors ${
               language === "pt"
-                ? "text-cyan-300"
-                : "text-white/40 hover:text-white"
+                ? "text-white font-bold underline underline-offset-4"
+                : "text-zinc-500 hover:text-white"
             }`}
           >
             PT-BR
           </button>
-          <span className="text-white/20">|</span>
+          <span className="text-zinc-600">|</span>
           <button
             type="button"
             onClick={() => setLanguage("en")}
             className={`cursor-pointer transition-colors ${
               language === "en"
-                ? "text-cyan-300"
-                : "text-white/40 hover:text-white"
+                ? "text-white font-bold underline underline-offset-4"
+                : "text-zinc-500 hover:text-white"
             }`}
           >
             ENG
           </button>
         </div>
-        {!isLoading &&
-          (isLoggedIn ? (
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="cursor-pointer inline-flex items-end self-end text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px] p-0 border-0 bg-transparent outline-none"
-            >
-              {t("Sair")}
-            </button>
-          ) : (
-            <>
+
+        {/* Botões de Sessão / Conta em Pílula */}
+        {!isLoading && (
+          <div className="flex items-center gap-2">
+            {isLoggedIn ? (
               <button
                 type="button"
-                onClick={() => handleAuthCardClick("login")}
-                className="cursor-pointer inline-flex items-end self-end text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px] p-0 border-0 bg-transparent outline-none"
+                onClick={handleLogout}
+                className="cursor-pointer px-4 py-1 text-xs uppercase tracking-wider rounded-full border border-white hover:bg-white hover:text-black text-white transition-colors bg-black"
               >
-                {t("Login")}
+                {t("Sair")}
               </button>
-              <button
-                type="button"
-                onClick={() => handleAuthCardClick("cadastro")}
-                className="cursor-pointer inline-flex items-end self-end text-sm font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors leading-none translate-y-[-2px] p-0 border-0 bg-transparent outline-none"
-              >
-                {t("Cadastrar")}
-              </button>
-            </>
-          ))}
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => handleAuthCardClick("login")}
+                  className="cursor-pointer px-4 py-1 text-xs uppercase tracking-wider rounded-full border border-white hover:bg-white hover:text-black text-white transition-colors bg-black"
+                >
+                  {t("Login")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleAuthCardClick("cadastro")}
+                  className="cursor-pointer px-4 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-white text-black hover:bg-black hover:text-white border border-white transition-colors"
+                >
+                  {t("Cadastrar")}
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* ======= MOBILE/TABLET HAMBURGER ======= */}
+      {/* ======= BARRA SUPERIOR MOBILE ======= */}
+      <div className="absolute top-2 right-4 z-50 flex lg:hidden items-center">
+        <button
+          type="button"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+          className="cursor-pointer w-8 h-8 rounded-full flex items-center justify-center border border-white bg-black text-white hover:bg-white hover:text-black transition-colors"
+        >
+          {menuOpen ? <XIcon size={16} /> : <ThreeBarsIcon size={16} />}
+        </button>
+      </div>
 
-      {/* Hamburger button (mobile/tablet only) */}
-      <button
-        type="button"
-        onClick={() => setMenuOpen(!menuOpen)}
-        className="absolute top-2.5 right-3 z-[60] lg:hidden cursor-pointer text-white/70 hover:text-white transition-colors p-1"
-        aria-label="Menu"
-      >
-        {menuOpen ? <XIcon size={22} /> : <ThreeBarsIcon size={22} />}
-      </button>
-
-      {/* Mobile/tablet menu overlay */}
+      {/* Menu Mobile como Janela Flutuante */}
       {menuOpen && (
         <div
-          className="fixed inset-0 z-[55] lg:hidden"
+          className="fixed inset-0 z-[55] bg-black flex items-start justify-center pt-16 px-4 lg:hidden"
           onClick={() => setMenuOpen(false)}
         >
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
           <nav
-            className="absolute top-12 right-2 left-2 bg-[#111]/95 border border-white/10 rounded-2xl p-6 flex flex-col gap-1 animate-[fadeIn_0.15s_ease-out]"
+            className="w-full max-w-sm rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise shadow-2xl flex flex-col animate-[fadeIn_0.15s_ease-out]"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Navigation Links */}
-            {hasSidePanel ? (
-              <button
-                type="button"
-                onClick={() => handleSidePanelClick("privacy")}
-                className="cursor-pointer text-left py-3 text-base font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors border-b border-white/5"
-              >
-                {t("Termos de Uso")}
-              </button>
-            ) : (
-              <Link
-                href="/privacidade"
-                onClick={() => setMenuOpen(false)}
-                className="py-3 text-base font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors border-b border-white/5"
-              >
-                {t("Termos de Uso")}
-              </Link>
-            )}
-
-            {hasSidePanel ? (
-              <button
-                type="button"
-                onClick={() => handleSidePanelClick("contact")}
-                className="cursor-pointer text-left py-3 text-base font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors border-b border-white/5"
-              >
-                {t("Contato")}
-              </button>
-            ) : (
-              <Link
-                href="/contato"
-                onClick={() => setMenuOpen(false)}
-                className="py-3 text-base font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors border-b border-white/5"
-              >
-                {t("Contato")}
-              </Link>
-            )}
-
-            {/* Auth actions */}
-            {!isLoading && (
-              <div className="flex flex-col gap-1 mt-2">
-                {isLoggedIn ? (
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="cursor-pointer text-left py-3 text-base font-bold tracking-widest uppercase text-red-400/80 hover:text-red-300 transition-colors"
+            {/* Barra de título do menu mobile */}
+            <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen(false)}
+                  aria-label="Fechar menu"
+                  className="w-5 h-5 rounded-full border-2 border-black bg-white flex items-center justify-center hover:bg-black hover:text-white transition-all cursor-pointer group shrink-0 active:scale-90"
+                >
+                  <svg
+                    className="w-3.5 h-3.5 text-black group-hover:text-white transition-colors"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
                   >
-                    {t("Sair")}
-                  </button>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => handleAuthCardClick("login")}
-                      className="cursor-pointer text-left py-3 text-base font-bold tracking-widest uppercase text-cyan-400/80 hover:text-cyan-300 transition-colors border-b border-white/5"
-                    >
-                      {t("Login")}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleAuthCardClick("cadastro")}
-                      className="cursor-pointer text-left py-3 text-base font-bold tracking-widest uppercase text-cyan-400/80 hover:text-cyan-300 transition-colors"
-                    >
-                      {t("Cadastrar")}
-                    </button>
-                  </>
-                )}
+                    <path d="M10 3.5L5.5 8L10 12.5" />
+                  </svg>
+                </button>
+                <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+                <span className="w-5 h-5 rounded-full bg-black shrink-0" />
               </div>
-            )}
+              <span className="text-sm font-bold font-mono tracking-wider uppercase text-black">
+                MENU
+              </span>
+              <button
+                type="button"
+                onClick={() => setMenuOpen(false)}
+                className="w-5 h-5 rounded-full border border-black flex items-center justify-center text-xs font-bold text-black hover:bg-black hover:text-white transition-colors cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
 
-            {/* Mobile Language Switcher */}
-            <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-white/5 font-bold text-sm tracking-widest uppercase select-none">
-              <button
-                type="button"
-                onClick={() => {
-                  setLanguage("pt");
-                  setMenuOpen(false);
-                }}
-                className={`cursor-pointer transition-colors ${
-                  language === "pt"
-                    ? "text-cyan-300"
-                    : "text-white/40 hover:text-white"
-                }`}
-              >
-                PT-BR
-              </button>
-              <span className="text-white/20">|</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setLanguage("en");
-                  setMenuOpen(false);
-                }}
-                className={`cursor-pointer transition-colors ${
-                  language === "en"
-                    ? "text-cyan-300"
-                    : "text-white/40 hover:text-white"
-                }`}
-              >
-                ENG
-              </button>
+            <div className="p-4 flex flex-col gap-3 text-sm">
+              {hasSidePanel ? (
+                <button
+                  type="button"
+                  onClick={() => handleSidePanelClick("privacy")}
+                  className="cursor-pointer text-left py-2 border-b border-zinc-800 uppercase tracking-wider text-white hover:bg-white hover:text-black transition-colors px-2"
+                >
+                  &gt; {t("Termos de Uso")}
+                </button>
+              ) : (
+                <Link
+                  href="/privacidade"
+                  onClick={() => setMenuOpen(false)}
+                  className="py-2 border-b border-zinc-800 uppercase tracking-wider text-white hover:bg-white hover:text-black transition-colors px-2"
+                >
+                  &gt; {t("Termos de Uso")}
+                </Link>
+              )}
+
+              {hasSidePanel ? (
+                <button
+                  type="button"
+                  onClick={() => handleSidePanelClick("contact")}
+                  className="cursor-pointer text-left py-2 border-b border-zinc-800 uppercase tracking-wider text-white hover:bg-white hover:text-black transition-colors px-2"
+                >
+                  &gt; {t("Contato")}
+                </button>
+              ) : (
+                <Link
+                  href="/contato"
+                  onClick={() => setMenuOpen(false)}
+                  className="py-2 border-b border-zinc-800 uppercase tracking-wider text-white hover:bg-white hover:text-black transition-colors px-2"
+                >
+                  &gt; {t("Contato")}
+                </Link>
+              )}
+
+              {!isLoading && (
+                <div className="flex flex-col gap-2 mt-2 pt-2 border-t border-zinc-700">
+                  {isLoggedIn ? (
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="cursor-pointer text-center py-2.5 rounded-full border border-white uppercase tracking-wider text-white hover:bg-white hover:text-black transition-colors text-xs font-mono bg-black"
+                    >
+                      {t("Sair")}
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleAuthCardClick("login")}
+                        className="cursor-pointer text-center py-2.5 rounded-full border border-white uppercase tracking-wider text-white hover:bg-white hover:text-black transition-colors text-xs font-mono bg-black"
+                      >
+                        {t("Login")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleAuthCardClick("cadastro")}
+                        className="cursor-pointer text-center py-2.5 rounded-full bg-white text-black font-bold uppercase tracking-wider hover:bg-black hover:text-white border border-white transition-colors text-xs font-mono"
+                      >
+                        {t("Cadastrar")}
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* Seletor de Idioma Mobile */}
+              <div className="flex items-center justify-center gap-4 mt-3 pt-3 border-t border-zinc-700 text-xs uppercase tracking-wider">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLanguage("pt");
+                    setMenuOpen(false);
+                  }}
+                  className={`cursor-pointer ${
+                    language === "pt"
+                      ? "text-white font-bold underline"
+                      : "text-zinc-500"
+                  }`}
+                >
+                  PT-BR
+                </button>
+                <span className="text-zinc-600">|</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLanguage("en");
+                    setMenuOpen(false);
+                  }}
+                  className={`cursor-pointer ${
+                    language === "en"
+                      ? "text-white font-bold underline"
+                      : "text-zinc-500"
+                  }`}
+                >
+                  ENG
+                </button>
+              </div>
             </div>
           </nav>
         </div>
       )}
 
-      {/* Render the inner content (Main Container) here */}
+      {/* Conteúdo Principal (Container de Janelas) */}
       {children}
-
-      {/* Decorative Floating Elements — smaller on mobile/tablet */}
-      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-50">
-        <div className="absolute top-[10%] right-[5%] w-[200px] h-[200px] lg:w-[500px] lg:h-[500px] bg-cyan-500/10 rounded-full blur-[80px] lg:blur-[120px]"></div>
-        <div className="absolute bottom-[0%] left-[0%] w-[150px] h-[150px] lg:w-[400px] lg:h-[400px] bg-purple-500/10 rounded-full blur-[60px] lg:blur-[100px]"></div>
-      </div>
     </div>
   );
 }

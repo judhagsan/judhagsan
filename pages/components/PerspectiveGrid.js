@@ -5,7 +5,6 @@ export default function PerspectiveGrid() {
   const [offset, setOffset] = useState(0);
 
   useEffect(() => {
-    // Atualiza dimensões
     const updateDimensions = () => {
       setDimensions({
         width: window.innerWidth,
@@ -15,13 +14,12 @@ export default function PerspectiveGrid() {
     updateDimensions();
     window.addEventListener("resize", updateDimensions);
 
-    // Loop de animação bem lento
+    // Loop suave de afastamento em perspectiva (túnel infinito para frente)
     let animationFrame;
     const animate = () => {
-      // Invertido: subtraindo para ir "para dentro" (afastando)
       setOffset((prev) => {
-        let next = prev - 0.002;
-        if (next < 0) next += 1;
+        let next = prev + 0.0018;
+        if (next >= 1) next -= 1;
         return next;
       });
       animationFrame = requestAnimationFrame(animate);
@@ -38,7 +36,7 @@ export default function PerspectiveGrid() {
   const cx = width / 2;
   const cy = height / 2;
 
-  // 1. Linhas Diagonais (Quinas principais)
+  // Linhas diagonais principais dos cantos ao ponto de fuga central
   const cornerLines = [
     { x1: cx, y1: cy, x2: 0, y2: 0 },
     { x1: cx, y1: cy, x2: width, y2: 0 },
@@ -46,37 +44,28 @@ export default function PerspectiveGrid() {
     { x1: cx, y1: cy, x2: 0, y2: height },
   ];
 
-  // 2. Linhas Radiais Extras
+  // Linhas radiais adicionais no teto, chão e paredes laterais
   const extraLines = [];
-  const linesPerWall = 8; // Aumentado para mais densidade
+  const linesPerWall = 7;
 
-  // Top
   for (let i = 1; i <= linesPerWall; i++) {
     const x = (width * i) / (linesPerWall + 1);
     extraLines.push({ x1: cx, y1: cy, x2: x, y2: 0 });
-  }
-  // Bottom
-  for (let i = 1; i <= linesPerWall; i++) {
-    const x = (width * i) / (linesPerWall + 1);
     extraLines.push({ x1: cx, y1: cy, x2: x, y2: height });
   }
-  // Left
+
   for (let i = 1; i <= linesPerWall; i++) {
     const y = (height * i) / (linesPerWall + 1);
     extraLines.push({ x1: cx, y1: cy, x2: 0, y2: y });
-  }
-  // Right
-  for (let i = 1; i <= linesPerWall; i++) {
-    const y = (height * i) / (linesPerWall + 1);
     extraLines.push({ x1: cx, y1: cy, x2: width, y2: y });
   }
 
   const allRadialLines = [...cornerLines, ...extraLines];
 
-  // 3. Retângulos de profundidade Animados
+  // 29 retângulos concêntricos com escala exponencial de profundidade
   const gridRects = [];
-  const numRects = 30; // Aumentado para mais densidade
-  const maxScale = 1.5;
+  const numRects = 29;
+  const maxScale = 1.0;
 
   for (let i = 0; i < numRects; i++) {
     let t = (i + offset) / numRects;
@@ -84,60 +73,80 @@ export default function PerspectiveGrid() {
     if (t > 1) t -= 1;
     if (t < 0) t += 1;
 
-    // Escala não-linear para perspectiva
-    const scale = Math.pow(t, 2.5);
+    // Escala não-linear de profundidade idêntica à vinheta
+    const scale = Math.pow(t, 2.3);
+    const currentScale = scale * maxScale;
 
-    const rectW = width * scale * maxScale;
-    const rectH = height * scale * maxScale;
+    // Descarte estrito: nunca renderizar retângulos fora dos limites do viewport
+    if (currentScale > 1.0) continue;
 
-    // Opacidade suave
-    const opacity = Math.min(1, t * 5);
+    const rectW = width * currentScale;
+    const rectH = height * currentScale;
 
-    if (rectW > 1) {
+    if (rectW > 2) {
       gridRects.push({
         x: cx - rectW / 2,
         y: cy - rectH / 2,
         width: rectW,
         height: rectH,
-        opacity,
       });
     }
   }
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0 bg-[#050505]">
-      <svg className="w-full h-full opacity-30" width="100%" height="100%">
-        {/* Linhas Radiais (Estáticas) */}
-        {allRadialLines.map((line, i) => (
-          <line
-            key={`r-${i}`}
-            x1={line.x1}
-            y1={line.y1}
-            x2={line.x2}
-            y2={line.y2}
-            stroke="rgba(150, 150, 150, 0.3)"
-            strokeWidth={i < 4 ? 3 : 2}
-          />
-        ))}
+    <div className="fixed inset-0 overflow-hidden pointer-events-none select-none z-0 bg-black">
+      {/* Grade do túnel vetorial com traço luminoso 100% sólido */}
+      <svg
+        className="w-full h-full block overflow-hidden"
+        viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="none"
+      >
+        <defs>
+          <clipPath id="perspective-viewport-clip">
+            <rect x="0" y="0" width={width} height={height} />
+          </clipPath>
+        </defs>
 
-        {/* Retângulos (Animados) */}
-        {gridRects.map((rect, i) => (
-          <rect
-            key={`g-${i}`}
-            x={rect.x}
-            y={rect.y}
-            width={rect.width}
-            height={rect.height}
-            fill="none"
-            stroke="rgba(150, 150, 150, 0.3)"
-            strokeWidth="2"
-            opacity={rect.opacity}
-          />
-        ))}
+        <g clipPath="url(#perspective-viewport-clip)">
+          {/* Raios e diagonais radiais sólidas */}
+          {allRadialLines.map((line, i) => (
+            <line
+              key={`r-${i}`}
+              x1={line.x1}
+              y1={line.y1}
+              x2={line.x2}
+              y2={line.y2}
+              stroke={i < 4 ? "#52525b" : "#3f3f46"}
+              strokeWidth={i < 4 ? 2 : 1.5}
+            />
+          ))}
+
+          {/* Retângulos de perspectiva em profundidade sólidos */}
+          {gridRects.map((rect, i) => (
+            <rect
+              key={`g-${i}`}
+              x={rect.x}
+              y={rect.y}
+              width={rect.width}
+              height={rect.height}
+              fill="none"
+              stroke="#3f3f46"
+              strokeWidth="1.5"
+            />
+          ))}
+        </g>
       </svg>
 
-      {/* Vignette */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,#050505_100%)] z-10 pointer-events-none"></div>
+      {/* Camada de grão analógico estático com gradiente elíptico concentrado no centro */}
+      <div
+        className="absolute inset-0 bg-noise pointer-events-none"
+        style={{
+          maskImage:
+            "radial-gradient(ellipse at center, black 35%, transparent 95%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse at center, black 35%, transparent 95%)",
+        }}
+      />
     </div>
   );
 }

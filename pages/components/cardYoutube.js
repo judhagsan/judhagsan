@@ -7,19 +7,15 @@ export default function CardYoutube() {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const CHANNEL_ID = "UCVqzru2hZO3pX7IjjkSGDyQ"; // Channel: @Judhagsan
+  const CHANNEL_ID = "UCVqzru2hZO3pX7IjjkSGDyQ";
 
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        // Server-side proxy do feed RSS do canal (sem chave de API, sem
-        // quota, com cache CDN) — ver pages/api/v1/youtube.
         const response = await fetch("/api/v1/youtube");
-
         if (!response.ok) throw new Error("API call failed");
 
         const data = await response.json();
-
         const formattedVideos = data.map((item) => ({
           id: item.id,
           title: item.title,
@@ -34,7 +30,6 @@ export default function CardYoutube() {
         setLoading(false);
       } catch (error) {
         console.error("Error loading videos:", error);
-        // Fallback to mock data on error so the UI doesn't break
         setVideos([
           {
             id: 1,
@@ -51,30 +46,31 @@ export default function CardYoutube() {
     fetchVideos();
   }, [language, t]);
 
-  // Tile "Ver o canal" preenche colunas vazias no desktop; quando ele está
-  // visível, o pill do header some no desktop para não duplicar o link.
   const showsChannelTile = !loading && videos.length > 0 && videos.length < 3;
 
   return (
     <div className="w-full">
-      <div className="glass-card group rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col gap-3 animate-[fadeIn_0.3s_ease-out]">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10"></div>
-
-        {/* Header */}
-        <div className="shrink-0 flex items-center justify-between pl-2 relative z-10">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-300 shadow-lg shadow-red-500/15 shrink-0">
-              <PlayIcon size={16} />
-            </div>
-            <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
-              {t("Ultimos videos")}
-            </h2>
+      <div className="rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col relative animate-[fadeIn_0.2s_ease-out]">
+        {/* Barra de Título Branca com Texto Preto */}
+        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
+          <div className="flex items-center gap-2.5 shrink-0">
+            <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
           </div>
+
+          <div className="flex items-center gap-2 min-w-0 mx-2">
+            <PlayIcon size={17} className="shrink-0 text-black" />
+            <span className="text-sm lg:text-base font-mono font-bold tracking-wider uppercase text-black truncate">
+              {t("Ultimos videos")}
+            </span>
+          </div>
+
           <a
             href={`https://www.youtube.com/channel/${CHANNEL_ID}`}
             target="_blank"
             rel="noopener noreferrer"
-            className={`text-xs font-semibold text-white/50 hover:text-white transition-colors uppercase tracking-wider bg-white/5 px-3 py-1 rounded-full cursor-pointer decoration-transparent ${
+            className={`text-[11px] font-mono font-bold uppercase tracking-wider text-black border border-black px-3 py-1 rounded-full hover:bg-black hover:text-white transition-colors ${
               showsChannelTile ? "lg:hidden" : ""
             }`}
           >
@@ -82,19 +78,20 @@ export default function CardYoutube() {
           </a>
         </div>
 
-        {/* Video List - Responsive Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4">
+        {/* Grade de Vídeos */}
+        <div className="p-3 lg:p-4 grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4 font-mono">
           {loading
-            ? // Skeleton Loading
-              [1, 2, 3].map((i) => (
+            ? [1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className={`flex gap-4 p-2 rounded-xl bg-white/5 animate-pulse ${i > 1 ? "hidden lg:flex" : "flex"}`}
+                  className={`flex gap-3 p-2 rounded-xl border border-zinc-800 bg-black animate-pulse ${
+                    i > 1 ? "hidden lg:flex" : "flex"
+                  }`}
                 >
-                  <div className="w-28 h-20 lg:w-40 lg:h-24 rounded-lg bg-white/10 shrink-0"></div>
+                  <div className="w-28 h-20 lg:w-36 lg:h-22 bg-zinc-900 shrink-0 rounded-lg border border-zinc-800" />
                   <div className="flex-1 space-y-2 py-2 min-w-0">
-                    <div className="h-4 bg-white/10 rounded w-3/4"></div>
-                    <div className="h-4 bg-white/5 rounded w-1/2"></div>
+                    <div className="h-4 bg-zinc-800 w-3/4 rounded" />
+                    <div className="h-3 bg-zinc-800 w-1/2 rounded" />
                   </div>
                 </div>
               ))
@@ -104,42 +101,40 @@ export default function CardYoutube() {
                   href={`https://www.youtube.com/watch?v=${video.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`group gap-3 p-2 rounded-2xl hover:bg-white/10 transition-all cursor-pointer border border-transparent hover:border-white/5 deco ${index > 0 ? "hidden lg:flex" : "flex"}`}
+                  className={`group gap-3 p-2 rounded-xl border border-white bg-black hover:bg-white text-white hover:text-black transition-colors cursor-pointer ${
+                    index > 0 ? "hidden lg:flex" : "flex"
+                  }`}
                 >
-                  {/* Thumbnail */}
-                  <div className="relative w-28 h-20 lg:w-40 lg:h-24 flex-shrink-0 rounded-xl overflow-hidden shadow-lg border border-white/5">
+                  {/* Thumbnail com moldura e indicador de play */}
+                  <div className="relative w-28 h-20 lg:w-36 lg:h-22 shrink-0 rounded-lg border border-white overflow-hidden bg-black">
                     <img
                       src={video.thumbnail}
                       alt={video.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      className="w-full h-full object-cover filter contrast-110 group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors"></div>
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <PlayIcon
-                        size={32}
-                        className="text-white drop-shadow-md"
-                      />
+                      <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center border border-black shadow-lg">
+                        <PlayIcon size={18} />
+                      </div>
                     </div>
                   </div>
 
-                  {/* Info */}
+                  {/* Informações */}
                   <div className="flex flex-col justify-center min-w-0 py-1">
-                    <h3 className="text-sm lg:text-base font-bold text-white line-clamp-2 leading-snug group-hover:text-cyan-400 transition-colors">
+                    <h3 className="text-xs lg:text-sm font-bold line-clamp-2 leading-snug group-hover:underline">
                       {video.title}
                     </h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-zinc-400 font-medium bg-black/30 px-2 py-0.5 rounded-md">
+                    <div className="flex items-center gap-2 mt-2 text-[11px] text-zinc-400 group-hover:text-black">
+                      <span className="border border-current px-1.5 py-0.5 rounded bg-black group-hover:bg-white">
                         {t(video.views)}
                       </span>
-                      <span className="text-xs text-zinc-500">
-                        {video.date}
-                      </span>
+                      <span>{video.date}</span>
                     </div>
                   </div>
                 </a>
               ))}
 
-          {/* Preenche colunas vazias com convite ao canal */}
+          {/* Tile do Canal quando faltam vídeos */}
           {showsChannelTile &&
             Array.from({ length: 3 - Math.min(videos.length, 3) }).map(
               (_, index) => (
@@ -148,10 +143,10 @@ export default function CardYoutube() {
                   href={`https://www.youtube.com/channel/${CHANNEL_ID}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hidden lg:flex items-center justify-center gap-2 p-2 rounded-2xl border border-dashed border-white/10 hover:border-white/25 text-white/30 hover:text-white/70 transition-all cursor-pointer text-xs uppercase tracking-widest"
+                  className="hidden lg:flex items-center justify-center gap-2 p-3 rounded-xl border border-dashed border-white text-zinc-400 hover:text-white transition-colors cursor-pointer text-xs uppercase tracking-wider"
                 >
-                  <PlayIcon size={16} />
-                  {t("Ver o canal")}
+                  <PlayIcon size={14} />
+                  <span>{t("Ver o canal")}</span>
                 </a>
               ),
             )}

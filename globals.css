@@ -1,19 +1,14 @@
-/* Custom Web Fonts — precisa vir antes do import do Tailwind, que é
-   expandido em regras concretas antes da checagem de ordem dos @import */
+/* Custom Web Fonts — precisa vir antes do import do Tailwind */
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap");
 
 @import "tailwindcss";
 
 @plugin "daisyui" {
-  themes: sunset;
+  themes: black;
 }
 
 @theme {
   --font-outfit: "Outfit", sans-serif;
-  /* O site tem uma fonte só. `font-sans` e `font-mono` continuam existindo
-     como classes do Tailwind, e por padrão cairiam no stack do sistema — o que
-     colocava uma segunda e uma terceira fonte na tela sem ninguém pedir.
-     Apontadas para a Outfit, escrevê-las por hábito não quebra a unidade. */
   --font-sans: "Outfit", sans-serif;
   --font-mono: "Outfit", sans-serif;
   --font-size-xs: 0.8rem;
@@ -22,23 +17,31 @@
   --font-size-lg: 1.225rem;
   --font-size-xl: 1.375rem;
   --font-size-2xl: 1.625rem;
+  --background-image-noise: url("/noise.png");
 }
 
 @layer base {
   body {
-    @apply bg-[#0a0a0a] text-white antialiased font-outfit;
+    @apply bg-black text-white antialiased font-outfit;
   }
 
-  /* Ocultar barra de rolagem globalmente para visual de app */
+  /* Ocultar barra de rolagem mantendo a navegação por teclado/touch */
   ::-webkit-scrollbar {
     display: none;
   }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+    display: none;
+  }
+  ::-webkit-resizer {
+    display: none;
+  }
   * {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
-  /* Navegação por teclado: anel de foco visível em todo elemento interativo */
+  /* Anel de foco acessível de alto contraste, nítido e sem cantos arredondados */
   :where(
     a,
     button,
@@ -48,12 +51,17 @@
     summary,
     [role="button"]
   ):focus-visible {
-    outline: 2px solid rgba(34, 211, 238, 0.6);
+    outline: 2px solid #ffffff;
     outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: #ffffff;
+    color: #000000;
   }
 }
 
-/* Respeita a preferência do sistema por menos movimento */
+/* Respeito à preferência do sistema por menos movimento */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -65,45 +73,67 @@
 }
 
 @layer utilities {
-  .glass-card {
-    @apply bg-gradient-to-br from-white/10 to-white/0 backdrop-blur-sm border border-white/20;
-    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
-  }
-
-  .glass-button {
-    @apply bg-white/20 backdrop-blur-md hover:bg-white/30 transition-all border border-white/10;
-  }
-
-  .text-glow {
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-  }
-
-  .cyan-glow {
-    box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
-  }
-
-  /* Noise Static Effect */
+  /* Textura de grão estática de filme analógico */
   .bg-noise {
-    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAACAgIBAQEAAAAAAAD///8AAAB3Rl2sAAAACXBIWXMAAA7EAAAOxAGTK7hGAAAAQUlEQVQ4y2NgwA04GfACQkGgEAg5AIL2A8WAFgAFjI0QAsYIImAMiB8gYAzE7wdCxhgCxgjCYAyM/gH2A2M7wBgA2sIxS885U7cAAAAASUVORK5CYII=");
-    background-size: 64px 64px;
+    background-image: url("/noise.png");
+    background-size: 128px 128px;
     background-repeat: repeat;
   }
 
-  .animate-noise {
-    animation: noise 0.2s steps(3) infinite;
+  /* Painel de janela padrão inspirado na vinheta do Pindorama */
+  .win-panel {
+    @apply bg-black border border-white text-white relative bg-noise;
+  }
+
+  /* Janela em destaque com borda dupla / traço nítido */
+  .win-panel-active {
+    @apply bg-black border-2 border-white text-white relative bg-noise;
+  }
+
+  /* Barra de título de janela escura */
+  .win-titlebar {
+    @apply shrink-0 flex items-center justify-between px-3 py-2 border-b border-zinc-700 bg-black text-white text-xs uppercase tracking-wider select-none;
+  }
+
+  /* Barra de título invertida (fundo branco, texto preto - como o Main Window "JUDHAGSAN") */
+  .win-titlebar-inverted {
+    @apply shrink-0 flex items-center justify-between px-3 py-2 border-b-2 border-white bg-white text-black text-xs font-bold uppercase tracking-wider select-none;
+  }
+
+  /* Botão clássico estilo pílula com inversão de contraste no hover */
+  .win-btn {
+    @apply cursor-pointer inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full border border-white bg-black text-white text-xs uppercase tracking-wider transition-colors hover:bg-white hover:text-black hover:border-white active:scale-95 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-white;
+  }
+
+  /* Botão principal de ação em pílula (já nasce invertido: fundo branco, texto preto) */
+  .win-btn-primary {
+    @apply cursor-pointer inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full border-2 border-white bg-white text-black text-xs font-bold uppercase tracking-wider transition-colors hover:bg-black hover:text-white active:scale-95 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-black;
+  }
+
+  /* Input de dados com estética de terminal */
+  .win-input {
+    @apply px-3 py-2 bg-black border border-zinc-700 text-white placeholder-zinc-500 text-sm font-mono transition-colors focus:border-white focus:outline-none;
+  }
+
+  /* Retrocompatibilidade com .glass-card e .glass-button adaptados ao novo padrão */
+  .glass-card {
+    @apply bg-black border border-white text-white bg-noise;
+  }
+
+  .glass-button {
+    @apply bg-black text-white border border-white hover:bg-white hover:text-black transition-colors;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px #ffffff;
   }
 }
 
-/* Entrada dos cards. O fade roda no próprio elemento que carrega o
-   `backdrop-filter`, nunca em um ancestral: opacidade intermediária em
-   ancestral cria um novo backdrop root e desliga o blur do .glass-card até a
-   animação acabar — é isso que aparece como um flash no fim da entrada. Por
-   isso a classe vale tanto aplicada no card quanto em um wrapper, mas só
-   anima o card. A escala é discreta de propósito; o "pop" de scale(0.85) é
-   coisa do fadeIn, que segue servindo a ícones e mensagens. A duração
-   acompanha a entrada dos cards centrais (fadeIn 0.12s) de propósito. */
+/* Transições e entradas de janela */
 .card-enter.glass-card,
-.card-enter .glass-card {
+.card-enter .glass-card,
+.card-enter.win-panel,
+.card-enter .win-panel {
   animation: cardIn 0.12s ease-out;
 }
 
@@ -112,7 +142,6 @@
     opacity: 0;
     transform: scale(0.98);
   }
-
   to {
     opacity: 1;
     transform: scale(1);
@@ -122,86 +151,29 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: scale(0.85);
+    transform: scale(0.95);
   }
-
   to {
     opacity: 1;
     transform: scale(1);
   }
 }
 
-/* Entrada do painel lateral (privacidade/contato) no desktop: o painel
-   vem da profundidade, crescendo até o tamanho final enquanto o card central
-   desliza para a esquerda. O card fica na frente pelo z-index, então o painel
-   emerge por trás dele. Escala 2D em vez de translateZ: transformação 3D
-   costuma bagunçar a rasterização do `backdrop-blur` do .glass-card. Anima só
-   `transform` de propósito — qualquer opacidade intermediária no ancestral
-   cria um novo backdrop root e desliga o blur até a animação terminar. */
 @keyframes panelIn {
   from {
-    transform: scale(0.88);
+    transform: scale(0.92);
   }
-
   to {
     transform: scale(1);
   }
 }
 
-/* Marquee dos créditos de apoiadores: translada exatamente uma cópia do
-   conteúdo (duplicado no componente) para um loop sem emenda. */
+/* Letreiro contínuo para apoiadores */
 @keyframes marquee {
   from {
     transform: translateX(0);
   }
-
   to {
     transform: translateX(-50%);
-  }
-}
-
-@keyframes noise {
-  0% {
-    transform: translate(0, 0);
-  }
-
-  10% {
-    transform: translate(-5%, -5%);
-  }
-
-  20% {
-    transform: translate(-10%, 5%);
-  }
-
-  30% {
-    transform: translate(5%, -10%);
-  }
-
-  40% {
-    transform: translate(-5%, 15%);
-  }
-
-  50% {
-    transform: translate(-10%, 5%);
-  }
-
-  60% {
-    transform: translate(15%, 0);
-  }
-
-  70% {
-    transform: translate(0, 10%);
-  }
-
-  80% {
-    transform: translate(-15%, 0);
-  }
-
-  90% {
-    transform: translate(10%, 5%);
-  }
-
-  100% {
-    transform: translate(5%, 0);
   }
 }

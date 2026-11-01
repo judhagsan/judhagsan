@@ -22,7 +22,7 @@ function DiscordIcon({ size = 16, className }) {
       aria-hidden="true"
       className={className}
     >
-      <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z" />
+      <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.0777.0777 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z" />
     </svg>
   );
 }
@@ -96,8 +96,6 @@ export default function CardUsuario({ user }) {
     event.preventDefault();
     if (isSavingPassword) return;
 
-    // Validação no cliente só para o que dá para responder na hora; o resto
-    // (senha atual, complexidade) é a API que decide.
     if (newPassword.length < 8) {
       setPasswordError(t("A senha deve ter no minimo 8 caracteres"));
       return;
@@ -122,8 +120,9 @@ export default function CardUsuario({ user }) {
         }),
       });
 
+      const body = await response.json().catch(() => ({}));
+
       if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
         setPasswordError(body.message || t("Erro alterar senha"));
         return;
       }
@@ -165,274 +164,296 @@ export default function CardUsuario({ user }) {
   }
 
   return (
-    <div className="w-full h-auto">
-      <div className="glass-card group rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
+    <div className="w-full h-auto font-mono">
+      <div className="rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col h-auto relative">
+        {/* Barra de Título Branca com Texto Preto */}
+        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
+          <div className="flex items-center gap-2.5 shrink-0">
+            <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+          </div>
 
-        {isConfirming ? (
-          <form
-            onSubmit={handleDelete}
-            className="flex flex-col items-center justify-center text-center gap-4 text-white/70 text-sm relative z-10 flex-1 h-full animate-[fadeIn_0.18s_ease-out]"
-          >
-            <div className="w-14 h-14 rounded-full bg-red-500/20 border border-red-400/40 flex items-center justify-center text-red-200">
-              <AlertFillIcon size={28} />
-            </div>
-            <p className="text-lg text-white font-semibold">
-              {t("Excluir conta")}
-            </p>
-            <p className="text-xs leading-relaxed max-w-xs">
-              {t("Texto excluir conta aviso")}
-            </p>
-            <label className="flex flex-col gap-1 w-full max-w-xs">
-              <span className="text-xs uppercase tracking-widest text-white/50">
-                {t("Digite para confirmar", { username: user?.username })}
-              </span>
-              <input
-                type="text"
-                value={confirmationInput}
-                onChange={(e) => setConfirmationInput(e.target.value)}
-                autoComplete="off"
-                className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-red-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-center"
-                placeholder={user?.username}
-              />
-            </label>
+          <div className="flex items-center gap-2 min-w-0 mx-2">
+            <PersonFillIcon size={17} className="shrink-0 text-black" />
+            <span className="text-sm lg:text-base font-mono font-bold tracking-wider uppercase text-black truncate">
+              USER::{user?.username}
+            </span>
+          </div>
 
-            {errorMessage && (
-              <p className="text-red-300 text-xs">{errorMessage}</p>
-            )}
+          <div
+            className="w-20 shrink-0 pointer-events-none"
+            aria-hidden="true"
+          />
+        </div>
 
-            <div className="flex gap-3 mt-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsConfirming(false);
-                  setConfirmationInput("");
-                  setErrorMessage("");
-                }}
-                disabled={isDeleting}
-                className="cursor-pointer px-6 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white/70 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm"
-              >
-                {t("Cancelar")}
-              </button>
-              <button
-                type="submit"
-                disabled={!confirmationMatches || isDeleting}
-                className="cursor-pointer px-6 py-2 bg-red-500/10 hover:bg-red-500/30 border border-red-500/30 hover:border-red-500/60 text-red-200 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm inline-flex items-center gap-2"
-              >
-                <TrashIcon size={14} />
-                {isDeleting ? t("Excluindo...") : t("Excluir")}
-              </button>
-            </div>
-          </form>
-        ) : isChangingPassword ? (
-          <form
-            onSubmit={handleChangePassword}
-            className="flex flex-col items-center justify-center text-center gap-4 text-white/70 text-sm relative z-10 flex-1 h-full animate-[fadeIn_0.18s_ease-out]"
-          >
-            <div className="w-14 h-14 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-200">
-              <KeyIcon size={24} />
-            </div>
-            <p className="text-lg text-white font-semibold">
-              {t("Alterar senha")}
-            </p>
-            <p className="text-xs leading-relaxed max-w-xs">
-              {t("Texto alterar senha aviso")}
-            </p>
-
-            <label className="flex flex-col gap-1 w-full max-w-xs text-left">
-              <span className="text-xs uppercase tracking-widest text-white/50">
-                {t("Senha atual")}
-              </span>
-              <input
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                autoComplete="current-password"
-                className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors"
-              />
-            </label>
-
-            <label className="flex flex-col gap-1 w-full max-w-xs text-left">
-              <span className="text-xs uppercase tracking-widest text-white/50">
-                {t("Nova senha")}{" "}
-                <span className="normal-case tracking-normal text-white/30">
-                  ({t("min_char")})
+        <div className="p-4 lg:p-5 flex flex-col h-auto">
+          {isConfirming ? (
+            <form
+              onSubmit={handleDelete}
+              className="flex flex-col items-center justify-center text-center gap-4 text-white text-sm animate-[fadeIn_0.15s_ease-out]"
+            >
+              <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black">
+                <AlertFillIcon size={24} />
+              </div>
+              <p className="text-base font-bold uppercase tracking-wider text-white">
+                {t("Excluir conta")}
+              </p>
+              <p className="text-xs text-zinc-400 leading-relaxed max-w-xs">
+                {t("Texto excluir conta aviso")}
+              </p>
+              <label className="flex flex-col gap-1 w-full max-w-xs">
+                <span className="text-xs uppercase tracking-wider text-zinc-500">
+                  {t("Digite para confirmar", { username: user?.username })}
                 </span>
-              </span>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                autoComplete="new-password"
-                className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors"
-              />
-            </label>
+                <input
+                  type="text"
+                  value={confirmationInput}
+                  onChange={(e) => setConfirmationInput(e.target.value)}
+                  autoComplete="off"
+                  className="win-input text-center text-sm"
+                  placeholder={user?.username}
+                />
+              </label>
 
-            <label className="flex flex-col gap-1 w-full max-w-xs text-left">
-              <span className="text-xs uppercase tracking-widest text-white/50">
-                {t("Confirmar nova senha")}
-              </span>
-              <input
-                type="password"
-                value={newPasswordConfirmation}
-                onChange={(e) => setNewPasswordConfirmation(e.target.value)}
-                autoComplete="new-password"
-                className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors"
-              />
-            </label>
-
-            {passwordError && (
-              <p className="text-red-300 text-xs">{passwordError}</p>
-            )}
-
-            <div className="flex gap-3 mt-2">
-              <button
-                type="button"
-                onClick={resetPasswordForm}
-                disabled={isSavingPassword}
-                className="cursor-pointer px-6 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white/70 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm"
-              >
-                {t("Cancelar")}
-              </button>
-              <button
-                type="submit"
-                disabled={isSavingPassword}
-                className="cursor-pointer px-6 py-2 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm inline-flex items-center gap-2"
-              >
-                <KeyIcon size={14} />
-                {isSavingPassword ? t("Salvando...") : t("Salvar")}
-              </button>
-            </div>
-          </form>
-        ) : (
-          <div className="flex flex-col gap-4 text-white/70 text-sm relative z-10 flex-1 h-full animate-[fadeIn_0.4s_ease-out]">
-            {/* Identidade — o selo no avatar é quem conta o status de apoiador */}
-            <div className="flex items-center gap-4 text-left">
-              <div className="relative shrink-0">
-                <div className="w-14 h-14 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-200">
-                  <PersonFillIcon size={28} />
+              {errorMessage && (
+                <div className="border border-white bg-zinc-950 p-2 text-xs text-white">
+                  {errorMessage}
                 </div>
-                {isSupporter && (
-                  <span
-                    title={t("Apoiador")}
-                    className="absolute -bottom-0.5 -right-1 w-6 h-6 rounded-full bg-amber-400 border-2 border-[#141414] flex items-center justify-center text-[#3a2a00] shadow-lg shadow-amber-500/40"
-                  >
-                    <HeartFillIcon size={12} />
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col gap-1 min-w-0">
-                <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
-                  {t("Bem vindo", { username: user?.username })}
-                </h2>
-                <p className="text-xs text-white/50 break-all">{user?.email}</p>
-              </div>
-            </div>
+              )}
 
-            {/* Apoiador */}
-            {isSupporter && (
-              <div className="flex flex-col gap-3 animate-[fadeIn_0.4s_ease-out]">
-                <div className="flex items-center gap-3">
-                  <span className="text-[10px] uppercase tracking-widest text-amber-300/80 font-semibold">
-                    {t("Apoiador")}
-                  </span>
-                  <span className="h-px flex-1 bg-gradient-to-r from-amber-400/30 to-transparent"></span>
-                </div>
-
-                {discordResult === "connected" && (
-                  <p className="text-emerald-300 text-xs animate-[fadeIn_0.3s_ease-out]">
-                    {t("Discord conectado com sucesso")}
-                  </p>
-                )}
-                {discordResult === "error" && (
-                  <p className="text-red-300 text-xs animate-[fadeIn_0.3s_ease-out]">
-                    {discordReason === "already_linked"
-                      ? t("Discord ja vinculado")
-                      : t("Erro ao conectar Discord")}
-                  </p>
-                )}
-
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                  {/* Os dois lados a lado: são as duas ações do apoiador, e
-                      ficavam em linhas separadas como se não tivessem relação.
-                      `flex-wrap` cobre a coluna estreita do /sessao, onde os
-                      dois não cabem na mesma linha. */}
-                  {user?.discord_connected ? (
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 text-xs shrink-0">
-                      <CheckCircleFillIcon size={14} />
-                      {t("Discord conectado")}
-                    </div>
-                  ) : (
-                    <a
-                      href="/api/v1/discord/connect"
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#5865F2]/15 hover:bg-[#5865F2]/35 border border-[#5865F2]/40 hover:border-[#5865F2]/70 text-indigo-200 text-xs font-semibold transition-all duration-300 shrink-0 cursor-pointer hover:scale-105 active:scale-95"
-                    >
-                      <DiscordIcon size={16} />
-                      {t("Entrar no Discord")}
-                    </a>
-                  )}
-
-                  <Link
-                    href="/apoiadores"
-                    className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-amber-300 transition-colors shrink-0"
-                  >
-                    <HeartFillIcon size={12} />
-                    {t("Ver mural de apoiadores")}
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            {isSupporter && <span className="h-px w-full bg-white/5"></span>}
-
-            {/* Ações de conta, lado a lado. O erro de exportação fica embaixo
-                para não empurrar os botões de linha. */}
-            <div className="flex flex-col items-start gap-2">
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-                <button
-                  type="button"
-                  onClick={handleExport}
-                  disabled={isExporting}
-                  className="cursor-pointer inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-cyan-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <PackageIcon size={12} />
-                  {isExporting ? t("Exportando...") : t("Exportar meus dados")}
-                </button>
-
+              <div className="flex gap-3 mt-2">
                 <button
                   type="button"
                   onClick={() => {
-                    setPasswordChanged(false);
-                    setIsChangingPassword(true);
+                    setIsConfirming(false);
+                    setConfirmationInput("");
+                    setErrorMessage("");
                   }}
-                  className="cursor-pointer inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-cyan-300 transition-colors"
+                  disabled={isDeleting}
+                  className="win-btn text-xs"
                 >
-                  <KeyIcon size={12} />
-                  {t("Alterar senha")}
+                  {t("Cancelar")}
                 </button>
-
                 <button
-                  type="button"
-                  onClick={() => setIsConfirming(true)}
-                  className="cursor-pointer inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/40 hover:text-red-300 transition-colors"
+                  type="submit"
+                  disabled={!confirmationMatches || isDeleting}
+                  className="win-btn-primary text-xs"
                 >
-                  <TrashIcon size={12} />
-                  {t("Excluir conta")}
+                  <TrashIcon size={14} />
+                  <span>{isDeleting ? t("Excluindo...") : t("Excluir")}</span>
                 </button>
               </div>
+            </form>
+          ) : isChangingPassword ? (
+            <form
+              onSubmit={handleChangePassword}
+              className="flex flex-col items-center justify-center text-center gap-4 text-white text-sm animate-[fadeIn_0.15s_ease-out]"
+            >
+              <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black">
+                <KeyIcon size={22} />
+              </div>
+              <p className="text-base font-bold uppercase tracking-wider text-white">
+                {t("Alterar senha")}
+              </p>
+              <p className="text-xs text-zinc-400 leading-relaxed max-w-xs">
+                {t("Texto alterar senha aviso")}
+              </p>
 
-              {exportError && (
-                <p className="text-red-300 text-xs">{exportError}</p>
+              <label className="flex flex-col gap-1 w-full max-w-xs text-left">
+                <span className="text-xs uppercase tracking-wider text-zinc-500">
+                  {t("Senha atual")}
+                </span>
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  autoComplete="current-password"
+                  className="win-input text-sm"
+                />
+              </label>
+
+              <label className="flex flex-col gap-1 w-full max-w-xs text-left">
+                <span className="text-xs uppercase tracking-wider text-zinc-500">
+                  {t("Nova senha")}{" "}
+                  <span className="normal-case text-zinc-500">
+                    ({t("min_char")})
+                  </span>
+                </span>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  autoComplete="new-password"
+                  minLength={8}
+                  className="win-input text-sm"
+                />
+              </label>
+
+              <label className="flex flex-col gap-1 w-full max-w-xs text-left">
+                <span className="text-xs uppercase tracking-wider text-zinc-500">
+                  {t("Confirmar")}
+                </span>
+                <input
+                  type="password"
+                  value={newPasswordConfirmation}
+                  onChange={(e) => setNewPasswordConfirmation(e.target.value)}
+                  autoComplete="new-password"
+                  className="win-input text-sm"
+                />
+              </label>
+
+              {passwordError && (
+                <div className="border border-white bg-zinc-950 p-2 text-xs text-white">
+                  {passwordError}
+                </div>
               )}
 
-              {passwordChanged && (
-                <p className="text-emerald-300 text-xs animate-[fadeIn_0.3s_ease-out]">
-                  {t("Senha alterada")}
-                </p>
+              <div className="flex gap-3 mt-2">
+                <button
+                  type="button"
+                  onClick={resetPasswordForm}
+                  disabled={isSavingPassword}
+                  className="win-btn text-xs"
+                >
+                  {t("Cancelar")}
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingPassword}
+                  className="win-btn-primary text-xs"
+                >
+                  <KeyIcon size={14} />
+                  <span>
+                    {isSavingPassword ? t("Salvando...") : t("Salvar")}
+                  </span>
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className="flex flex-col gap-4 text-white text-sm animate-[fadeIn_0.2s_ease-out]">
+              {/* Identidade */}
+              <div className="flex items-center gap-4 text-left border-b border-zinc-800 pb-4">
+                <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black shrink-0">
+                  <PersonFillIcon size={24} />
+                </div>
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-base font-bold uppercase tracking-wider text-white truncate">
+                      {user?.username}
+                    </h2>
+                    {isSupporter && (
+                      <span className="border border-white px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-white text-black shrink-0">
+                        {t("Apoiador")}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-zinc-500 break-all">
+                    {user?.email}
+                  </p>
+                </div>
+              </div>
+
+              {/* Seção de Apoiador */}
+              {isSupporter && (
+                <div className="flex flex-col gap-3 py-1 border-b border-zinc-800 pb-4">
+                  <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-400">
+                    <span>STATUS::SUPPORTER</span>
+                  </div>
+
+                  {discordResult === "connected" && (
+                    <div className="border border-white bg-zinc-950 p-2 text-xs text-white">
+                      [OK] {t("Discord conectado com sucesso")}
+                    </div>
+                  )}
+                  {discordResult === "error" && (
+                    <div className="border border-white bg-zinc-950 p-2 text-xs text-white">
+                      [!]{" "}
+                      {discordReason === "already_linked"
+                        ? t("Discord ja vinculado")
+                        : t("Erro ao conectar Discord")}
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    {user?.discord_connected ? (
+                      <span className="inline-flex items-center gap-1.5 border border-white px-2.5 py-1 text-xs text-white bg-zinc-950">
+                        <CheckCircleFillIcon size={12} />
+                        {t("Discord conectado")}
+                      </span>
+                    ) : (
+                      <a
+                        href="/api/v1/discord/connect"
+                        className="win-btn text-xs inline-flex items-center gap-2"
+                      >
+                        <DiscordIcon size={14} />
+                        {t("Entrar no Discord")}
+                      </a>
+                    )}
+
+                    <Link
+                      href="/apoiadores"
+                      className="win-btn text-xs inline-flex items-center gap-1.5"
+                    >
+                      <HeartFillIcon size={12} />
+                      {t("Ver mural de apoiadores")}
+                    </Link>
+                  </div>
+                </div>
               )}
+
+              {/* Ações de Conta */}
+              <div className="flex flex-col items-start gap-2 pt-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleExport}
+                    disabled={isExporting}
+                    className="win-btn text-xs inline-flex items-center gap-1.5"
+                  >
+                    <PackageIcon size={12} />
+                    {isExporting
+                      ? t("Exportando...")
+                      : t("Exportar meus dados")}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPasswordChanged(false);
+                      setIsChangingPassword(true);
+                    }}
+                    className="win-btn text-xs inline-flex items-center gap-1.5"
+                  >
+                    <KeyIcon size={12} />
+                    {t("Alterar senha")}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsConfirming(true)}
+                    className="win-btn text-xs inline-flex items-center gap-1.5 text-zinc-400 hover:text-white"
+                  >
+                    <TrashIcon size={12} />
+                    {t("Excluir conta")}
+                  </button>
+                </div>
+
+                {exportError && (
+                  <p className="text-white text-xs border border-white p-2 mt-1">
+                    {exportError}
+                  </p>
+                )}
+
+                {passwordChanged && (
+                  <p className="text-white text-xs border border-white p-2 mt-1 bg-zinc-900">
+                    [OK] {t("Senha alterada")}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

@@ -24,23 +24,14 @@ const PLATFORMS = {
   windows: {
     label: "Windows",
     available: true,
-    classes:
-      "bg-blue-500/10 hover:bg-blue-500/30 border-blue-500/30 hover:border-blue-500/60 text-blue-200 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]",
-    iconHover: "group-hover:text-blue-400",
   },
   macos: {
     label: "Mac ARM",
     available: false,
-    classes:
-      "bg-zinc-300/10 hover:bg-zinc-300/30 border-zinc-300/30 hover:border-zinc-300/60 text-zinc-200 hover:shadow-[0_0_20px_rgba(212,212,216,0.3)]",
-    iconHover: "group-hover:text-zinc-100",
   },
   linux: {
     label: "Linux",
     available: true,
-    classes:
-      "bg-orange-500/10 hover:bg-orange-500/30 border-orange-500/30 hover:border-orange-500/60 text-orange-200 hover:shadow-[0_0_20px_rgba(249,115,22,0.3)]",
-    iconHover: "group-hover:text-orange-400",
   },
 };
 
@@ -58,26 +49,17 @@ function PlatformButton({ platformKey, primary, compact }) {
   const available = info.available;
   const href = available ? `/api/v1/download/${platformKey}` : "#";
 
-  /*
-   * No modo compacto os três precisam caber em uma linha só dentro da coluna
-   * de 1/4 de largura. `flex-1 min-w-0` divide o espaço em partes iguais e o
-   * `truncate` do rótulo absorve o que faltar, então a linha nunca quebra —
-   * em vez de encolher até estourar numa largura de tela específica.
-   *
-   * O destaque da plataforma detectada vira um anel em vez de tamanho maior:
-   * aumentar um dos três é exatamente o que impedia a linha única.
-   */
   const sizeClasses = compact
-    ? `flex-1 min-w-0 justify-center px-2 py-2 text-[11px] gap-1.5 font-medium${
-        primary ? " ring-1 ring-white/25" : ""
+    ? `flex-1 min-w-0 justify-center px-3 py-1.5 rounded-full text-[11px] gap-1.5 font-mono ${
+        primary ? "bg-white text-black font-bold" : "bg-black text-white"
       }`
     : primary
-      ? "px-8 py-3 text-base gap-3 font-semibold"
-      : "px-4 py-2 text-xs gap-2 font-medium";
+      ? "px-8 py-3 text-sm gap-3 font-bold win-btn-primary"
+      : "px-5 py-2 text-xs gap-2 font-mono win-btn";
 
-  const colorClasses = available
-    ? `${info.classes} cursor-pointer hover:scale-105 active:scale-95`
-    : `${info.classes} opacity-40 cursor-not-allowed pointer-events-none`;
+  const availabilityClasses = available
+    ? "cursor-pointer active:scale-95"
+    : "cursor-not-allowed pointer-events-none border-zinc-800 text-zinc-600 bg-zinc-950";
 
   return (
     <a
@@ -87,23 +69,14 @@ function PlatformButton({ platformKey, primary, compact }) {
       onClick={(e) => {
         if (!available) e.preventDefault();
       }}
-      className={`inline-flex items-center border rounded-xl transition-all duration-300 group ${sizeClasses} ${colorClasses}`}
+      className={`inline-flex items-center rounded-full border border-white uppercase tracking-wider transition-colors ${sizeClasses} ${availabilityClasses}`}
     >
-      <DownloadIcon
-        size={primary && !compact ? 20 : 14}
-        className={`shrink-0 ${available ? `${info.iconHover} transition-colors` : ""}`}
-      />
+      <DownloadIcon size={primary && !compact ? 16 : 14} className="shrink-0" />
       <span className={compact ? "truncate" : undefined}>{info.label}</span>
     </a>
   );
 }
 
-/*
- * `compact` é o modo do painel administrativo: sem o parágrafo de descrição,
- * só título e botões. O card sai da área central larga e vai para a coluna
- * estreita da esquerda, onde o texto de divulgação não cabe nem faz sentido —
- * quem está no painel já conhece o produto.
- */
 export default function CardSessao({ compact = false }) {
   const { t } = useLanguage();
   const [platform, setPlatform] = useState(null);
@@ -120,45 +93,49 @@ export default function CardSessao({ compact = false }) {
     stage && versionData?.version ? `${stage} ${versionData.version}` : null;
 
   return (
-    <div className="w-full h-auto lg:h-auto">
-      <div className="glass-card group rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-auto">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10"></div>
-
-        {/* Header */}
-        <div className="shrink-0 mb-3 flex items-center gap-3 relative z-10">
-          <div className="w-8 h-8 rounded-full bg-yellow-500/30 border border-yellow-400/40 flex items-center justify-center text-yellow-300 shadow-lg shadow-yellow-400/25 shrink-0">
-            <img
-              src="/PinLogo.svg"
-              alt="PinLogo"
-              className="w-full h-full object-cover rounded-full"
-            />
+    <div className="w-full h-auto">
+      <div className="rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col h-auto relative font-mono">
+        {/* Barra de Título Branca com Texto Preto */}
+        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
+          <div className="flex items-center gap-2.5 shrink-0">
+            <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
           </div>
-          <div className="flex items-center gap-3 min-w-0">
-            <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
-              Pindorama
-            </h2>
+
+          <div className="flex items-center gap-2 min-w-0 mx-2">
+            <span className="text-sm lg:text-base font-mono font-bold tracking-wider uppercase text-black">
+              PINDORAMA
+            </span>
             {versionLabel && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-xs uppercase tracking-wider text-white/50">
+              <span className="text-[10px] uppercase tracking-wider rounded-full border border-black px-2 py-0.5 text-zinc-700 font-bold">
                 {versionLabel}
               </span>
             )}
           </div>
+
+          <div
+            className="w-20 shrink-0 pointer-events-none"
+            aria-hidden="true"
+          />
         </div>
 
-        {/* Content */}
-        <div className="flex-1 flex flex-col items-center justify-center text-center mb-2">
+        {/* Conteúdo */}
+        <div className="p-5 flex flex-col items-center justify-center text-center">
           {!compact && (
-            <p className="text-zinc-300 mb-6 max-w-2xl leading-relaxed text-base lg:text-lg font-medium">
+            <p className="text-white mb-6 max-w-xl leading-relaxed text-sm lg:text-base font-mono">
               {t("pindorama_desc")}
             </p>
           )}
 
           {platform && !PLATFORMS[platform].available && (
-            <div className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-sm animate-[fadeIn_0.3s_ease-out]">
-              <InfoIcon size={14} />
-              {t("Versao para platform em breve", {
-                platform: PLATFORMS[platform].label,
-              })}
+            <div className="mb-5 inline-flex items-center gap-2 px-3 py-2 border border-white bg-zinc-950 text-xs text-white animate-[fadeIn_0.2s_ease-out]">
+              <InfoIcon size={14} className="shrink-0" />
+              <span>
+                {t("Versao para platform em breve", {
+                  platform: PLATFORMS[platform].label,
+                })}
+              </span>
             </div>
           )}
 

@@ -1,16 +1,11 @@
-import {
-  ShieldLockIcon,
-  MailIcon,
-  CalendarIcon,
-  ArrowLeftIcon,
-} from "@primer/octicons-react";
+import { ShieldLockIcon, MailIcon, CalendarIcon } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
 
 function Section({ title, children }) {
   return (
     <section className="flex flex-col gap-2">
-      <h3 className="text-base font-semibold text-white/90">{title}</h3>
-      <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
+      <h3 className="text-base font-semibold text-white">{title}</h3>
+      <div className="text-zinc-300 leading-relaxed text-sm flex flex-col gap-2">
         {children}
       </div>
     </section>
@@ -26,59 +21,72 @@ export default function CardPrivacidade({ onClose }) {
       : "Última atualização: 28 de maio de 2026";
 
   return (
-    <div className="w-full h-auto lg:h-full">
-      <div className="glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-full group card-enter">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
-
-        <div className="shrink-0 mb-3 relative z-10">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              {onClose && (
-                <button
-                  type="button"
-                  onClick={onClose}
-                  aria-label={t("Voltar")}
-                  className="cursor-pointer text-white/50 hover:text-white transition-colors flex items-center justify-center -ml-1 pr-1"
+    <div className="w-full h-auto lg:h-full font-mono">
+      <div className="rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col h-auto lg:h-full relative card-enter">
+        {/* Barra de Título Branca com Texto Preto */}
+        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
+          <div className="flex items-center gap-2.5 shrink-0">
+            {onClose ? (
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label={t("Voltar")}
+                title={t("Voltar")}
+                className="w-5 h-5 rounded-full border-2 border-black bg-white flex items-center justify-center hover:bg-black hover:text-white transition-all cursor-pointer group shrink-0 active:scale-90"
+              >
+                <svg
+                  className="w-3.5 h-3.5 text-black group-hover:text-white transition-colors"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
                 >
-                  <ArrowLeftIcon size={18} />
-                </button>
-              )}
-              <div className="w-8 h-8 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
-                <ShieldLockIcon size={16} />
-              </div>
-              <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
-                {t("Termos de Uso")}
-              </h2>
-            </div>
-            <div className="flex items-center gap-4 mt-1 lg:mt-0">
-              <p className="hidden lg:flex text-xs uppercase tracking-widest text-white/40 items-center gap-2">
-                <CalendarIcon size={12} className="relative -top-px" />
-                {lastUpdateLabel}
-              </p>
-            </div>
+                  <path d="M10 3.5L5.5 8L10 12.5" />
+                </svg>
+              </button>
+            ) : (
+              <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />
+            )}
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
           </div>
-          <p className="lg:hidden mt-2 text-xs uppercase tracking-widest text-white/40 flex items-center gap-2">
-            <CalendarIcon size={12} className="relative -top-px" />
-            {lastUpdateLabel}
-          </p>
+
+          <div className="flex items-center gap-2 min-w-0 mx-2">
+            <ShieldLockIcon size={17} className="shrink-0 text-black" />
+            <h2 className="text-sm lg:text-base font-mono font-bold tracking-wider uppercase text-black truncate">
+              {t("Termos de Uso")}
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-2 text-[10px] text-zinc-600 font-bold uppercase tracking-widest shrink-0">
+            <CalendarIcon size={12} />
+            <span className="hidden sm:inline">{lastUpdateLabel}</span>
+          </div>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto pr-3 relative z-10 flex flex-col gap-6">
+        <div className="p-4 lg:p-6 flex-1 min-h-0 overflow-y-auto pr-3 relative z-10 flex flex-col gap-6">
           {language === "en" ? (
             <>
               <Section title="1. Who we are">
                 <p>
                   These Terms and Conditions of Use aim to regulate the use of
                   the website{" "}
-                  <span className="text-cyan-300">judhagsan.com</span> and the
-                  software <span className="text-cyan-300">Pindorama</span> by
-                  their Users, developed by{" "}
-                  <span className="text-white/90">
+                  <span className="text-white underline font-semibold">
+                    judhagsan.com
+                  </span>{" "}
+                  and the software{" "}
+                  <span className="text-white underline font-semibold">
+                    Pindorama
+                  </span>{" "}
+                  by their Users, developed by{" "}
+                  <span className="text-white">
                     JUDHA GUILHERME DE OLIVEIRA SANTOS
                   </span>
                   , based in São Paulo — SP (Brazil), registered under CNPJ
-                  number{" "}
-                  <span className="text-white/90">35.266.920/0001-30</span>.
+                  number <span className="text-white">35.266.920/0001-30</span>.
                 </p>
                 <p>
                   To use the judhagsan.com website and the Pindorama software,
@@ -102,32 +110,32 @@ export default function CardPrivacidade({ onClose }) {
                 </p>
                 <ul className="list-disc pl-5 flex flex-col gap-1">
                   <li>
-                    <span className="text-white/90">Registration:</span>{" "}
-                    username, email, and password (always stored with
-                    encryption, never in plain text).
+                    <span className="text-white">Registration:</span> username,
+                    email, and password (always stored with encryption, never in
+                    plain text).
                   </li>
                   <li>
-                    <span className="text-white/90">Session:</span> session
+                    <span className="text-white">Session:</span> session
                     identifier to keep you authenticated, with creation and
                     expiration dates.
                   </li>
                   <li>
-                    <span className="text-white/90">Account activation:</span>{" "}
+                    <span className="text-white">Account activation:</span>{" "}
                     temporary link sent by email to confirm registration.
                   </li>
                   <li>
-                    <span className="text-white/90">Server logs:</span> IP
-                    address and browser information, recorded by the hosting
-                    provider for security and operational purposes.
+                    <span className="text-white">Server logs:</span> IP address
+                    and browser information, recorded by the hosting provider
+                    for security and operational purposes.
                   </li>
                   <li>
-                    <span className="text-white/90">Pindorama (desktop):</span>{" "}
+                    <span className="text-white">Pindorama (desktop):</span>{" "}
                     when logging into the Software, the same set of data above
                     is processed. When checking for updates, your IP address is
                     logged by the server.
                   </li>
                   <li>
-                    <span className="text-white/90">
+                    <span className="text-white">
                       Device specifications (Pindorama telemetry):
                     </span>{" "}
                     when logging into the Software, we record a unique hardware
@@ -140,7 +148,10 @@ export default function CardPrivacidade({ onClose }) {
                     bug diagnosis, support, and development of Software
                     compatibility with different hardware setups. You can view,
                     pause updates, or delete this information at any time in{" "}
-                    <span className="text-cyan-300">/sessao</span>.
+                    <span className="text-white underline font-semibold">
+                      /sessao
+                    </span>
+                    .
                   </li>
                 </ul>
               </Section>
@@ -167,16 +178,16 @@ export default function CardPrivacidade({ onClose }) {
               <Section title="4. Legal basis">
                 <ul className="list-disc pl-5 flex flex-col gap-1">
                   <li>
-                    <span className="text-white/90">Consent</span> — provided
+                    <span className="text-white">Consent</span> — provided
                     during registration upon accepting this policy.
                   </li>
                   <li>
-                    <span className="text-white/90">Contract execution</span> —
-                    to provide the requested service (login, Software
+                    <span className="text-white">Contract execution</span> — to
+                    provide the requested service (login, Software
                     distribution).
                   </li>
                   <li>
-                    <span className="text-white/90">Legitimate interest</span> —
+                    <span className="text-white">Legitimate interest</span> —
                     for operational security and fraud prevention.
                   </li>
                 </ul>
@@ -189,15 +200,15 @@ export default function CardPrivacidade({ onClose }) {
                 </p>
                 <ul className="list-disc pl-5 flex flex-col gap-1">
                   <li>
-                    <span className="text-white/90">Vercel Inc.</span> — website
+                    <span className="text-white">Vercel Inc.</span> — website
                     and database hosting (USA).
                   </li>
                   <li>
-                    <span className="text-white/90">GitHub Inc.</span> — hosting
+                    <span className="text-white">GitHub Inc.</span> — hosting
                     Pindorama releases distributed via download (USA).
                   </li>
                   <li>
-                    <span className="text-white/90">SMTP Email Provider</span> —
+                    <span className="text-white">SMTP Email Provider</span> —
                     sending transactional emails.
                   </li>
                 </ul>
@@ -224,7 +235,10 @@ export default function CardPrivacidade({ onClose }) {
                   <li>
                     Device specifications: as long as the device is in use. You
                     can delete manually at any time in{" "}
-                    <span className="text-cyan-300">/sessao</span>.
+                    <span className="text-white underline font-semibold">
+                      /sessao
+                    </span>
+                    .
                   </li>
                   <li>
                     Server logs: retained for the standard duration set by the
@@ -263,9 +277,7 @@ export default function CardPrivacidade({ onClose }) {
                   identifier and basic profile data locally on your computer to
                   allow persistent login. You can disable persistent login by
                   unchecking the{" "}
-                  <span className="text-white/90">
-                    &quot;Stay signed in&quot;
-                  </span>{" "}
+                  <span className="text-white">&quot;Stay signed in&quot;</span>{" "}
                   option on the Software&apos;s login screen.
                 </p>
                 <p>
@@ -285,7 +297,7 @@ export default function CardPrivacidade({ onClose }) {
               <Section title="12. Privacy contact info">
                 <p>
                   Controller:{" "}
-                  <span className="text-white/90">
+                  <span className="text-white">
                     JUDHA GUILHERME DE OLIVEIRA SANTOS
                   </span>{" "}
                   — CNPJ 35.266.920/0001-30.
@@ -294,7 +306,7 @@ export default function CardPrivacidade({ onClose }) {
                   Contact:{" "}
                   <a
                     href="mailto:contato@judhagsan.com"
-                    className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
+                    className="text-white underline font-semibold hover:text-zinc-300 transition-colors inline-flex items-center gap-1"
                   >
                     <MailIcon size={14} />
                     contato@judhagsan.com
@@ -309,14 +321,19 @@ export default function CardPrivacidade({ onClose }) {
                 <p>
                   Estes Termos e Condições de Uso têm como objetivo regular a
                   utilização do site{" "}
-                  <span className="text-cyan-300">judhagsan.com</span> e do
-                  software <span className="text-cyan-300">Pindorama</span>{" "}
+                  <span className="text-white underline font-semibold">
+                    judhagsan.com
+                  </span>{" "}
+                  e do software{" "}
+                  <span className="text-white underline font-semibold">
+                    Pindorama
+                  </span>{" "}
                   pelos seus Usuários, desenvolvidos por{" "}
-                  <span className="text-white/90">
+                  <span className="text-white">
                     JUDHA GUILHERME DE OLIVEIRA SANTOS
                   </span>
                   , com sede em São Paulo — SP (Brasil), inscrito sob o CNPJ nº{" "}
-                  <span className="text-white/90">35.266.920/0001-30</span>.
+                  <span className="text-white">35.266.920/0001-30</span>.
                 </p>
                 <p>
                   Para a utilização do site judhagsan.com e do software
@@ -340,32 +357,32 @@ export default function CardPrivacidade({ onClose }) {
                 </p>
                 <ul className="list-disc pl-5 flex flex-col gap-1">
                   <li>
-                    <span className="text-white/90">Cadastro:</span> nome de
+                    <span className="text-white">Cadastro:</span> nome de
                     usuário, email e senha (sempre armazenada com criptografia,
                     nunca em texto puro).
                   </li>
                   <li>
-                    <span className="text-white/90">Sessão:</span> identificador
-                    de sessão para manter você autenticado, com data de criação
-                    e expiração.
+                    <span className="text-white">Sessão:</span> identificador de
+                    sessão para manter você autenticado, com data de criação e
+                    expiração.
                   </li>
                   <li>
-                    <span className="text-white/90">Ativação de conta:</span>{" "}
-                    link temporário enviado por email para confirmar o cadastro.
+                    <span className="text-white">Ativação de conta:</span> link
+                    temporário enviado por email para confirmar o cadastro.
                   </li>
                   <li>
-                    <span className="text-white/90">Logs de servidor:</span>{" "}
+                    <span className="text-white">Logs de servidor:</span>{" "}
                     endereço IP e informações do navegador, registrados pelo
                     provedor de hospedagem para fins de segurança e operação.
                   </li>
                   <li>
-                    <span className="text-white/90">Pindorama (desktop):</span>{" "}
-                    ao fazer login no Software, o mesmo conjunto de dados acima
-                    é tratado. Ao verificar atualizações, o seu endereço IP é
+                    <span className="text-white">Pindorama (desktop):</span> ao
+                    fazer login no Software, o mesmo conjunto de dados acima é
+                    tratado. Ao verificar atualizações, o seu endereço IP é
                     registrado pelo servidor.
                   </li>
                   <li>
-                    <span className="text-white/90">
+                    <span className="text-white">
                       Especificações do dispositivo (telemetria do Pindorama):
                     </span>{" "}
                     ao fazer login no Software, registramos identificador único
@@ -379,7 +396,11 @@ export default function CardPrivacidade({ onClose }) {
                     desenvolvimento da compatibilidade do Software com
                     diferentes hardwares. Você pode visualizar, pausar a
                     atualização ou excluir essas informações a qualquer momento
-                    em <span className="text-cyan-300">/sessao</span>.
+                    em{" "}
+                    <span className="text-white underline font-semibold">
+                      /sessao
+                    </span>
+                    .
                   </li>
                 </ul>
               </Section>
@@ -404,16 +425,16 @@ export default function CardPrivacidade({ onClose }) {
               <Section title="4. Base legal">
                 <ul className="list-disc pl-5 flex flex-col gap-1">
                   <li>
-                    <span className="text-white/90">Consentimento</span> —
+                    <span className="text-white">Consentimento</span> —
                     fornecido no cadastro, ao aceitar esta política.
                   </li>
                   <li>
-                    <span className="text-white/90">Execução de contrato</span>{" "}
-                    — para prover o serviço solicitado (login, distribuição do
+                    <span className="text-white">Execução de contrato</span> —
+                    para prover o serviço solicitado (login, distribuição do
                     Software).
                   </li>
                   <li>
-                    <span className="text-white/90">Legítimo interesse</span> —
+                    <span className="text-white">Legítimo interesse</span> —
                     para segurança operacional e prevenção a fraudes.
                   </li>
                 </ul>
@@ -426,19 +447,16 @@ export default function CardPrivacidade({ onClose }) {
                 </p>
                 <ul className="list-disc pl-5 flex flex-col gap-1">
                   <li>
-                    <span className="text-white/90">Vercel Inc.</span> —
-                    hospedagem do site e do banco de dados (EUA).
+                    <span className="text-white">Vercel Inc.</span> — hospedagem
+                    do site e do banco de dados (EUA).
                   </li>
                   <li>
-                    <span className="text-white/90">GitHub Inc.</span> —
-                    hospedagem das releases do Pindorama distribuídas via
-                    download (EUA).
+                    <span className="text-white">GitHub Inc.</span> — hospedagem
+                    das releases do Pindorama distribuídas via download (EUA).
                   </li>
                   <li>
-                    <span className="text-white/90">
-                      Provedor de email SMTP
-                    </span>{" "}
-                    — envio de emails transacionais.
+                    <span className="text-white">Provedor de email SMTP</span> —
+                    envio de emails transacionais.
                   </li>
                 </ul>
               </Section>
@@ -466,7 +484,11 @@ export default function CardPrivacidade({ onClose }) {
                   <li>
                     Especificações de dispositivo: enquanto o dispositivo
                     estiver em uso. Você pode excluir manualmente a qualquer
-                    momento em <span className="text-cyan-300">/sessao</span>.
+                    momento em{" "}
+                    <span className="text-white underline font-semibold">
+                      /sessao
+                    </span>
+                    .
                   </li>
                   <li>
                     Logs de servidor: retidos pelo prazo padrão do provedor de
@@ -505,9 +527,7 @@ export default function CardPrivacidade({ onClose }) {
                   no seu computador o identificador da sua sessão e dados
                   básicos do perfil para permitir login persistente. Você pode
                   desativar o login persistente desmarcando a opção{" "}
-                  <span className="text-white/90">
-                    &quot;Stay signed in&quot;
-                  </span>{" "}
+                  <span className="text-white">&quot;Stay signed in&quot;</span>{" "}
                   na tela de login do Software.
                 </p>
                 <p>
@@ -528,7 +548,7 @@ export default function CardPrivacidade({ onClose }) {
               <Section title="12. Contato para questões de privacidade">
                 <p>
                   Responsável:{" "}
-                  <span className="text-white/90">
+                  <span className="text-white">
                     JUDHA GUILHERME DE OLIVEIRA SANTOS
                   </span>{" "}
                   — CNPJ 35.266.920/0001-30.
@@ -537,7 +557,7 @@ export default function CardPrivacidade({ onClose }) {
                   Contato:{" "}
                   <a
                     href="mailto:contato@judhagsan.com"
-                    className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
+                    className="text-white underline font-semibold hover:text-zinc-300 transition-colors inline-flex items-center gap-1"
                   >
                     <MailIcon size={14} />
                     contato@judhagsan.com

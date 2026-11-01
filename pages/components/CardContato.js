@@ -4,7 +4,6 @@ import {
   CommentDiscussionIcon,
   QuestionIcon,
   ShieldIcon,
-  ArrowLeftIcon,
   SyncIcon,
   CheckCircleFillIcon,
   AlertFillIcon,
@@ -14,11 +13,11 @@ import useLanguage from "hooks/useLanguage";
 function Section({ icon: Icon, title, children }) {
   return (
     <section className="flex flex-col gap-2">
-      <h3 className="text-base font-semibold text-white/90 flex items-center gap-2">
-        <Icon size={16} className="text-cyan-300" />
-        {title}
+      <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+        <Icon size={14} className="text-white shrink-0" />
+        <span>{title}</span>
       </h3>
-      <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
+      <div className="text-zinc-400 leading-relaxed text-xs flex flex-col gap-2 font-mono">
         {children}
       </div>
     </section>
@@ -30,7 +29,7 @@ export default function CardContato({ onClose }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [status, setStatus] = useState("idle"); // idle, loading, success, error
+  const [status, setStatus] = useState("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
   async function handleSubmit(e) {
@@ -66,50 +65,72 @@ export default function CardContato({ onClose }) {
   }
 
   return (
-    <div className="w-full h-auto lg:h-full">
-      <div className="glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto group">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
-
-        {/* Header */}
-        <div className="shrink-0 mb-3 flex items-center gap-3 relative z-10">
-          {onClose && (
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Voltar"
-              className="cursor-pointer text-white/50 hover:text-white transition-colors flex items-center justify-center -ml-1 pr-1"
-            >
-              <ArrowLeftIcon size={18} />
-            </button>
-          )}
-          <div className="w-8 h-8 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
-            <CommentDiscussionIcon size={16} />
+    <div className="w-full h-auto lg:h-full font-mono">
+      <div className="rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col h-auto lg:h-full relative card-enter">
+        {/* Barra de Título Branca com Texto Preto */}
+        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
+          <div className="flex items-center gap-2.5 shrink-0">
+            {onClose ? (
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label={t("Voltar")}
+                title={t("Voltar")}
+                className="w-5 h-5 rounded-full border-2 border-black bg-white flex items-center justify-center hover:bg-black hover:text-white transition-all cursor-pointer group shrink-0 active:scale-90"
+              >
+                <svg
+                  className="w-3.5 h-3.5 text-black group-hover:text-white transition-colors"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M10 3.5L5.5 8L10 12.5" />
+                </svg>
+              </button>
+            ) : (
+              <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />
+            )}
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
           </div>
-          <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
-            {t("Contato")}
-          </h2>
+
+          <div className="flex items-center gap-2 min-w-0 mx-2">
+            <CommentDiscussionIcon size={17} className="shrink-0 text-black" />
+            <h2 className="text-sm lg:text-base font-mono font-bold tracking-wider uppercase text-black truncate">
+              {t("Contato")}
+            </h2>
+          </div>
+
+          <div
+            className="w-20 shrink-0 pointer-events-none"
+            aria-hidden="true"
+          />
         </div>
 
-        {/* Main Content Area */}
-        <div className="flex-1 min-h-0 overflow-y-auto pr-3 relative z-10">
+        {/* Área Principal de Conteúdo */}
+        <div className="p-4 lg:p-6 flex-1 min-h-0 overflow-y-auto pr-3 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column: Form (2/3 width on desktop) */}
+            {/* Formulário (2/3 da largura no desktop) */}
             <div className="lg:col-span-2 flex flex-col justify-start">
               {status === "success" ? (
-                <div className="flex flex-col items-center justify-center text-center p-6 gap-3 text-white/70 text-sm flex-1 h-full min-h-[300px] border border-cyan-500/10 rounded-2xl bg-cyan-950/10 animate-[fadeIn_0.3s_ease-out]">
-                  <div className="w-12 h-12 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-200 animate-[fadeIn_0.4s_ease-out]">
+                <div className="flex flex-col items-center justify-center text-center p-6 gap-3 text-white text-sm flex-1 h-full min-h-[300px] border border-white bg-black animate-[fadeIn_0.2s_ease-out]">
+                  <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black">
                     <CheckCircleFillIcon size={24} />
                   </div>
-                  <p className="text-base text-white/90 font-semibold">
+                  <p className="text-base font-bold uppercase tracking-wider text-white">
                     {t("Mensagem enviada!")}
                   </p>
-                  <p className="text-xs leading-relaxed max-w-xs">
+                  <p className="text-xs text-zinc-400 leading-relaxed max-w-xs">
                     {t("Sucesso ao enviar mensagem")}
                   </p>
                   <button
                     type="button"
                     onClick={() => setStatus("idle")}
-                    className="cursor-pointer mt-4 inline-flex items-center gap-2 px-6 py-2.5 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 active:scale-95 font-semibold text-sm"
+                    className="win-btn mt-4 text-xs"
                   >
                     {t("Enviar outra mensagem")}
                   </button>
@@ -117,11 +138,11 @@ export default function CardContato({ onClose }) {
               ) : (
                 <form
                   onSubmit={handleSubmit}
-                  className="flex flex-col gap-4 text-white/70 text-sm"
+                  className="flex flex-col gap-4 text-white text-sm"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <label className="flex flex-col gap-1.5">
-                      <span className="text-xs uppercase tracking-widest text-white/50">
+                      <span className="text-xs uppercase tracking-wider text-zinc-400">
                         {t("Nome")}
                       </span>
                       <input
@@ -130,13 +151,13 @@ export default function CardContato({ onClose }) {
                         onChange={(e) => setName(e.target.value)}
                         required
                         disabled={status === "loading"}
-                        className="px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-sm"
+                        className="win-input text-sm"
                         placeholder={t("Seu nome")}
                       />
                     </label>
 
                     <label className="flex flex-col gap-1.5">
-                      <span className="text-xs uppercase tracking-widest text-white/50">
+                      <span className="text-xs uppercase tracking-wider text-zinc-400">
                         {t("Email")}
                       </span>
                       <input
@@ -145,14 +166,14 @@ export default function CardContato({ onClose }) {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         disabled={status === "loading"}
-                        className="px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-sm"
+                        className="win-input text-sm"
                         placeholder="voce@exemplo.com"
                       />
                     </label>
                   </div>
 
                   <label className="flex flex-col gap-1.5">
-                    <span className="text-xs uppercase tracking-widest text-white/50">
+                    <span className="text-xs uppercase tracking-wider text-zinc-400">
                       {t("Mensagem")}
                     </span>
                     <textarea
@@ -161,32 +182,32 @@ export default function CardContato({ onClose }) {
                       required
                       rows={8}
                       disabled={status === "loading"}
-                      className="px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-sm resize-none"
+                      className="win-input text-sm resize-none"
                       placeholder={t("Escreva sua mensagem aqui...")}
                     />
                   </label>
 
                   {status === "error" && (
-                    <p className="text-red-300 text-xs flex items-start gap-2 animate-[fadeIn_0.3s_ease-out]">
+                    <div className="border border-white bg-black p-2 text-xs text-white flex items-start gap-2">
                       <AlertFillIcon size={14} className="mt-0.5 shrink-0" />
                       <span>{errorMessage}</span>
-                    </p>
+                    </div>
                   )}
 
                   <button
                     type="submit"
                     disabled={status === "loading"}
-                    className="cursor-pointer mt-2 inline-flex items-center justify-center gap-2 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_0_20px_rgba(6,182,212,0.2)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-semibold text-sm w-full md:w-auto self-start"
+                    className="win-btn-primary w-full md:w-auto self-start py-2.5 text-xs"
                   >
                     {status === "loading" ? (
                       <>
-                        <SyncIcon size={16} className="animate-spin" />
-                        {t("Enviando...")}
+                        <SyncIcon size={14} className="animate-spin" />
+                        <span>{t("Enviando...")}</span>
                       </>
                     ) : (
                       <>
-                        <MailIcon size={16} />
-                        {t("Enviar mensagem")}
+                        <MailIcon size={14} />
+                        <span>{t("Enviar mensagem")}</span>
                       </>
                     )}
                   </button>
@@ -194,21 +215,23 @@ export default function CardContato({ onClose }) {
               )}
             </div>
 
-            {/* Right Column: Info (1/3 width on desktop) */}
-            <div className="flex flex-col gap-6 lg:border-l lg:border-white/10 lg:pl-6">
+            {/* Informações da Direita (1/3 da largura no desktop) */}
+            <div className="flex flex-col gap-6 lg:border-l lg:border-zinc-800 lg:pl-6">
               {language === "en" ? (
                 <>
                   <Section icon={QuestionIcon} title="General questions">
                     <p>
                       For questions regarding the website, the{" "}
-                      <span className="text-cyan-300">Pindorama</span> software,
-                      or partnerships, send an email through the form or
-                      directly to{" "}
+                      <span className="text-white font-bold underline">
+                        Pindorama
+                      </span>{" "}
+                      software, or partnerships, send an email through the form
+                      or directly to{" "}
                       <a
                         href="mailto:contato@judhagsan.com"
-                        className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
+                        className="text-white underline hover:text-zinc-400 transition-colors inline-flex items-center gap-1 font-semibold"
                       >
-                        <MailIcon size={14} />
+                        <MailIcon size={12} />
                         contato@judhagsan.com
                       </a>
                       .
@@ -220,23 +243,23 @@ export default function CardContato({ onClose }) {
                     <p>
                       If you found a security vulnerability in the website or in
                       Pindorama, please report it{" "}
-                      <span className="text-white/90">privately</span> to{" "}
+                      <span className="text-white font-bold">privately</span> to{" "}
                       <a
                         href="mailto:contato@judhagsan.com?subject=Security%20-%20Vulnerability"
-                        className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
+                        className="text-white underline hover:text-zinc-400 transition-colors inline-flex items-center gap-1 font-semibold"
                       >
-                        <MailIcon size={14} />
+                        <MailIcon size={12} />
                         contato@judhagsan.com
                       </a>{" "}
                       with the subject{" "}
-                      <span className="text-white/90">
+                      <span className="text-white font-bold">
                         &quot;Security - Vulnerability&quot;
                       </span>
                       .
                     </p>
                     <p>
                       We ask you{" "}
-                      <span className="text-white/90">
+                      <span className="text-white font-bold">
                         not to disclose publicly
                       </span>{" "}
                       before we have a chance to patch it.
@@ -248,14 +271,16 @@ export default function CardContato({ onClose }) {
                   <Section icon={QuestionIcon} title="Dúvidas gerais">
                     <p>
                       Para perguntas sobre o site, o software{" "}
-                      <span className="text-cyan-300">Pindorama</span> ou
-                      parcerias, envie o email pelo formulário ou diretamente
+                      <span className="text-white font-bold underline">
+                        Pindorama
+                      </span>{" "}
+                      ou parcerias, envie o email pelo formulário ou diretamente
                       para o email{" "}
                       <a
                         href="mailto:contato@judhagsan.com"
-                        className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
+                        className="text-white underline hover:text-zinc-400 transition-colors inline-flex items-center gap-1 font-semibold"
                       >
-                        <MailIcon size={14} />
+                        <MailIcon size={12} />
                         contato@judhagsan.com
                       </a>
                       .
@@ -270,23 +295,23 @@ export default function CardContato({ onClose }) {
                     <p>
                       Se você encontrou uma vulnerabilidade de segurança no site
                       ou no Pindorama, por favor reporte de forma{" "}
-                      <span className="text-white/90">privada</span> para{" "}
+                      <span className="text-white font-bold">privada</span> para{" "}
                       <a
                         href="mailto:contato@judhagsan.com?subject=Security%20-%20Vulnerabilidade"
-                        className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
+                        className="text-white underline hover:text-zinc-400 transition-colors inline-flex items-center gap-1 font-semibold"
                       >
-                        <MailIcon size={14} />
+                        <MailIcon size={12} />
                         contato@judhagsan.com
                       </a>{" "}
                       com o assunto{" "}
-                      <span className="text-white/90">
+                      <span className="text-white font-bold">
                         &quot;Security - Vulnerabilidade&quot;
                       </span>
                       .
                     </p>
                     <p>
                       Pedimos para{" "}
-                      <span className="text-white/90">
+                      <span className="text-white font-bold">
                         não divulgar publicamente
                       </span>{" "}
                       antes de termos chance de corrigir.

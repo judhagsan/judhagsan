@@ -49,27 +49,36 @@ export default function CardAtivacao({ tokenId }) {
   }, [tokenId]);
 
   return (
-    <div className="w-full h-auto lg:h-full">
-      <div className="glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-full group">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
-
-        {/* Header */}
-        <div className="shrink-0 mb-3 flex items-center gap-3 relative z-10">
-          <div className="w-8 h-8 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
-            <CheckCircleFillIcon size={16} />
+    <div className="w-full h-auto font-mono">
+      <div className="rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col h-auto relative">
+        {/* Barra de Título Branca com Texto Preto */}
+        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
+          <div className="flex items-center gap-2.5 shrink-0">
+            <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
           </div>
-          <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
-            {t("Ativacao")}
-          </h2>
+
+          <div className="flex items-center gap-2 min-w-0 mx-2">
+            <CheckCircleFillIcon size={17} className="shrink-0 text-black" />
+            <span className="text-sm lg:text-base font-mono font-bold tracking-wider uppercase text-black">
+              {t("Ativacao")}
+            </span>
+          </div>
+
+          <div
+            className="w-20 shrink-0 pointer-events-none"
+            aria-hidden="true"
+          />
         </div>
 
-        <div className="flex flex-col items-center justify-center text-center gap-3 text-white/70 text-sm relative z-10 flex-1 h-full">
+        <div className="p-6 flex flex-col items-center justify-center text-center gap-4 text-white text-sm">
           {status === "loading" && (
             <>
-              <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-cyan-300 animate-spin">
-                <SyncIcon size={24} />
+              <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black">
+                <SyncIcon size={24} className="animate-spin" />
               </div>
-              <p className="text-base text-white/90 font-semibold">
+              <p className="text-sm font-bold uppercase tracking-wider text-white">
                 {t("Ativando sua conta...")}
               </p>
             </>
@@ -77,40 +86,37 @@ export default function CardAtivacao({ tokenId }) {
 
           {status === "success" && (
             <>
-              <div className="w-12 h-12 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-200 animate-[fadeIn_0.4s_ease-out]">
+              <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black animate-[fadeIn_0.2s_ease-out]">
                 <CheckCircleFillIcon size={24} />
               </div>
-              <p className="text-base text-white/90 font-semibold">
+              <p className="text-sm font-bold uppercase tracking-wider text-white">
                 {t("Conta ativada!")}
               </p>
-              <p className="text-xs leading-relaxed max-w-xs">
+              <p className="text-xs text-zinc-400 leading-relaxed max-w-xs">
                 {t("Sucesso ativacao")}
               </p>
               <Link
                 href="/login"
-                className="cursor-pointer mt-2 inline-flex items-center gap-2 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 font-semibold text-base"
+                className="win-btn-primary px-8 py-2.5 text-xs inline-flex items-center gap-2 mt-2"
               >
-                <SignInIcon size={18} />
-                {t("Entrar")}
+                <SignInIcon size={16} />
+                <span>{t("Entrar")}</span>
               </Link>
             </>
           )}
 
           {status === "error" && (
             <>
-              <div className="w-12 h-12 rounded-full bg-red-500/20 border border-red-400/40 flex items-center justify-center text-red-200 animate-[fadeIn_0.4s_ease-out]">
+              <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black animate-[fadeIn_0.2s_ease-out]">
                 <AlertFillIcon size={24} />
               </div>
-              <p className="text-base text-white/90 font-semibold">
+              <p className="text-sm font-bold uppercase tracking-wider text-white">
                 {t("Ativacao falhou")}
               </p>
-              <p className="text-xs leading-relaxed max-w-xs text-red-300">
+              <p className="text-xs text-zinc-400 leading-relaxed max-w-xs border border-white p-2">
                 {errorMessage}
               </p>
-              <Link
-                href="/cadastro"
-                className="cursor-pointer mt-2 text-xs uppercase tracking-widest text-white/50 hover:text-white transition-colors"
-              >
+              <Link href="/cadastro" className="win-btn px-6 py-2 text-xs mt-2">
                 {t("Voltar ao cadastro")}
               </Link>
             </>

@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import {
-  SignInIcon,
-  AlertFillIcon,
-  ArrowLeftIcon,
-} from "@primer/octicons-react";
+import { SignInIcon, AlertFillIcon } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
 
 export default function CardLogin({ onCadastroClick, onBack }) {
@@ -44,35 +40,60 @@ export default function CardLogin({ onCadastroClick, onBack }) {
   }
 
   return (
-    <div className="w-full h-auto lg:h-auto">
-      <div className="glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-auto group">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
-
-        <div className="shrink-0 mb-3 flex items-center gap-3 relative z-10">
-          {onBack && (
-            <button
-              type="button"
-              onClick={onBack}
-              aria-label="Voltar"
-              className="cursor-pointer text-white/50 hover:text-white transition-colors flex items-center justify-center -ml-1 pr-1"
-            >
-              <ArrowLeftIcon size={18} />
-            </button>
-          )}
-          <div className="w-8 h-8 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
-            <SignInIcon size={16} />
+    <div className="w-full h-auto">
+      <div className="rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col h-auto relative">
+        {/* Barra de Título Branca com Texto Preto */}
+        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
+          {/* Os 3 botões com o primeiro agindo como botão de voltar */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            {onBack ? (
+              <button
+                type="button"
+                onClick={onBack}
+                aria-label={t("Voltar")}
+                title={t("Voltar")}
+                className="w-5 h-5 rounded-full border-2 border-black bg-white flex items-center justify-center hover:bg-black hover:text-white transition-all cursor-pointer group shrink-0 active:scale-90"
+              >
+                <svg
+                  className="w-3.5 h-3.5 text-black group-hover:text-white transition-colors"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M10 3.5L5.5 8L10 12.5" />
+                </svg>
+              </button>
+            ) : (
+              <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />
+            )}
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
           </div>
-          <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
-            {t("Login")}
-          </h2>
+
+          <div className="flex items-center gap-2 min-w-0 mx-2">
+            <SignInIcon size={17} className="shrink-0 text-black" />
+            <span className="text-sm lg:text-base font-mono font-bold tracking-wider uppercase text-black">
+              {t("Login")}
+            </span>
+          </div>
+
+          <div
+            className="w-20 shrink-0 pointer-events-none"
+            aria-hidden="true"
+          />
         </div>
 
+        {/* Formulário */}
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-4 text-white/70 text-sm relative z-10 flex-1"
+          className="p-5 flex flex-col gap-4 font-mono"
         >
-          <label className="flex flex-col gap-1">
-            <span className="text-xs uppercase tracking-widest text-white/50">
+          <label className="flex flex-col gap-1.5">
+            <span className="text-xs uppercase tracking-wider text-zinc-400">
               {t("Email")}
             </span>
             <input
@@ -81,13 +102,13 @@ export default function CardLogin({ onCadastroClick, onBack }) {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="px-3 py-3 lg:py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-base lg:text-sm"
-              placeholder="voce@exemplo.com"
+              className="win-input rounded-xl text-sm py-2.5"
+              placeholder="usuario@exemplo.com"
             />
           </label>
 
-          <label className="flex flex-col gap-1">
-            <span className="text-xs uppercase tracking-widest text-white/50">
+          <label className="flex flex-col gap-1.5">
+            <span className="text-xs uppercase tracking-wider text-zinc-400">
               {t("Senha")}
             </span>
             <input
@@ -96,41 +117,41 @@ export default function CardLogin({ onCadastroClick, onBack }) {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
-              className="px-3 py-3 lg:py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-base lg:text-sm"
+              className="win-input rounded-xl text-sm py-2.5"
               placeholder="••••••••"
             />
           </label>
 
           {errorMessage && (
-            <p className="text-red-300 text-xs flex items-start gap-2 animate-[fadeIn_0.3s_ease-out]">
+            <div className="border border-white bg-black rounded-xl p-2.5 text-xs text-white flex items-start gap-2 animate-[fadeIn_0.15s_ease-out]">
               <AlertFillIcon size={14} className="mt-0.5 shrink-0" />
               <span>{errorMessage}</span>
-            </p>
+            </div>
           )}
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="cursor-pointer mt-2 inline-flex items-center justify-center gap-2 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-semibold text-base w-full lg:w-auto"
+            className="win-btn-primary w-full py-2.5 text-xs mt-2"
           >
-            <SignInIcon size={18} />
-            {isSubmitting ? t("Entrando...") : t("Entrar")}
+            <SignInIcon size={16} />
+            <span>{isSubmitting ? t("Entrando...") : t("Entrar")}</span>
           </button>
 
-          <p className="text-xs text-white/50 text-center mt-2">
+          <p className="text-xs text-zinc-400 text-center mt-2">
             {t("Nao tem conta?")}{" "}
             {onCadastroClick ? (
               <button
                 type="button"
                 onClick={onCadastroClick}
-                className="cursor-pointer text-cyan-300 hover:text-cyan-200 transition-colors"
+                className="cursor-pointer text-white underline hover:text-zinc-300 font-semibold"
               >
                 {t("Cadastrar")}
               </button>
             ) : (
               <Link
                 href="/cadastro"
-                className="text-cyan-300 hover:text-cyan-200 transition-colors"
+                className="text-white underline hover:text-zinc-300 font-semibold"
               >
                 {t("Cadastrar")}
               </Link>

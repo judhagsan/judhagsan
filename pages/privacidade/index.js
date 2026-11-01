@@ -14,21 +14,15 @@ export default function PrivacidadePage() {
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      {/* Main Container (The "Clear" Window) */}
-      <div className="relative z-10 w-full h-full rounded-[20px] overflow-hidden border border-white/5 shadow-[inset_0px_0px_50px_rgba(0,0,0,0.9)] flex">
-        {/* Main Content Area */}
-        <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-6 gap-6">
-          {/* Center Section - Privacidade Card */}
-          <div className="lg:flex-1 flex items-start lg:items-center justify-center min-h-0 shrink-0">
-            <div className="w-full h-full lg:h-full">
-              <CardPrivacidade />
-            </div>
+      <div className="relative z-10 w-full h-full flex flex-col p-2 lg:p-4 gap-6 overflow-y-auto lg:overflow-hidden font-mono">
+        <div className="lg:flex-1 flex items-start lg:items-center justify-center min-h-0 shrink-0">
+          <div className="w-full h-full">
+            <CardPrivacidade />
           </div>
+        </div>
 
-          <div className="lg:mt-auto flex items-end w-full shrink-0">
-            {/* Bottom Section - YouTube Card */}
-            <CardYoutube />
-          </div>
+        <div className="lg:mt-auto flex items-end w-full shrink-0">
+          <CardYoutube />
         </div>
       </div>
     </MainFrame>

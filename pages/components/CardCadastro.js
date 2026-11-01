@@ -3,8 +3,8 @@ import Link from "next/link";
 import {
   CheckCircleFillIcon,
   MailIcon,
-  ArrowLeftIcon,
   PersonFillIcon,
+  AlertFillIcon,
 } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
 
@@ -76,39 +76,63 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
   }
 
   return (
-    <div className="w-full h-auto lg:h-auto">
-      <div className="glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-auto group">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
-
-        <div className="shrink-0 mb-3 flex items-center gap-3 relative z-10">
-          {onBack && (
-            <button
-              type="button"
-              onClick={onBack}
-              aria-label="Voltar"
-              className="cursor-pointer text-white/50 hover:text-white transition-colors flex items-center justify-center -ml-1 pr-1"
-            >
-              <ArrowLeftIcon size={18} />
-            </button>
-          )}
-          <div className="w-8 h-8 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
-            <PersonFillIcon size={16} />
+    <div className="w-full h-auto">
+      <div className="rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col h-auto relative">
+        {/* Barra de Título Branca com Texto Preto */}
+        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
+          {/* Três botões com o primeiro agindo como voltar */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            {onBack ? (
+              <button
+                type="button"
+                onClick={onBack}
+                aria-label={t("Voltar")}
+                title={t("Voltar")}
+                className="w-5 h-5 rounded-full border-2 border-black bg-white flex items-center justify-center hover:bg-black hover:text-white transition-all cursor-pointer group shrink-0 active:scale-90"
+              >
+                <svg
+                  className="w-3.5 h-3.5 text-black group-hover:text-white transition-colors"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M10 3.5L5.5 8L10 12.5" />
+                </svg>
+              </button>
+            ) : (
+              <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />
+            )}
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
           </div>
-          <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
-            {t("Cadastro")}
-          </h2>
+
+          <div className="flex items-center gap-2 min-w-0 mx-2">
+            <PersonFillIcon size={17} className="shrink-0 text-black" />
+            <span className="text-sm lg:text-base font-mono font-bold tracking-wider uppercase text-black">
+              {t("Cadastro")}
+            </span>
+          </div>
+
+          <div
+            className="w-20 shrink-0 pointer-events-none"
+            aria-hidden="true"
+          />
         </div>
 
         {registeredEmail ? (
-          <div className="flex flex-col items-center justify-center text-center gap-3 text-white/70 text-sm relative z-10 flex-1">
-            <div className="w-12 h-12 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-200 animate-[fadeIn_0.4s_ease-out]">
+          <div className="p-6 flex flex-col items-center justify-center text-center gap-3 font-mono">
+            <div className="w-12 h-12 rounded-xl border-2 border-white flex items-center justify-center text-white bg-black">
               <CheckCircleFillIcon size={24} />
             </div>
-            <p className="text-base text-white/90 font-semibold">
+            <p className="text-sm font-bold uppercase tracking-wider text-white">
               {t("Verifique seu email")}
             </p>
-            <p className="text-xs leading-relaxed max-w-xs flex items-start gap-2 justify-center">
-              <MailIcon size={14} className="mt-0.5 text-cyan-300 shrink-0" />
+            <p className="text-xs text-zinc-400 leading-relaxed max-w-xs flex items-center gap-2 justify-center">
+              <MailIcon size={14} className="shrink-0" />
               <span>
                 {t("Email de ativacao enviado", { email: registeredEmail })}
               </span>
@@ -116,7 +140,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
             <button
               type="button"
               onClick={() => setRegisteredEmail("")}
-              className="cursor-pointer mt-2 text-xs uppercase tracking-widest text-white/50 hover:text-white transition-colors"
+              className="win-btn mt-4 text-xs"
             >
               {t("Cadastrar outra conta")}
             </button>
@@ -124,10 +148,10 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
         ) : (
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col gap-4 text-white/70 text-sm relative z-10 flex-1"
+            className="p-5 flex flex-col gap-3 font-mono"
           >
             <label className="flex flex-col gap-1">
-              <span className="text-xs uppercase tracking-widest text-white/50">
+              <span className="text-xs uppercase tracking-wider text-zinc-400">
                 {t("Username")}
               </span>
               <input
@@ -136,13 +160,13 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 autoComplete="username"
-                className="px-3 py-3 lg:py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-base lg:text-sm"
-                placeholder={t("seu_usuario")}
+                className="win-input rounded-xl text-sm py-2"
+                placeholder="usuario"
               />
             </label>
 
             <label className="flex flex-col gap-1">
-              <span className="text-xs uppercase tracking-widest text-white/50">
+              <span className="text-xs uppercase tracking-wider text-zinc-400">
                 {t("Email")}
               </span>
               <input
@@ -151,14 +175,14 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
-                className="px-3 py-3 lg:py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-base lg:text-sm"
-                placeholder="voce@exemplo.com"
+                className="win-input rounded-xl text-sm py-2"
+                placeholder="usuario@exemplo.com"
               />
             </label>
 
-            <div className="flex flex-col lg:flex-row gap-3">
-              <label className="flex flex-col gap-1 flex-1">
-                <span className="text-xs uppercase tracking-widest text-white/50">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label className="flex flex-col gap-1">
+                <span className="text-xs uppercase tracking-wider text-zinc-400">
                   {t("Senha")}
                 </span>
                 <input
@@ -168,13 +192,13 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
                   required
                   autoComplete="new-password"
                   minLength={8}
-                  className="px-3 py-3 lg:py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-base lg:text-sm"
+                  className="win-input rounded-xl text-sm py-2"
                   placeholder={t("min_char")}
                 />
               </label>
 
-              <label className="flex flex-col gap-1 flex-1">
-                <span className="text-xs uppercase tracking-widest text-white/50">
+              <label className="flex flex-col gap-1">
+                <span className="text-xs uppercase tracking-wider text-zinc-400">
                   {t("Confirmar")}
                 </span>
                 <input
@@ -183,10 +207,8 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   autoComplete="new-password"
-                  className={`px-3 py-3 lg:py-2 rounded-xl bg-white/5 border outline-none text-white placeholder-white/30 transition-colors focus:bg-white/10 text-base lg:text-sm ${
-                    passwordsMismatch
-                      ? "border-red-400/60 focus:border-red-400"
-                      : "border-white/10 focus:border-cyan-400/60"
+                  className={`win-input rounded-xl text-sm py-2 ${
+                    passwordsMismatch ? "border-red-400" : ""
                   }`}
                   placeholder="••••••••"
                 />
@@ -194,25 +216,25 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
             </div>
 
             {passwordsMismatch && (
-              <p className="text-red-300 text-xs -mt-2">
+              <p className="text-red-400 text-xs">
                 {t("As senhas nao conferem")}
               </p>
             )}
 
-            <label className="flex items-start gap-2 cursor-pointer select-none">
+            <label className="flex items-start gap-2 cursor-pointer select-none mt-1">
               <input
                 type="checkbox"
                 checked={privacyAccepted}
                 onChange={(e) => setPrivacyAccepted(e.target.checked)}
-                className="mt-0.5 w-4 h-4 accent-cyan-400 cursor-pointer shrink-0"
+                className="mt-0.5 accent-white w-4 h-4 cursor-pointer"
               />
-              <span className="text-xs text-white/60 leading-relaxed">
+              <span className="text-xs text-zinc-400 leading-relaxed">
                 {t("Li e aceito os")}{" "}
                 {onPrivacyClick ? (
                   <button
                     type="button"
                     onClick={onPrivacyClick}
-                    className="cursor-pointer text-cyan-300 hover:text-cyan-200 transition-colors"
+                    className="cursor-pointer text-white underline font-semibold"
                   >
                     {t("Termos de Uso")}
                   </button>
@@ -220,7 +242,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
                   <Link
                     href="/privacidade"
                     target="_blank"
-                    className="text-cyan-300 hover:text-cyan-200 transition-colors"
+                    className="text-white underline font-semibold"
                   >
                     {t("Termos de Uso")}
                   </Link>
@@ -230,31 +252,35 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
             </label>
 
             {errorMessage && (
-              <p className="text-red-300 text-xs">{errorMessage}</p>
+              <div className="border border-white bg-black rounded-xl p-2 text-xs text-white flex items-start gap-2">
+                <AlertFillIcon size={14} className="mt-0.5 shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
             )}
 
             <button
               type="submit"
               disabled={isSubmitting || passwordsMismatch || !privacyAccepted}
-              className="cursor-pointer mt-2 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-semibold text-base w-full lg:w-auto"
+              className="win-btn-primary w-full py-2.5 text-xs mt-2"
             >
-              {isSubmitting ? t("Cadastrando...") : t("Cadastrar")}
+              <PersonFillIcon size={16} />
+              <span>{isSubmitting ? t("Cadastrando...") : t("Cadastrar")}</span>
             </button>
 
-            <p className="text-xs text-white/50 text-center mt-2">
+            <p className="text-xs text-zinc-400 text-center mt-1">
               {t("Ja tem conta?")}{" "}
               {onLoginClick ? (
                 <button
                   type="button"
                   onClick={onLoginClick}
-                  className="cursor-pointer text-cyan-300 hover:text-cyan-200 transition-colors"
+                  className="cursor-pointer text-white underline hover:text-zinc-300 font-semibold"
                 >
                   {t("Entrar")}
                 </button>
               ) : (
                 <Link
                   href="/login"
-                  className="text-cyan-300 hover:text-cyan-200 transition-colors"
+                  className="text-white underline hover:text-zinc-300 font-semibold"
                 >
                   {t("Entrar")}
                 </Link>

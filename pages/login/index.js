@@ -20,59 +20,49 @@ export default function LoginPage() {
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      {/* Main Container (The "Clear" Window) */}
-      <div className="relative z-10 w-full h-full rounded-[20px] overflow-hidden border border-white/5 shadow-[inset_0px_0px_50px_rgba(0,0,0,0.9)] flex flex-col">
-        {/* Main Content Area */}
-        <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-6 gap-6 overflow-y-auto lg:overflow-hidden">
-          {/* Center Section - Active card + Privacidade panel */}
-          <div className="lg:flex-1 flex flex-col lg:flex-row items-stretch justify-start min-h-0 gap-4 lg:gap-6 shrink-0">
-            {/* Sem painel aberto, o deslocamento de 100% da própria largura
-                (w-1/3) deixa o card exatamente centralizado; ao abrir o painel
-                ele desliza de volta para a esquerda, abrindo espaço. */}
-            <div
-              className={`w-full lg:w-1/3 lg:h-auto lg:self-center shrink-0 lg:relative lg:z-10 lg:transition-transform lg:duration-[350ms] lg:ease-out ${
-                activePanel ? "lg:translate-x-0" : "lg:translate-x-full"
-              }`}
-            >
-              <div className="animate-[fadeIn_0.12s_ease-out]">
-                <CardLogin
-                  onCadastroClick={() => router.push("/cadastro")}
-                  onBack={() => router.push("/")}
-                />
-              </div>
-            </div>
-
-            {/* Side panel — full-screen overlay on mobile, inline on desktop */}
-            {activePanel && (
-              <div
-                className="fixed inset-0 z-[52] bg-black/70 backdrop-blur-sm lg:hidden"
-                onClick={closeSidePanel}
+      <div className="relative z-10 w-full h-full flex flex-col p-2 lg:p-4 gap-6 overflow-y-auto lg:overflow-hidden font-mono">
+        <div className="lg:flex-1 flex flex-col lg:flex-row items-stretch justify-start min-h-0 gap-4 lg:gap-6 shrink-0">
+          <div
+            className={`w-full lg:w-1/3 lg:h-auto lg:self-center shrink-0 lg:relative lg:z-10 lg:transition-transform lg:duration-[300ms] lg:ease-out ${
+              activePanel ? "lg:translate-x-0" : "lg:translate-x-full"
+            }`}
+          >
+            <div className="animate-[fadeIn_0.12s_ease-out]">
+              <CardLogin
+                onCadastroClick={() => router.push("/cadastro")}
+                onBack={() => router.push("/")}
               />
-            )}
-            <div
-              key={activePanel}
-              className={`
-                ${
-                  activePanel
-                    ? "fixed inset-2 top-14 z-[53] lg:relative lg:inset-auto lg:top-auto lg:z-0 lg:flex-1 lg:h-full lg:w-auto lg:shrink-0 lg:opacity-100 card-enter lg:animate-[panelIn_0.35s_ease-out]"
-                    : "hidden"
-                }
-                transition-all duration-500 ease-out lg:transition-none overflow-hidden
-              `}
-            >
-              {activePanel === "privacy" && (
-                <CardPrivacidade onClose={closeSidePanel} />
-              )}
-              {activePanel === "contact" && (
-                <CardContato onClose={closeSidePanel} />
-              )}
             </div>
           </div>
 
-          <div className="lg:mt-auto flex items-end w-full shrink-0">
-            {/* Bottom Section - YouTube Card */}
-            <CardYoutube />
+          {activePanel && (
+            <div
+              className="fixed inset-0 z-[52] bg-black lg:hidden"
+              onClick={closeSidePanel}
+            />
+          )}
+          <div
+            key={activePanel}
+            className={`
+              ${
+                activePanel
+                  ? "fixed inset-2 top-14 z-[53] lg:relative lg:inset-auto lg:top-auto lg:z-0 lg:flex-1 lg:h-full lg:w-auto lg:shrink-0 lg:opacity-100 card-enter lg:animate-[panelIn_0.3s_ease-out]"
+                  : "hidden"
+              }
+              transition-all duration-300 ease-out lg:transition-none overflow-hidden
+            `}
+          >
+            {activePanel === "privacy" && (
+              <CardPrivacidade onClose={closeSidePanel} />
+            )}
+            {activePanel === "contact" && (
+              <CardContato onClose={closeSidePanel} />
+            )}
           </div>
+        </div>
+
+        <div className="lg:mt-auto flex items-end w-full shrink-0">
+          <CardYoutube />
         </div>
       </div>
     </MainFrame>

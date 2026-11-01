@@ -21,12 +21,6 @@ function formatDate(iso, language) {
   if (!iso) return "—";
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "—";
-  /*
-   * Numérica, não por extenso: "24 de ago. de 26" gasta uns 112px numa linha
-   * que tem 310 no celular, e essa coluna disputa espaço com o username e os
-   * selos. "24/08/26" cabe em metade disso e, com `tabular-nums`, alinha em
-   * coluna — que é o que se quer de uma data numa lista de dados.
-   */
   return date.toLocaleDateString(language === "pt" ? "pt-BR" : "en-US", {
     day: "2-digit",
     month: "2-digit",
@@ -34,39 +28,27 @@ function formatDate(iso, language) {
   });
 }
 
-/*
- * Uma conta recém-criada carrega `read:activation_token` e nada mais — é o que
- * `activation.activateUserByUserId()` troca pelas features de verdade. Então a
- * presença dessa feature é o sinal de que o cadastro nunca foi confirmado.
- */
 function isPending(features) {
   return Boolean(features?.includes("read:activation_token"));
 }
 
-/*
- * A barra é o elemento que dá identidade ao card: em vez de três números
- * soltos, mostra a proporção entre apoiadores, confirmados e pendentes. É o
- * funil que a tabela `users` já contém — o `features` de cada conta é, na
- * prática, em que etapa ela parou. Some quando não há ninguém, porque uma
- * barra vazia não informa nada.
- */
 function FunnelBar({ supporters, confirmed, pending, total }) {
   if (total === 0) return null;
 
   const segments = [
-    { value: supporters, className: "bg-amber-300/80" },
-    { value: confirmed, className: "bg-violet-400/70" },
-    { value: pending, className: "bg-white/15" },
+    { value: supporters, className: "bg-white" },
+    { value: confirmed, className: "bg-zinc-9500" },
+    { value: pending, className: "bg-zinc-800" },
   ];
 
   return (
-    <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-white/5">
+    <div className="flex h-1.5 w-full overflow-hidden border border-white bg-black">
       {segments.map(
         (segment, index) =>
           segment.value > 0 && (
             <div
               key={index}
-              className={`${segment.className} transition-[width] duration-500`}
+              className={`${segment.className} transition-[width] duration-300`}
               style={{ width: `${(segment.value / total) * 100}%` }}
             />
           ),
@@ -77,14 +59,14 @@ function FunnelBar({ supporters, confirmed, pending, total }) {
 
 function Count({ value, label, dotClassName, valueClassName }) {
   return (
-    <span className="inline-flex items-baseline gap-1.5">
+    <span className="inline-flex items-baseline gap-1.5 font-mono text-xs">
       <span
-        className={`inline-block w-1.5 h-1.5 rounded-full translate-y-[-1px] ${dotClassName}`}
+        className={`inline-block w-1.5 h-1.5 translate-y-[-1px] ${dotClassName}`}
       />
-      <span className={`font-semibold tabular-nums ${valueClassName}`}>
+      <span className={`font-bold tabular-nums ${valueClassName}`}>
         {value}
       </span>
-      <span className="text-white/40">{label}</span>
+      <span className="text-zinc-500 uppercase">{label}</span>
     </span>
   );
 }
@@ -92,7 +74,7 @@ function Count({ value, label, dotClassName, valueClassName }) {
 function Badge({ icon, label, className }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-[11px] uppercase tracking-wider shrink-0 ${className}`}
+      className={`inline-flex items-center gap-1 px-1.5 py-0.5 border text-[10px] uppercase font-mono tracking-wider shrink-0 ${className}`}
     >
       {icon}
       {label}
@@ -100,13 +82,6 @@ function Badge({ icon, label, className }) {
   );
 }
 
-/*
- * Vai para `document.body` por portal, e não fica onde o JSX está.
- * `.glass-card` usa `backdrop-filter`, e um elemento com backdrop-filter vira
- * bloco contentor dos descendentes `fixed` — dentro do card, o overlay
- * "fixo" se posicionaria em relação ao card e ainda seria cortado pelo
- * `overflow-hidden` dele.
- */
 function ConfirmDialog({
   title,
   description,
@@ -124,55 +99,83 @@ function ConfirmDialog({
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [onCancel]);
 
-  const confirmClasses =
-    tone === "revoke"
-      ? "bg-red-500/10 hover:bg-red-500/30 border-red-500/30 hover:border-red-500/60 text-red-200"
-      : "bg-amber-400/10 hover:bg-amber-400/30 border-amber-300/30 hover:border-amber-300/60 text-amber-100";
-
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-        onClick={onCancel}
-      />
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 font-mono">
+      <div className="absolute inset-0 bg-black" onClick={onCancel} />
 
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="glass-card card-enter relative z-10 w-full max-w-sm rounded-[20px] p-6 shadow-2xl flex flex-col items-center text-center gap-4"
+        className="relative z-10 w-full max-w-sm rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col card-enter"
       >
-        <div
-          className={`w-14 h-14 rounded-full flex items-center justify-center border ${
-            tone === "revoke"
-              ? "bg-red-500/15 border-red-400/40 text-red-200"
-              : "bg-amber-400/15 border-amber-300/40 text-amber-100"
-          }`}
-        >
-          <HeartFillIcon size={26} />
-        </div>
-
-        <p className="text-lg text-white font-semibold">{title}</p>
-        <p className="text-sm leading-relaxed text-white/60">{description}</p>
-
-        <div className="flex gap-3 mt-1">
+        {/* Barra de título do diálogo */}
+        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
+          <div className="flex items-center gap-2.5 shrink-0">
+            <button
+              type="button"
+              onClick={onCancel}
+              aria-label="Fechar"
+              className="w-5 h-5 rounded-full border-2 border-black bg-white flex items-center justify-center hover:bg-black hover:text-white transition-all cursor-pointer group shrink-0 active:scale-90"
+            >
+              <svg
+                className="w-3.5 h-3.5 text-black group-hover:text-white transition-colors"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M10 3.5L5.5 8L10 12.5" />
+              </svg>
+            </button>
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+          </div>
+          <span className="text-sm font-bold uppercase tracking-wider text-black">
+            CONFIRM
+          </span>
           <button
             type="button"
             onClick={onCancel}
-            disabled={busy}
-            className="cursor-pointer px-6 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white/70 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm"
+            className="w-5 h-5 rounded-full border border-black flex items-center justify-center text-xs font-bold text-black hover:bg-black hover:text-white transition-colors cursor-pointer"
           >
-            {/* Reaproveita a chave já usada pelo card de exclusão de conta. */}
-            {confirmLabel.cancel}
+            ×
           </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            disabled={busy}
-            className={`cursor-pointer px-6 py-2 border rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm ${confirmClasses}`}
-          >
-            {busy ? confirmLabel.busy : confirmLabel.action}
-          </button>
+        </div>
+
+        <div className="p-5 flex flex-col items-center text-center gap-3">
+          <div className="w-12 h-12 border border-white flex items-center justify-center text-white bg-zinc-950">
+            <HeartFillIcon size={22} />
+          </div>
+
+          <p className="text-sm font-bold uppercase tracking-wider text-white">
+            {title}
+          </p>
+          <p className="text-xs leading-relaxed text-zinc-400">{description}</p>
+
+          <div className="flex gap-3 mt-2 w-full">
+            <button
+              type="button"
+              onClick={onCancel}
+              disabled={busy}
+              className="win-btn flex-1 py-2 text-xs"
+            >
+              {confirmLabel.cancel}
+            </button>
+            <button
+              type="button"
+              onClick={onConfirm}
+              disabled={busy}
+              className={`${
+                tone === "revoke" ? "win-btn text-white" : "win-btn-primary"
+              } flex-1 py-2 text-xs`}
+            >
+              {busy ? confirmLabel.busy : confirmLabel.action}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -182,8 +185,6 @@ function ConfirmDialog({
 export default function CardAdminUsuarios() {
   const { language, t } = useLanguage();
 
-  // Dois estados para a busca: o que se digita e o que vira requisição. Sem o
-  // atraso, cada tecla dispara uma consulta à base inteira.
   const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -192,20 +193,13 @@ export default function CardAdminUsuarios() {
     return () => clearTimeout(timeoutId);
   }, [searchInput]);
 
-  // A busca roda no servidor, não sobre a lista já carregada: com a paginação
-  // de 50, filtrar no cliente diria "nenhum resultado" para quem existe mas
-  // ficou fora da página — errado de um jeito que parece certo.
   const listKey = searchTerm
     ? `/api/v1/users?search=${encodeURIComponent(searchTerm)}`
     : "/api/v1/users";
 
   const { data, error, isLoading, mutate } = useSWR(listKey, fetcher, {
     revalidateOnFocus: false,
-    // Segura a lista anterior enquanto a busca nova chega, em vez de piscar
-    // vazio a cada letra.
     keepPreviousData: true,
-    // Mesmo critério do card de dispositivos: 4xx é determinístico (sessão
-    // expirada ou conta sem a feature), re-tentar só martela o servidor.
     onErrorRetry: (err, _key, _config, revalidate, { retryCount }) => {
       if (err?.status >= 400 && err?.status < 500) return;
       if (retryCount >= 3) return;
@@ -213,8 +207,6 @@ export default function CardAdminUsuarios() {
     },
   });
 
-  // O portal só existe depois da montagem: no render do servidor não há
-  // `document` para receber o diálogo.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -224,8 +216,6 @@ export default function CardAdminUsuarios() {
 
   const users = data?.users || [];
 
-  // Contagens da página carregada, não da base inteira: quando as duas
-  // divergem, o rodapé diz quantos estão à vista.
   const pendingCount = users.filter((each) => isPending(each.features)).length;
   const supporterCount = users.filter((each) =>
     each.features?.includes("apoiador"),
@@ -253,9 +243,6 @@ export default function CardAdminUsuarios() {
         return;
       }
 
-      // Relê do servidor em vez de remendar a lista na mão: a resposta muda a
-      // barra e a legenda também, e reconstruir isso no cliente é onde as duas
-      // versões do mesmo dado começam a divergir.
       await mutate();
     } catch {
       setActionError(t("Erro de conexao"));
@@ -266,25 +253,33 @@ export default function CardAdminUsuarios() {
   }
 
   return (
-    <div className="w-full">
-      <div className="glass-card card-enter rounded-[20px] p-5 lg:p-6 shadow-2xl relative overflow-hidden flex flex-col">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
-
-        {/* Cabeçalho. A barra vive aqui, e não numa faixa própria abaixo do
-            título: na mesma linha ela se lê como indicador do card, e não como
-            uma régua decorativa entre o título e a lista. Ocupa a sobra da
-            linha (`flex-1`), então cresce com o card em vez de ficar num
-            tamanho fixo que só serve a uma largura de tela. */}
-        <div className="shrink-0 flex items-center gap-3 relative z-10 min-w-0">
-          <div className="w-8 h-8 rounded-full bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-violet-300 shadow-lg shadow-violet-500/15 shrink-0">
-            <PeopleIcon size={16} />
+    <div className="w-full font-mono">
+      <div className="rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col relative card-enter">
+        {/* Barra de Título Branca com Texto Preto */}
+        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
+          <div className="flex items-center gap-2.5 shrink-0">
+            <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
           </div>
-          <h2 className="text-lg font-bold tracking-tight text-white/90 truncate">
-            {t("Usuarios cadastrados")}
-          </h2>
 
+          <div className="flex items-center gap-2 min-w-0 mx-2">
+            <PeopleIcon size={17} className="shrink-0 text-black" />
+            <h2 className="text-sm lg:text-base font-mono font-bold tracking-wider uppercase text-black truncate">
+              {t("Usuarios cadastrados")}
+            </h2>
+          </div>
+
+          <div
+            className="w-20 shrink-0 pointer-events-none"
+            aria-hidden="true"
+          />
+        </div>
+
+        <div className="p-4 lg:p-5 flex flex-col gap-3">
+          {/* Barra de funil de proporção */}
           {!isLoading && !error && users.length > 0 && (
-            <div className="flex-1 min-w-0">
+            <div className="flex flex-col gap-1.5">
               <FunnelBar
                 supporters={supporterCount}
                 confirmed={confirmedCount}
@@ -293,227 +288,191 @@ export default function CardAdminUsuarios() {
               />
             </div>
           )}
-        </div>
 
-        {/* Legenda e busca dividem a linha: à esquerda os três estados da
-            barra em número e por extenso — é a legenda que dá nome às cores
-            lá de cima —, à direita o campo de busca.
-
-            A condição de fora é a da busca, mais ampla que a da legenda de
-            propósito: numa busca sem resultado a legenda some, mas o campo
-            precisa continuar na tela, senão não há como corrigir o termo. */}
-        {!error && (users.length > 0 || searchTerm) && (
-          <div className="relative z-10 mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-            {/* `min-w-0` em vez de `shrink-0`: a legenda tem quebra própria,
-                e com `shrink-0` ela reivindicava a largura de tudo numa linha
-                só — transbordava em vez de quebrar quando as contagens
-                ganhassem dígito. Podendo encolher, ela quebra internamente e a
-                busca mantém seu piso. */}
-            {!isLoading && users.length > 0 && (
-              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm min-w-0">
-                {supporterCount > 0 && (
+          {/* Legenda e Busca */}
+          {!error && (users.length > 0 || searchTerm) && (
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 border-b border-zinc-800 pb-3">
+              {!isLoading && users.length > 0 && (
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xs">
+                  {supporterCount > 0 && (
+                    <Count
+                      value={supporterCount}
+                      label={t("apoiadores")}
+                      dotClassName="bg-white"
+                      valueClassName="text-white"
+                    />
+                  )}
                   <Count
-                    value={supporterCount}
-                    label={t("apoiadores")}
-                    dotClassName="bg-amber-300/80"
-                    valueClassName="text-amber-100"
+                    value={confirmedCount}
+                    label={t("confirmados")}
+                    dotClassName="bg-zinc-9500"
+                    valueClassName="text-white"
                   />
+                  <Count
+                    value={pendingCount}
+                    label={t("pendentes")}
+                    dotClassName="bg-zinc-800"
+                    valueClassName="text-zinc-500"
+                  />
+                </div>
+              )}
+
+              <label className="flex-1 min-w-[8rem] flex items-center gap-2 px-2.5 py-1 bg-black border border-white focus-within:border-white transition-colors">
+                <SearchIcon size={12} className="text-zinc-500 shrink-0" />
+                <input
+                  type="search"
+                  value={searchInput}
+                  onChange={(event) => setSearchInput(event.target.value)}
+                  placeholder={t("Buscar por nome ou email")}
+                  aria-label={t("Buscar por nome ou email")}
+                  className="flex-1 min-w-0 bg-transparent outline-none text-white placeholder-zinc-600 text-xs font-mono"
+                />
+                {searchInput && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchInput("")}
+                    aria-label={t("Limpar busca")}
+                    className="cursor-pointer text-zinc-500 hover:text-white transition-colors shrink-0"
+                  >
+                    <XCircleFillIcon size={12} />
+                  </button>
                 )}
-                <Count
-                  value={confirmedCount}
-                  label={t("confirmados")}
-                  dotClassName="bg-violet-400/70"
-                  valueClassName="text-white/90"
-                />
-                <Count
-                  value={pendingCount}
-                  label={t("pendentes")}
-                  dotClassName="bg-white/15"
-                  valueClassName="text-white/60"
-                />
-              </div>
+              </label>
+            </div>
+          )}
+
+          {/* Conteúdo / Lista */}
+          <div className="flex flex-col gap-2 text-white">
+            {isLoading && (
+              <p className="text-zinc-500 text-center py-4 text-xs">
+                [{t("Carregando...")}]
+              </p>
             )}
 
-            {/* `flex-1` sem teto: o campo toma toda a sobra da linha e se
-                reajusta sozinho quando a legenda muda de tamanho — o que
-                acontece o tempo todo, porque as contagens crescem de dígito e
-                a de apoiadores só aparece quando existe algum.
+            {error && !isLoading && (
+              <p className="text-white border border-white p-2 text-center text-xs">
+                [!] {t("Erro ao carregar usuarios")}
+              </p>
+            )}
 
-                `min-w-[8rem]` é o piso: abaixo disso o campo deixa de ser
-                utilizável, e aí o `flex-wrap` do contêiner joga ele para a
-                própria linha, onde volta a ocupar a largura inteira. */}
-            <label className="flex-1 min-w-[8rem] flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 focus-within:border-violet-400/50 focus-within:bg-white/10 transition-colors">
-              <SearchIcon size={14} className="text-white/30 shrink-0" />
-              <input
-                type="search"
-                value={searchInput}
-                onChange={(event) => setSearchInput(event.target.value)}
-                placeholder={t("Buscar por nome ou email")}
-                aria-label={t("Buscar por nome ou email")}
-                className="flex-1 min-w-0 bg-transparent outline-none text-white placeholder-white/30 text-sm"
-              />
-              {searchInput && (
-                <button
-                  type="button"
-                  onClick={() => setSearchInput("")}
-                  aria-label={t("Limpar busca")}
-                  className="cursor-pointer text-white/30 hover:text-white/70 transition-colors shrink-0"
-                >
-                  <XCircleFillIcon size={14} />
-                </button>
-              )}
-            </label>
-          </div>
-        )}
+            {!isLoading && !error && users.length === 0 && (
+              <p className="text-zinc-500 text-center py-4 text-xs">
+                {searchTerm
+                  ? t("Nenhum usuario encontrado", { termo: searchTerm })
+                  : t("Nenhum usuario cadastrado")}
+              </p>
+            )}
 
-        <div className="relative z-10 mt-4 flex flex-col gap-2 text-white/70">
-          {isLoading && (
-            <p className="text-white/40 text-center py-4">
-              {t("Carregando...")}
-            </p>
-          )}
+            {users.length > 0 && (
+              <ul className="flex flex-col max-h-[18rem] overflow-y-auto divide-y divide-zinc-800">
+                {users.map((userFound) => {
+                  const pending = isPending(userFound.features);
+                  const supporter = Boolean(
+                    userFound.features?.includes("apoiador"),
+                  );
 
-          {error && !isLoading && (
-            <p className="text-red-300 text-center py-4 text-sm">
-              {t("Erro ao carregar usuarios")}
-            </p>
-          )}
+                  return (
+                    <li
+                      key={userFound.id}
+                      className="flex items-center gap-3 py-2.5"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={`w-1 self-stretch shrink-0 ${
+                          pending ? "bg-zinc-800" : "bg-white"
+                        }`}
+                      />
 
-          {!isLoading && !error && users.length === 0 && (
-            <p className="text-white/40 text-center py-4 text-sm">
-              {searchTerm
-                ? t("Nenhum usuario encontrado", { termo: searchTerm })
-                : t("Nenhum usuario cadastrado")}
-            </p>
-          )}
+                      <div className="flex flex-col min-w-0 flex-1 gap-0.5">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
+                          <span className="font-bold text-xs truncate text-white">
+                            {userFound.username}
+                          </span>
 
-          {/* A lista rola dentro do card: com a base crescendo, o card não pode
-              empurrar o resto do painel para fora da tela. */}
-          {users.length > 0 && (
-            <ul className="flex flex-col max-h-[20rem] overflow-y-auto -mx-1 px-1">
-              {users.map((userFound) => {
-                const pending = isPending(userFound.features);
-                const supporter = Boolean(
-                  userFound.features?.includes("apoiador"),
-                );
+                          {userFound.features?.includes("admin") && (
+                            <Badge
+                              icon={<ShieldLockIcon size={9} />}
+                              label={t("Admin")}
+                              className="border-white bg-white text-black font-bold"
+                            />
+                          )}
+                          {supporter && (
+                            <Badge
+                              icon={<HeartFillIcon size={9} />}
+                              label={t("Apoiador")}
+                              className="border-white bg-black text-white"
+                            />
+                          )}
+                          {pending && (
+                            <Badge
+                              icon={<ClockIcon size={9} />}
+                              label={t("Pendente")}
+                              className="border-zinc-800 text-zinc-500"
+                            />
+                          )}
+                        </div>
+                        <span className="text-xs text-zinc-500 truncate">
+                          {userFound.email}
+                        </span>
+                      </div>
 
-                return (
-                  <li
-                    key={userFound.id}
-                    className="flex items-center gap-3 py-2.5 border-b border-white/5 last:border-b-0"
-                  >
-                    {/* O trilho repete, no começo da linha, a cor que o estado
-                        tem na barra do cabeçalho. */}
-                    <span
-                      aria-hidden="true"
-                      className={`w-0.5 self-stretch rounded-full shrink-0 ${
-                        pending ? "bg-white/10" : "bg-violet-400/40"
-                      }`}
-                    />
-
-                    <div className="flex flex-col min-w-0 flex-1 gap-0.5">
-                      {/* `flex-wrap`: com os dois selos, a linha pede ~150px
-                          só para eles, e num celular sobram ~128px para tudo.
-                          Sem quebrar, o username (que encolhe) sumia e os
-                          selos (que não encolhem) eram cortados pelo
-                          `overflow-hidden` do card. Descer de linha custa
-                          altura, que é justamente o que sobra no celular.
-
-                          Ícone com rótulo em vez de só ícone de propósito:
-                          tooltip não existe em toque. */}
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
-                        <span className="font-semibold truncate text-white/90">
-                          {userFound.username}
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span className="text-xs text-zinc-500 tabular-nums">
+                          {formatDate(userFound.created_at, language)}
                         </span>
 
-                        {userFound.features?.includes("admin") && (
-                          <Badge
-                            icon={<ShieldLockIcon size={10} />}
-                            label={t("Admin")}
-                            className="bg-violet-500/10 border-violet-400/30 text-violet-200"
-                          />
-                        )}
-                        {supporter && (
-                          <Badge
-                            icon={<HeartFillIcon size={10} />}
-                            label={t("Apoiador")}
-                            className="bg-amber-400/10 border-amber-300/30 text-amber-100"
-                          />
-                        )}
-                        {pending && (
-                          <Badge
-                            icon={<ClockIcon size={10} />}
-                            label={t("Pendente")}
-                            className="bg-white/5 border-white/15 text-white/40"
-                          />
+                        {!pending && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setConfirming({
+                                username: userFound.username,
+                                isSupporter: supporter,
+                              })
+                            }
+                            title={
+                              supporter
+                                ? t("Revogar apoio")
+                                : t("Tornar apoiador")
+                            }
+                            aria-label={
+                              supporter
+                                ? t("Revogar apoio")
+                                : t("Tornar apoiador")
+                            }
+                            className={`win-btn px-2 py-1 text-xs ${
+                              supporter ? "bg-white text-black font-bold" : ""
+                            }`}
+                          >
+                            {supporter ? (
+                              <HeartFillIcon size={12} />
+                            ) : (
+                              <HeartIcon size={12} />
+                            )}
+                          </button>
                         )}
                       </div>
-                      <span className="text-sm text-white/55 truncate">
-                        {userFound.email}
-                      </span>
-                    </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
 
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-sm text-white/50 tabular-nums">
-                        {formatDate(userFound.created_at, language)}
-                      </span>
+            {actionError && (
+              <p className="text-white border border-white p-2 text-xs">
+                [!] {actionError}
+              </p>
+            )}
 
-                      {/* Escondido para cadastros pendentes: dar benefício a
-                          quem nunca confirmou o email é conceder acesso a uma
-                          conta que ainda não se provou de ninguém. */}
-                      {!pending && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setConfirming({
-                              username: userFound.username,
-                              isSupporter: supporter,
-                            })
-                          }
-                          title={
-                            supporter
-                              ? t("Revogar apoio")
-                              : t("Tornar apoiador")
-                          }
-                          aria-label={
-                            supporter
-                              ? t("Revogar apoio")
-                              : t("Tornar apoiador")
-                          }
-                          className={`cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-300 ${
-                            supporter
-                              ? "bg-amber-400/10 border-amber-300/30 text-amber-200 hover:bg-amber-400/20"
-                              : "bg-white/5 border-white/10 text-white/40 hover:text-amber-200 hover:border-amber-300/30"
-                          }`}
-                        >
-                          {supporter ? (
-                            <HeartFillIcon size={14} />
-                          ) : (
-                            <HeartIcon size={14} />
-                          )}
-                        </button>
-                      )}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-
-          {actionError && (
-            <p className="text-red-300 text-sm pt-1">{actionError}</p>
-          )}
-
-          {/* Só aparece quando existe mais coisa do que a página trouxe — dizer
-              "2 de 2" seria ruído. */}
-          {data && data.total > users.length && (
-            <p className="text-xs uppercase tracking-widest text-white/30 text-center pt-1">
-              {t("Mostrando n de total", {
-                n: users.length,
-                total: data.total,
-              })}
-            </p>
-          )}
+            {data && data.total > users.length && (
+              <p className="text-[10px] uppercase tracking-widest text-zinc-500 text-center pt-2">
+                {t("Mostrando n de total", {
+                  n: users.length,
+                  total: data.total,
+                })}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
@@ -534,8 +493,6 @@ export default function CardAdminUsuarios() {
             confirmLabel={{
               cancel: t("Cancelar"),
               busy: t("Salvando..."),
-              // O botão do diálogo repete o nome da ação que o abriu: quem
-              // clicou em "Revogar apoio" confirma em "Revogar apoio".
               action: confirming.isSupporter
                 ? t("Revogar apoio")
                 : t("Tornar apoiador"),

@@ -6,64 +6,65 @@ export default function CardPindorama({ onDownloadClick }) {
   const { t } = useLanguage();
 
   return (
-    <div className="w-full h-auto lg:h-auto">
-      <div className="glass-card group rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-auto">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10"></div>
-
-        {/* Header */}
-        <div className="shrink-0 mb-3 flex items-center gap-3 relative z-10">
-          <div className="w-8 h-8 rounded-full bg-yellow-500/30 border border-yellow-400/40 flex items-center justify-center text-yellow-300 shadow-lg shadow-yellow-400/25 shrink-0">
-            <img
-              src="/PinLogo.svg"
-              alt="PinLogo"
-              className="w-full h-full object-cover rounded-full"
-            />
+    <div className="w-full h-auto">
+      <div className="rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col h-auto relative">
+        {/* Barra de Título Branca com Texto Preto */}
+        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
+          <div className="flex items-center gap-2.5 shrink-0">
+            <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
           </div>
-          <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
-            Pindorama
-          </h2>
+
+          <div className="flex items-center gap-2 min-w-0 mx-2">
+            <span className="text-sm lg:text-base font-mono font-bold tracking-wider uppercase text-black">
+              PINDORAMA
+            </span>
+          </div>
+
+          <div
+            className="w-20 shrink-0 pointer-events-none"
+            aria-hidden="true"
+          />
         </div>
 
-        {/* Content - Centered in remaining space */}
-        <div className="flex-1 flex flex-col items-center justify-center text-center mt-4 mb-2">
-          <p className="text-zinc-300 mb-6 lg:mb-10 max-w-2xl leading-relaxed text-base lg:text-lg font-medium">
+        {/* Conteúdo Central */}
+        <div className="p-5 lg:p-6 flex flex-col items-center justify-center text-center">
+          {/* Logo Pindorama com moldura técnica monocromática */}
+          <div className="w-16 h-16 rounded-xl border-2 border-white p-2 mb-4 bg-black flex items-center justify-center">
+            <img
+              src="/PinLogo.svg"
+              alt="Pindorama Logo"
+              className="w-full h-full object-contain filter invert contrast-200"
+            />
+          </div>
+
+          <p className="text-white mb-6 max-w-xl leading-relaxed text-sm lg:text-base font-mono">
             {t("pindorama_desc")}
           </p>
 
-          <div className="flex flex-col items-center gap-4">
-            <div className="flex flex-wrap gap-3 lg:gap-4 justify-center">
-              {/* Download (opens login card) */}
-              {onDownloadClick ? (
-                <button
-                  type="button"
-                  onClick={onDownloadClick}
-                  className="cursor-pointer flex items-center gap-3 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 group"
-                >
-                  <DownloadIcon
-                    size={20}
-                    className="group-hover:text-cyan-400 transition-colors"
-                  />
-                  <span className="font-semibold text-base">
-                    {t("Download")}
-                  </span>
-                </button>
-              ) : (
-                <Link
-                  href="/login"
-                  className="cursor-pointer flex items-center gap-3 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 group"
-                >
-                  <DownloadIcon
-                    size={20}
-                    className="group-hover:text-cyan-400 transition-colors"
-                  />
-                  <span className="font-semibold text-base">
-                    {t("Download")}
-                  </span>
-                </Link>
-              )}
-            </div>
+          <div className="flex flex-col items-center gap-3 w-full">
+            {/* Botão de Download de Alto Contraste */}
+            {onDownloadClick ? (
+              <button
+                type="button"
+                onClick={onDownloadClick}
+                className="win-btn-primary w-full sm:w-auto px-10 py-3 text-sm flex items-center justify-center gap-3 active:scale-95"
+              >
+                <DownloadIcon size={18} />
+                <span>{t("Download")}</span>
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="win-btn-primary w-full sm:w-auto px-10 py-3 text-sm flex items-center justify-center gap-3 active:scale-95"
+              >
+                <DownloadIcon size={18} />
+                <span>{t("Download")}</span>
+              </Link>
+            )}
 
-            <p className="text-xs text-zinc-400 tracking-wide select-none">
+            <p className="text-[11px] text-zinc-500 tracking-wider font-mono select-none mt-2">
               {t("pindorama_footer")}
             </p>
           </div>
