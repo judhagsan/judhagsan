@@ -63,7 +63,7 @@ export default function CardNormal({
         </div>
 
         {/* Corpo da Janela */}
-        <div className="p-4 lg:p-5 flex flex-col gap-4 text-white text-sm font-mono relative z-10 flex-1 h-full">
+        <div className="p-4 lg:p-5 flex flex-col gap-4 text-white text-sm lg:text-base font-mono relative z-10 flex-1 h-full">
           {children}
         </div>
       </div>

@@ -128,10 +128,10 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
             <div className="w-12 h-12 rounded-xl border-2 border-white flex items-center justify-center text-white bg-black">
               <CheckCircleFillIcon size={24} />
             </div>
-            <p className="text-sm font-bold uppercase tracking-wider text-white">
+            <p className="text-base font-bold uppercase tracking-wider text-white">
               {t("Verifique seu email")}
             </p>
-            <p className="text-xs text-zinc-400 leading-relaxed max-w-xs flex items-center gap-2 justify-center">
+            <p className="text-sm text-zinc-400 leading-relaxed max-w-xs flex items-center gap-2 justify-center">
               <MailIcon size={14} className="shrink-0" />
               <span>
                 {t("Email de ativacao enviado", { email: registeredEmail })}
@@ -140,7 +140,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
             <button
               type="button"
               onClick={() => setRegisteredEmail("")}
-              className="win-btn mt-4 text-xs"
+              className="win-btn mt-4 text-sm"
             >
               {t("Cadastrar outra conta")}
             </button>
@@ -151,7 +151,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
             className="p-5 flex flex-col gap-3 font-mono"
           >
             <label className="flex flex-col gap-1">
-              <span className="text-xs uppercase tracking-wider text-zinc-400">
+              <span className="text-sm uppercase tracking-wider text-zinc-400">
                 {t("Username")}
               </span>
               <input
@@ -160,13 +160,13 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 autoComplete="username"
-                className="win-input rounded-xl text-sm py-2"
+                className="win-input rounded-xl text-base py-2"
                 placeholder="usuario"
               />
             </label>
 
             <label className="flex flex-col gap-1">
-              <span className="text-xs uppercase tracking-wider text-zinc-400">
+              <span className="text-sm uppercase tracking-wider text-zinc-400">
                 {t("Email")}
               </span>
               <input
@@ -175,14 +175,14 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
-                className="win-input rounded-xl text-sm py-2"
+                className="win-input rounded-xl text-base py-2"
                 placeholder="usuario@exemplo.com"
               />
             </label>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="flex flex-col gap-1">
-                <span className="text-xs uppercase tracking-wider text-zinc-400">
+                <span className="text-sm uppercase tracking-wider text-zinc-400">
                   {t("Senha")}
                 </span>
                 <input
@@ -192,13 +192,13 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
                   required
                   autoComplete="new-password"
                   minLength={8}
-                  className="win-input rounded-xl text-sm py-2"
+                  className="win-input rounded-xl text-base py-2"
                   placeholder={t("min_char")}
                 />
               </label>
 
               <label className="flex flex-col gap-1">
-                <span className="text-xs uppercase tracking-wider text-zinc-400">
+                <span className="text-sm uppercase tracking-wider text-zinc-400">
                   {t("Confirmar")}
                 </span>
                 <input
@@ -207,7 +207,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   autoComplete="new-password"
-                  className={`win-input rounded-xl text-sm py-2 ${
+                  className={`win-input rounded-xl text-base py-2 ${
                     passwordsMismatch ? "border-red-400" : ""
                   }`}
                   placeholder="••••••••"
@@ -216,7 +216,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
             </div>
 
             {passwordsMismatch && (
-              <p className="text-red-400 text-xs">
+              <p className="text-red-400 text-sm">
                 {t("As senhas nao conferem")}
               </p>
             )}
@@ -228,7 +228,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
                 onChange={(e) => setPrivacyAccepted(e.target.checked)}
                 className="mt-0.5 accent-white w-4 h-4 cursor-pointer"
               />
-              <span className="text-xs text-zinc-400 leading-relaxed">
+              <span className="text-sm text-zinc-400 leading-relaxed">
                 {t("Li e aceito os")}{" "}
                 {onPrivacyClick ? (
                   <button
@@ -252,7 +252,7 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
             </label>
 
             {errorMessage && (
-              <div className="border border-white bg-black rounded-xl p-2 text-xs text-white flex items-start gap-2">
+              <div className="border border-white bg-black rounded-xl p-2 text-sm text-white flex items-start gap-2">
                 <AlertFillIcon size={14} className="mt-0.5 shrink-0" />
                 <span>{errorMessage}</span>
               </div>
@@ -261,13 +261,13 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
             <button
               type="submit"
               disabled={isSubmitting || passwordsMismatch || !privacyAccepted}
-              className="win-btn-primary w-full py-2.5 text-xs mt-2"
+              className="win-btn-primary w-full py-2.5 text-sm mt-2"
             >
               <PersonFillIcon size={16} />
               <span>{isSubmitting ? t("Cadastrando...") : t("Cadastrar")}</span>
             </button>
 
-            <p className="text-xs text-zinc-400 text-center mt-1">
+            <p className="text-sm text-zinc-400 text-center mt-1">
               {t("Ja tem conta?")}{" "}
               {onLoginClick ? (
                 <button

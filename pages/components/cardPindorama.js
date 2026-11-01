@@ -39,7 +39,7 @@ export default function CardPindorama({ onDownloadClick }) {
             />
           </div>
 
-          <p className="text-white mb-6 max-w-xl leading-relaxed text-sm lg:text-base font-mono">
+          <p className="text-white mb-6 max-w-xl leading-relaxed text-base lg:text-lg font-mono">
             {t("pindorama_desc")}
           </p>
 
@@ -49,7 +49,7 @@ export default function CardPindorama({ onDownloadClick }) {
               <button
                 type="button"
                 onClick={onDownloadClick}
-                className="win-btn-primary w-full sm:w-auto px-10 py-3 text-sm flex items-center justify-center gap-3 active:scale-95"
+                className="win-btn-primary w-full sm:w-auto px-10 py-3 text-base flex items-center justify-center gap-3 active:scale-95"
               >
                 <DownloadIcon size={18} />
                 <span>{t("Download")}</span>
@@ -57,14 +57,14 @@ export default function CardPindorama({ onDownloadClick }) {
             ) : (
               <Link
                 href="/login"
-                className="win-btn-primary w-full sm:w-auto px-10 py-3 text-sm flex items-center justify-center gap-3 active:scale-95"
+                className="win-btn-primary w-full sm:w-auto px-10 py-3 text-base flex items-center justify-center gap-3 active:scale-95"
               >
                 <DownloadIcon size={18} />
                 <span>{t("Download")}</span>
               </Link>
             )}
 
-            <p className="text-[11px] text-zinc-500 tracking-wider font-mono select-none mt-2">
+            <p className="text-xs text-zinc-500 tracking-wider font-mono select-none mt-2">
               {t("pindorama_footer")}
             </p>
           </div>

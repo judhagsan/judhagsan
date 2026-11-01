@@ -117,19 +117,19 @@ export default function CardDispositivos() {
         {/* Lista de Dispositivos */}
         <div className="p-4 flex flex-col gap-3 text-white text-sm">
           {isLoading && (
-            <p className="text-zinc-500 text-center py-2 text-xs">
+            <p className="text-zinc-500 text-center py-2 text-sm">
               [{t("Carregando...")}]
             </p>
           )}
 
           {error && (
-            <p className="text-white border border-white p-2 text-center text-xs">
+            <p className="text-white border border-white p-2 text-center text-sm">
               [!] {t("Erro ao carregar dispositivos")}
             </p>
           )}
 
           {!isLoading && !error && data?.length === 0 && (
-            <p className="text-zinc-500 text-center py-4 text-xs leading-relaxed">
+            <p className="text-zinc-500 text-center py-4 text-sm leading-relaxed">
               {t("Nenhum dispositivo registrado")}
             </p>
           )}
@@ -148,17 +148,17 @@ export default function CardDispositivos() {
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2 border-b border-zinc-800 pb-1.5 mb-2">
-                    <span className="font-bold text-xs uppercase tracking-wider text-white">
+                    <span className="font-bold text-sm uppercase tracking-wider text-white">
                       {osLabel(device.os)}
                     </span>
                     {device.upload_paused && (
-                      <span className="border border-white px-1 text-[10px] text-zinc-400">
+                      <span className="border border-white px-1 text-xs text-zinc-400">
                         {t("pausado")}
                       </span>
                     )}
                   </div>
 
-                  <div className="flex flex-col gap-0.5 text-xs text-white leading-relaxed font-mono">
+                  <div className="flex flex-col gap-0.5 text-sm text-white leading-relaxed font-mono">
                     {device.cpu && (
                       <p className="break-all">
                         <span className="text-zinc-500">{t("CPU")}:</span>{" "}
@@ -191,7 +191,7 @@ export default function CardDispositivos() {
                     )}
                   </div>
 
-                  <p className="text-zinc-500 text-[11px] mt-2 pt-1 border-t border-zinc-800">
+                  <p className="text-zinc-500 text-xs mt-2 pt-1 border-t border-zinc-800">
                     Pindorama v{device.pindorama_version || "?"} ·{" "}
                     {formatRelative(device.last_seen_at, language)}
                   </p>
@@ -203,7 +203,7 @@ export default function CardDispositivos() {
                   type="button"
                   onClick={() => togglePause(device)}
                   disabled={busyId === device.id}
-                  className="win-btn text-[11px] flex-1 inline-flex items-center justify-center gap-1.5"
+                  className="win-btn text-sm flex-1 inline-flex items-center justify-center gap-1.5"
                 >
                   {device.upload_paused ? (
                     <>
@@ -221,7 +221,7 @@ export default function CardDispositivos() {
                   type="button"
                   onClick={() => deleteDevice(device)}
                   disabled={busyId === device.id}
-                  className="win-btn text-[11px] flex-1 inline-flex items-center justify-center gap-1.5 text-zinc-400 hover:text-white"
+                  className="win-btn text-sm flex-1 inline-flex items-center justify-center gap-1.5 text-zinc-400 hover:text-white"
                 >
                   <TrashIcon size={12} />
                   <span>{t("Excluir")}</span>

@@ -17,7 +17,7 @@ function Section({ icon: Icon, title, children }) {
         <Icon size={14} className="text-white shrink-0" />
         <span>{title}</span>
       </h3>
-      <div className="text-zinc-400 leading-relaxed text-xs flex flex-col gap-2 font-mono">
+      <div className="text-zinc-400 leading-relaxed text-sm flex flex-col gap-2 font-mono">
         {children}
       </div>
     </section>
@@ -121,16 +121,16 @@ export default function CardContato({ onClose }) {
                   <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black">
                     <CheckCircleFillIcon size={24} />
                   </div>
-                  <p className="text-base font-bold uppercase tracking-wider text-white">
+                  <p className="text-lg font-bold uppercase tracking-wider text-white">
                     {t("Mensagem enviada!")}
                   </p>
-                  <p className="text-xs text-zinc-400 leading-relaxed max-w-xs">
+                  <p className="text-sm text-zinc-400 leading-relaxed max-w-xs">
                     {t("Sucesso ao enviar mensagem")}
                   </p>
                   <button
                     type="button"
                     onClick={() => setStatus("idle")}
-                    className="win-btn mt-4 text-xs"
+                    className="win-btn mt-4 text-sm"
                   >
                     {t("Enviar outra mensagem")}
                   </button>
@@ -142,7 +142,7 @@ export default function CardContato({ onClose }) {
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <label className="flex flex-col gap-1.5">
-                      <span className="text-xs uppercase tracking-wider text-zinc-400">
+                      <span className="text-sm uppercase tracking-wider text-zinc-400">
                         {t("Nome")}
                       </span>
                       <input
@@ -151,13 +151,13 @@ export default function CardContato({ onClose }) {
                         onChange={(e) => setName(e.target.value)}
                         required
                         disabled={status === "loading"}
-                        className="win-input text-sm"
+                        className="win-input text-base"
                         placeholder={t("Seu nome")}
                       />
                     </label>
 
                     <label className="flex flex-col gap-1.5">
-                      <span className="text-xs uppercase tracking-wider text-zinc-400">
+                      <span className="text-sm uppercase tracking-wider text-zinc-400">
                         {t("Email")}
                       </span>
                       <input
@@ -166,14 +166,14 @@ export default function CardContato({ onClose }) {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         disabled={status === "loading"}
-                        className="win-input text-sm"
+                        className="win-input text-base"
                         placeholder="voce@exemplo.com"
                       />
                     </label>
                   </div>
 
                   <label className="flex flex-col gap-1.5">
-                    <span className="text-xs uppercase tracking-wider text-zinc-400">
+                    <span className="text-sm uppercase tracking-wider text-zinc-400">
                       {t("Mensagem")}
                     </span>
                     <textarea
@@ -182,13 +182,13 @@ export default function CardContato({ onClose }) {
                       required
                       rows={8}
                       disabled={status === "loading"}
-                      className="win-input text-sm resize-none"
+                      className="win-input text-base resize-none"
                       placeholder={t("Escreva sua mensagem aqui...")}
                     />
                   </label>
 
                   {status === "error" && (
-                    <div className="border border-white bg-black p-2 text-xs text-white flex items-start gap-2">
+                    <div className="border border-white bg-black p-2 text-sm text-white flex items-start gap-2">
                       <AlertFillIcon size={14} className="mt-0.5 shrink-0" />
                       <span>{errorMessage}</span>
                     </div>
@@ -197,7 +197,7 @@ export default function CardContato({ onClose }) {
                   <button
                     type="submit"
                     disabled={status === "loading"}
-                    className="win-btn-primary w-full md:w-auto self-start py-2.5 text-xs"
+                    className="win-btn-primary w-full md:w-auto self-start py-2.5 text-sm"
                   >
                     {status === "loading" ? (
                       <>

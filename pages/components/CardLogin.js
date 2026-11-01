@@ -93,7 +93,7 @@ export default function CardLogin({ onCadastroClick, onBack }) {
           className="p-5 flex flex-col gap-4 font-mono"
         >
           <label className="flex flex-col gap-1.5">
-            <span className="text-xs uppercase tracking-wider text-zinc-400">
+            <span className="text-sm uppercase tracking-wider text-zinc-400">
               {t("Email")}
             </span>
             <input
@@ -102,13 +102,13 @@ export default function CardLogin({ onCadastroClick, onBack }) {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="win-input rounded-xl text-sm py-2.5"
+              className="win-input rounded-xl text-base py-2.5"
               placeholder="usuario@exemplo.com"
             />
           </label>
 
           <label className="flex flex-col gap-1.5">
-            <span className="text-xs uppercase tracking-wider text-zinc-400">
+            <span className="text-sm uppercase tracking-wider text-zinc-400">
               {t("Senha")}
             </span>
             <input
@@ -117,13 +117,13 @@ export default function CardLogin({ onCadastroClick, onBack }) {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
-              className="win-input rounded-xl text-sm py-2.5"
+              className="win-input rounded-xl text-base py-2.5"
               placeholder="••••••••"
             />
           </label>
 
           {errorMessage && (
-            <div className="border border-white bg-black rounded-xl p-2.5 text-xs text-white flex items-start gap-2 animate-[fadeIn_0.15s_ease-out]">
+            <div className="border border-white bg-black rounded-xl p-2.5 text-sm text-white flex items-start gap-2 animate-[fadeIn_0.15s_ease-out]">
               <AlertFillIcon size={14} className="mt-0.5 shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -132,13 +132,13 @@ export default function CardLogin({ onCadastroClick, onBack }) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="win-btn-primary w-full py-2.5 text-xs mt-2"
+            className="win-btn-primary w-full py-2.5 text-sm mt-2"
           >
             <SignInIcon size={16} />
             <span>{isSubmitting ? t("Entrando...") : t("Entrar")}</span>
           </button>
 
-          <p className="text-xs text-zinc-400 text-center mt-2">
+          <p className="text-sm text-zinc-400 text-center mt-2">
             {t("Nao tem conta?")}{" "}
             {onCadastroClick ? (
               <button

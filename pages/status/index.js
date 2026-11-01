@@ -55,7 +55,7 @@ function UpdatedAt() {
   return (
     <CardNormal title={t("Visao Geral")} icon={PulseIcon}>
       <div className="flex flex-col gap-2 p-3 border border-zinc-800 bg-black h-full justify-center font-mono">
-        <span className="text-zinc-500 uppercase text-[10px] tracking-wider">
+        <span className="text-zinc-400 uppercase text-xs tracking-wider">
           {t("Ultima Atualizacao")}
         </span>
         <span className="text-base text-white font-bold tabular-nums">
@@ -64,12 +64,12 @@ function UpdatedAt() {
 
         <div className="h-px w-full bg-zinc-800 my-1" />
 
-        <span className="text-zinc-500 uppercase text-[10px] tracking-wider">
+        <span className="text-zinc-400 uppercase text-xs tracking-wider">
           {t("Status Report")}
         </span>
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-white shrink-0 animate-ping" />
-          <span className="text-xs text-white">
+          <span className="text-sm text-white">
             {isLoading
               ? t("Buscando telemetria...")
               : `[OK] ${t("Sistemas Operacionais")}`}
@@ -89,17 +89,17 @@ function DatabaseStatus() {
   return (
     <CardNormal title={t("Banco de Dados")} icon={DatabaseIcon}>
       {isLoading || !data ? (
-        <div className="flex items-center justify-center h-full min-h-[140px] text-zinc-600 border border-zinc-800 bg-black font-mono">
-          <span className="text-xs">[{t("Carregando metricas...")}]</span>
+        <div className="flex items-center justify-center h-full min-h-[140px] text-zinc-500 border border-zinc-800 bg-black font-mono">
+          <span className="text-sm">[{t("Carregando metricas...")}]</span>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3 h-full font-mono">
           <div className="flex flex-col gap-1 p-3 border border-zinc-800 bg-black justify-center">
-            <span className="text-zinc-500 uppercase text-[10px] tracking-wider">
+            <span className="text-zinc-400 uppercase text-xs tracking-wider">
               {t("Versao (PostgreSQL)")}
             </span>
             <span
-              className="text-sm font-bold text-white truncate"
+              className="text-base font-bold text-white truncate"
               title={data?.dependencies?.database?.version || "—"}
             >
               {data?.dependencies?.database?.version?.split(" ")[0] || "—"}
@@ -107,20 +107,20 @@ function DatabaseStatus() {
           </div>
 
           <div className="flex flex-col gap-1 p-3 border border-zinc-800 bg-black justify-center">
-            <span className="text-zinc-500 uppercase text-[10px] tracking-wider">
+            <span className="text-zinc-400 uppercase text-xs tracking-wider">
               {t("Max Conexoes")}
             </span>
-            <span className="text-sm font-bold text-white">
+            <span className="text-base font-bold text-white">
               {data?.dependencies?.database?.max_connections ?? "—"}
             </span>
           </div>
 
           <div className="flex flex-col gap-1 p-3 border border-zinc-800 bg-black col-span-2">
             <div className="flex justify-between items-end mb-1">
-              <span className="text-zinc-500 uppercase text-[10px] tracking-wider">
+              <span className="text-zinc-400 uppercase text-xs tracking-wider">
                 {t("Conexoes Ativas")}
               </span>
-              <span className="text-white font-bold text-base leading-none tabular-nums">
+              <span className="text-white font-bold text-lg leading-none tabular-nums">
                 {data?.dependencies?.database?.opened_connections ?? "—"}
               </span>
             </div>
@@ -137,7 +137,7 @@ function DatabaseStatus() {
                 }}
               />
             </div>
-            <div className="flex justify-between mt-1 text-[10px] text-zinc-500 font-mono">
+            <div className="flex justify-between mt-1 text-xs text-zinc-400 font-mono">
               <span>0%</span>
               <span>
                 {t("Uso")}:{" "}

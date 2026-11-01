@@ -4,8 +4,8 @@ import useLanguage from "hooks/useLanguage";
 function Section({ title, children }) {
   return (
     <section className="flex flex-col gap-2">
-      <h3 className="text-base font-semibold text-white">{title}</h3>
-      <div className="text-zinc-300 leading-relaxed text-sm flex flex-col gap-2">
+      <h3 className="text-base lg:text-lg font-bold text-white">{title}</h3>
+      <div className="text-zinc-300 leading-relaxed text-sm lg:text-base flex flex-col gap-2">
         {children}
       </div>
     </section>
@@ -61,7 +61,7 @@ export default function CardPrivacidade({ onClose }) {
             </h2>
           </div>
 
-          <div className="flex items-center gap-2 text-[10px] text-zinc-600 font-bold uppercase tracking-widest shrink-0">
+          <div className="flex items-center gap-2 text-xs text-zinc-600 font-bold uppercase tracking-widest shrink-0">
             <CalendarIcon size={12} />
             <span className="hidden sm:inline">{lastUpdateLabel}</span>
           </div>

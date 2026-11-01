@@ -36,13 +36,13 @@ function FunnelBar({ supporters, confirmed, pending, total }) {
   if (total === 0) return null;
 
   const segments = [
-    { value: supporters, className: "bg-white" },
-    { value: confirmed, className: "bg-zinc-9500" },
-    { value: pending, className: "bg-zinc-800" },
+    { value: supporters, className: "bg-amber-400" },
+    { value: confirmed, className: "bg-violet-400" },
+    { value: pending, className: "bg-zinc-700" },
   ];
 
   return (
-    <div className="flex h-1.5 w-full overflow-hidden border border-white bg-black">
+    <div className="flex h-2 w-full overflow-hidden border border-zinc-800 bg-black">
       {segments.map(
         (segment, index) =>
           segment.value > 0 && (
@@ -59,7 +59,7 @@ function FunnelBar({ supporters, confirmed, pending, total }) {
 
 function Count({ value, label, dotClassName, valueClassName }) {
   return (
-    <span className="inline-flex items-baseline gap-1.5 font-mono text-xs">
+    <span className="inline-flex items-baseline gap-1.5 font-mono text-sm">
       <span
         className={`inline-block w-1.5 h-1.5 translate-y-[-1px] ${dotClassName}`}
       />
@@ -74,7 +74,7 @@ function Count({ value, label, dotClassName, valueClassName }) {
 function Badge({ icon, label, className }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 px-1.5 py-0.5 border text-[10px] uppercase font-mono tracking-wider shrink-0 ${className}`}
+      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-xs uppercase font-mono tracking-wider shrink-0 ${className}`}
     >
       {icon}
       {label}
@@ -147,21 +147,31 @@ function ConfirmDialog({
         </div>
 
         <div className="p-5 flex flex-col items-center text-center gap-3">
-          <div className="w-12 h-12 border border-white flex items-center justify-center text-white bg-zinc-950">
-            <HeartFillIcon size={22} />
+          <div
+            className={`w-12 h-12 rounded-full border flex items-center justify-center ${
+              tone === "revoke"
+                ? "border-red-600 bg-black text-red-500"
+                : "border-amber-400 bg-black text-amber-400"
+            }`}
+          >
+            {tone === "revoke" ? (
+              <XCircleFillIcon size={22} />
+            ) : (
+              <HeartFillIcon size={22} />
+            )}
           </div>
 
-          <p className="text-sm font-bold uppercase tracking-wider text-white">
+          <p className="text-base font-bold uppercase tracking-wider text-white">
             {title}
           </p>
-          <p className="text-xs leading-relaxed text-zinc-400">{description}</p>
+          <p className="text-sm leading-relaxed text-zinc-400">{description}</p>
 
           <div className="flex gap-3 mt-2 w-full">
             <button
               type="button"
               onClick={onCancel}
               disabled={busy}
-              className="win-btn flex-1 py-2 text-xs"
+              className="win-btn rounded-full flex-1 py-2 text-sm"
             >
               {confirmLabel.cancel}
             </button>
@@ -169,9 +179,11 @@ function ConfirmDialog({
               type="button"
               onClick={onConfirm}
               disabled={busy}
-              className={`${
-                tone === "revoke" ? "win-btn text-white" : "win-btn-primary"
-              } flex-1 py-2 text-xs`}
+              className={`flex-1 py-2 text-sm font-bold uppercase tracking-wider rounded-full border cursor-pointer transition-colors ${
+                tone === "revoke"
+                  ? "bg-red-600 hover:bg-red-500 text-white border-red-600"
+                  : "bg-amber-400 hover:bg-amber-300 text-black border-amber-400 font-bold"
+              }`}
             >
               {busy ? confirmLabel.busy : confirmLabel.action}
             </button>
@@ -298,34 +310,34 @@ export default function CardAdminUsuarios() {
                     <Count
                       value={supporterCount}
                       label={t("apoiadores")}
-                      dotClassName="bg-white"
-                      valueClassName="text-white"
+                      dotClassName="bg-amber-400"
+                      valueClassName="text-amber-300"
                     />
                   )}
                   <Count
                     value={confirmedCount}
                     label={t("confirmados")}
-                    dotClassName="bg-zinc-9500"
-                    valueClassName="text-white"
+                    dotClassName="bg-violet-400"
+                    valueClassName="text-violet-300"
                   />
                   <Count
                     value={pendingCount}
                     label={t("pendentes")}
-                    dotClassName="bg-zinc-800"
+                    dotClassName="bg-zinc-600"
                     valueClassName="text-zinc-500"
                   />
                 </div>
               )}
 
-              <label className="flex-1 min-w-[8rem] flex items-center gap-2 px-2.5 py-1 bg-black border border-white focus-within:border-white transition-colors">
-                <SearchIcon size={12} className="text-zinc-500 shrink-0" />
+              <label className="flex-1 min-w-[8rem] flex items-center gap-2 px-2.5 py-1.5 bg-black border border-white focus-within:border-white transition-colors">
+                <SearchIcon size={14} className="text-zinc-500 shrink-0" />
                 <input
                   type="search"
                   value={searchInput}
                   onChange={(event) => setSearchInput(event.target.value)}
                   placeholder={t("Buscar por nome ou email")}
                   aria-label={t("Buscar por nome ou email")}
-                  className="flex-1 min-w-0 bg-transparent outline-none text-white placeholder-zinc-600 text-xs font-mono"
+                  className="flex-1 min-w-0 bg-transparent outline-none text-white placeholder-zinc-600 text-sm font-mono"
                 />
                 {searchInput && (
                   <button
@@ -334,7 +346,7 @@ export default function CardAdminUsuarios() {
                     aria-label={t("Limpar busca")}
                     className="cursor-pointer text-zinc-500 hover:text-white transition-colors shrink-0"
                   >
-                    <XCircleFillIcon size={12} />
+                    <XCircleFillIcon size={14} />
                   </button>
                 )}
               </label>
@@ -344,19 +356,19 @@ export default function CardAdminUsuarios() {
           {/* Conteúdo / Lista */}
           <div className="flex flex-col gap-2 text-white">
             {isLoading && (
-              <p className="text-zinc-500 text-center py-4 text-xs">
+              <p className="text-zinc-500 text-center py-4 text-sm">
                 [{t("Carregando...")}]
               </p>
             )}
 
             {error && !isLoading && (
-              <p className="text-white border border-white p-2 text-center text-xs">
+              <p className="text-white border border-white p-2.5 text-center text-sm">
                 [!] {t("Erro ao carregar usuarios")}
               </p>
             )}
 
             {!isLoading && !error && users.length === 0 && (
-              <p className="text-zinc-500 text-center py-4 text-xs">
+              <p className="text-zinc-500 text-center py-4 text-sm">
                 {searchTerm
                   ? t("Nenhum usuario encontrado", { termo: searchTerm })
                   : t("Nenhum usuario cadastrado")}
@@ -379,13 +391,17 @@ export default function CardAdminUsuarios() {
                       <span
                         aria-hidden="true"
                         className={`w-1 self-stretch shrink-0 ${
-                          pending ? "bg-zinc-800" : "bg-white"
+                          pending
+                            ? "bg-zinc-800"
+                            : supporter
+                              ? "bg-amber-400"
+                              : "bg-violet-400"
                         }`}
                       />
 
                       <div className="flex flex-col min-w-0 flex-1 gap-0.5">
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
-                          <span className="font-bold text-xs truncate text-white">
+                          <span className="font-bold text-sm truncate text-white">
                             {userFound.username}
                           </span>
 
@@ -393,31 +409,31 @@ export default function CardAdminUsuarios() {
                             <Badge
                               icon={<ShieldLockIcon size={9} />}
                               label={t("Admin")}
-                              className="border-white bg-white text-black font-bold"
+                              className="border-violet-400 bg-violet-400 text-black font-bold"
                             />
                           )}
                           {supporter && (
                             <Badge
                               icon={<HeartFillIcon size={9} />}
                               label={t("Apoiador")}
-                              className="border-white bg-black text-white"
+                              className="border-amber-400 bg-amber-400 text-black font-bold"
                             />
                           )}
                           {pending && (
                             <Badge
                               icon={<ClockIcon size={9} />}
                               label={t("Pendente")}
-                              className="border-zinc-800 text-zinc-500"
+                              className="border-zinc-700 bg-zinc-800 text-zinc-400"
                             />
                           )}
                         </div>
-                        <span className="text-xs text-zinc-500 truncate">
+                        <span className="text-sm text-zinc-400 truncate">
                           {userFound.email}
                         </span>
                       </div>
 
                       <div className="flex items-center gap-3 shrink-0">
-                        <span className="text-xs text-zinc-500 tabular-nums">
+                        <span className="text-sm text-zinc-400 tabular-nums">
                           {formatDate(userFound.created_at, language)}
                         </span>
 
@@ -440,8 +456,10 @@ export default function CardAdminUsuarios() {
                                 ? t("Revogar apoio")
                                 : t("Tornar apoiador")
                             }
-                            className={`win-btn px-2 py-1 text-xs ${
-                              supporter ? "bg-white text-black font-bold" : ""
+                            className={`cursor-pointer inline-flex items-center justify-center w-7 h-7 rounded-full border transition-colors ${
+                              supporter
+                                ? "border-amber-400 bg-amber-400 text-black hover:bg-amber-300"
+                                : "border-zinc-800 bg-black text-zinc-500 hover:text-amber-400 hover:border-amber-400"
                             }`}
                           >
                             {supporter ? (
@@ -459,13 +477,13 @@ export default function CardAdminUsuarios() {
             )}
 
             {actionError && (
-              <p className="text-white border border-white p-2 text-xs">
+              <p className="text-white border border-white p-2.5 text-sm">
                 [!] {actionError}
               </p>
             )}
 
             {data && data.total > users.length && (
-              <p className="text-[10px] uppercase tracking-widest text-zinc-500 text-center pt-2">
+              <p className="text-xs uppercase tracking-widest text-zinc-500 text-center pt-2">
                 {t("Mostrando n de total", {
                   n: users.length,
                   total: data.total,

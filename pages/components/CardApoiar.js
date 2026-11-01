@@ -18,7 +18,7 @@ const SDK_URL = "https://sdk.mercadopago.com/js/v2";
 // formulário no próximo carregamento.
 const LIVE_STATUSES = ["authorized", "paused", "pending"];
 
-const INPUT_CLASS = "win-input w-full text-xs font-mono";
+const INPUT_CLASS = "win-input w-full text-base font-mono";
 
 // Apoio mensal ao Pindorama, cobrado pelo Mercado Pago.
 //
@@ -359,8 +359,8 @@ export default function CardApoiar() {
           </div>
 
           {errorMessage && (
-            <p className="text-red-300 text-xs flex items-start gap-2 animate-[fadeIn_0.3s_ease-out]">
-              <AlertFillIcon size={14} className="mt-0.5 shrink-0" />
+            <p className="text-red-300 text-sm flex items-start gap-2 animate-[fadeIn_0.3s_ease-out]">
+              <AlertFillIcon size={16} className="mt-0.5 shrink-0" />
               <span>{errorMessage}</span>
             </p>
           )}
@@ -373,9 +373,9 @@ export default function CardApoiar() {
               type={expanded ? "submit" : "button"}
               onClick={expanded ? undefined : () => setExpanded(true)}
               disabled={status !== "pronto"}
-              className="win-btn-primary flex-1 min-w-[9rem] py-2.5 text-xs"
+              className="win-btn-primary flex-1 min-w-[9rem] py-2.5 text-sm font-bold uppercase tracking-wider"
             >
-              <CreditCardIcon size={14} />
+              <CreditCardIcon size={16} />
               <span>
                 {status === "processando"
                   ? t("Processando...")
@@ -387,16 +387,16 @@ export default function CardApoiar() {
               type="button"
               onClick={handlePix}
               disabled={status !== "pronto"}
-              className="win-btn flex-1 min-w-[9rem] py-2.5 text-xs"
+              className="win-btn flex-1 min-w-[9rem] py-2.5 text-sm font-bold uppercase tracking-wider"
             >
-              <ZapIcon size={14} />
+              <ZapIcon size={16} />
               <span>{t("Pagar com Pix")}</span>
             </button>
           </div>
 
           {/* Uma frase por linha: a quebra sai do ponto final, não da largura
               do card, então ela é a mesma em qualquer tela e nos dois idiomas. */}
-          <p className="text-xs text-zinc-500 leading-snug text-left">
+          <p className="text-xs lg:text-sm text-zinc-400 leading-snug text-left">
             {splitSentences(t("Texto cobranca recorrente")).map((sentence) => (
               <span key={sentence} className="block">
                 {sentence}
@@ -454,7 +454,7 @@ function loadScript() {
 function Field({ label, children }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold">
+      <span className="text-xs uppercase tracking-widest text-zinc-400 font-semibold">
         {label}
       </span>
       {children}
@@ -561,7 +561,7 @@ function SubscriptionState({
   return (
     <div className="flex flex-col gap-2 text-left animate-[fadeIn_0.3s_ease-out]">
       {monthlyValue && !cancelled && (
-        <p className="text-xs uppercase tracking-widest text-zinc-500 font-semibold">
+        <p className="text-xs lg:text-sm uppercase tracking-widest text-zinc-400 font-semibold">
           {t("Valor por mes", { valor: formatValue(monthlyValue) })}
         </p>
       )}
@@ -569,7 +569,7 @@ function SubscriptionState({
       {lines.map((line) => (
         <p
           key={line}
-          className={`text-sm leading-snug ${
+          className={`text-sm lg:text-base leading-snug ${
             tone === "alert" ? "text-amber-200" : "text-zinc-400"
           }`}
         >
@@ -578,8 +578,8 @@ function SubscriptionState({
       ))}
 
       {errorMessage && (
-        <p className="text-red-300 text-xs flex items-start gap-2">
-          <AlertFillIcon size={14} className="mt-0.5 shrink-0" />
+        <p className="text-red-300 text-sm flex items-start gap-2">
+          <AlertFillIcon size={16} className="mt-0.5 shrink-0" />
           <span>{errorMessage}</span>
         </p>
       )}
@@ -593,9 +593,9 @@ function SubscriptionState({
               type="button"
               onClick={onPix}
               disabled={busy}
-              className="win-btn-primary flex-1 min-w-[9rem] py-2.5 text-xs"
+              className="win-btn-primary flex-1 min-w-[9rem] py-2.5 text-sm font-bold uppercase tracking-wider"
             >
-              <ZapIcon size={14} />
+              <ZapIcon size={16} />
               <span>{t("Pagar com Pix")}</span>
             </button>
           )}
@@ -604,7 +604,7 @@ function SubscriptionState({
             type="button"
             onClick={onCancel}
             disabled={busy}
-            className="win-btn flex-1 min-w-[9rem] py-2.5 text-xs text-zinc-400 hover:text-white"
+            className="win-btn flex-1 min-w-[9rem] py-2.5 text-sm font-bold uppercase tracking-wider text-zinc-400 hover:text-white"
           >
             <span>
               {cancelling ? t("Cancelando...") : t("Cancelar assinatura")}
@@ -646,13 +646,13 @@ function PixPayment({ t, pix, copied, onCopy }) {
       <button
         type="button"
         onClick={onCopy}
-        className="cursor-pointer flex items-center gap-2 px-5 py-2 rounded-full bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 text-xs text-white transition-colors active:scale-95"
+        className="cursor-pointer flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 text-sm font-bold uppercase tracking-wider text-white transition-colors active:scale-95"
       >
-        <CopyIcon size={14} />
+        <CopyIcon size={16} />
         {copied ? t("Codigo copiado") : t("Copiar codigo pix")}
       </button>
 
-      <p className="text-[11px] text-zinc-500 leading-snug">
+      <p className="text-xs text-zinc-400 leading-snug">
         {t("Texto pix pontual")}
       </p>
     </div>
@@ -669,9 +669,9 @@ function Advantages({ t }) {
         {ADVANTAGES.map((key) => (
           <li
             key={key}
-            className="flex items-center gap-1.5 text-xs font-mono leading-tight text-white whitespace-nowrap"
+            className="flex items-center gap-1.5 text-sm font-mono leading-tight text-white whitespace-nowrap"
           >
-            <CheckCircleFillIcon size={12} className="text-white shrink-0" />
+            <CheckCircleFillIcon size={14} className="text-white shrink-0" />
             {t(key)}
           </li>
         ))}

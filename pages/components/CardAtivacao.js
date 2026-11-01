@@ -72,13 +72,13 @@ export default function CardAtivacao({ tokenId }) {
           />
         </div>
 
-        <div className="p-6 flex flex-col items-center justify-center text-center gap-4 text-white text-sm">
+        <div className="p-6 flex flex-col items-center justify-center text-center gap-4 text-white text-base">
           {status === "loading" && (
             <>
               <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black">
                 <SyncIcon size={24} className="animate-spin" />
               </div>
-              <p className="text-sm font-bold uppercase tracking-wider text-white">
+              <p className="text-base font-bold uppercase tracking-wider text-white">
                 {t("Ativando sua conta...")}
               </p>
             </>
@@ -89,15 +89,15 @@ export default function CardAtivacao({ tokenId }) {
               <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black animate-[fadeIn_0.2s_ease-out]">
                 <CheckCircleFillIcon size={24} />
               </div>
-              <p className="text-sm font-bold uppercase tracking-wider text-white">
+              <p className="text-base font-bold uppercase tracking-wider text-white">
                 {t("Conta ativada!")}
               </p>
-              <p className="text-xs text-zinc-400 leading-relaxed max-w-xs">
+              <p className="text-sm text-zinc-300 leading-relaxed max-w-xs">
                 {t("Sucesso ativacao")}
               </p>
               <Link
                 href="/login"
-                className="win-btn-primary px-8 py-2.5 text-xs inline-flex items-center gap-2 mt-2"
+                className="win-btn-primary px-8 py-2.5 text-sm inline-flex items-center gap-2 mt-2"
               >
                 <SignInIcon size={16} />
                 <span>{t("Entrar")}</span>
@@ -110,13 +110,16 @@ export default function CardAtivacao({ tokenId }) {
               <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black animate-[fadeIn_0.2s_ease-out]">
                 <AlertFillIcon size={24} />
               </div>
-              <p className="text-sm font-bold uppercase tracking-wider text-white">
+              <p className="text-base font-bold uppercase tracking-wider text-white">
                 {t("Ativacao falhou")}
               </p>
-              <p className="text-xs text-zinc-400 leading-relaxed max-w-xs border border-white p-2">
+              <p className="text-sm text-zinc-300 leading-relaxed max-w-xs border border-white p-2.5">
                 {errorMessage}
               </p>
-              <Link href="/cadastro" className="win-btn px-6 py-2 text-xs mt-2">
+              <Link
+                href="/cadastro"
+                className="win-btn px-6 py-2.5 text-sm mt-2"
+              >
                 {t("Voltar ao cadastro")}
               </Link>
             </>

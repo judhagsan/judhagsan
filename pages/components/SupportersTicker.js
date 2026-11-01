@@ -19,11 +19,11 @@ export default function SupportersTicker() {
 
   return (
     <div className="w-full animate-[fadeIn_0.2s_ease-out]">
-      <div className="rounded-full border border-white bg-black px-4 py-2 relative flex items-center gap-3">
+      <div className="rounded-full border border-white bg-black px-4 py-2.5 relative flex items-center gap-3">
         {/* Rótulo da faixa */}
         <div className="shrink-0 flex items-center gap-2 select-none border-r border-white pr-3">
           <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-          <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-white">
+          <span className="text-sm font-mono font-bold uppercase tracking-wider text-white">
             {t("Apoiadores")}
           </span>
         </div>
@@ -34,10 +34,10 @@ export default function SupportersTicker() {
             {loop.map((supporterItem, index) => (
               <span
                 key={`${supporterItem.username}-${index}`}
-                className="inline-flex items-center gap-3 pr-6 text-xs font-mono text-white"
+                className="inline-flex items-center gap-3 pr-6 text-sm font-mono text-white"
               >
                 <span>{supporterItem.username}</span>
-                <span className="text-zinc-500 text-[10px]">✦</span>
+                <span className="text-zinc-500 text-xs">✦</span>
               </span>
             ))}
           </div>

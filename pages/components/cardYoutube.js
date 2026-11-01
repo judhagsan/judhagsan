@@ -70,7 +70,7 @@ export default function CardYoutube() {
             href={`https://www.youtube.com/channel/${CHANNEL_ID}`}
             target="_blank"
             rel="noopener noreferrer"
-            className={`text-[11px] font-mono font-bold uppercase tracking-wider text-black border border-black px-3 py-1 rounded-full hover:bg-black hover:text-white transition-colors ${
+            className={`text-xs font-mono font-bold uppercase tracking-wider text-black border border-black px-3 py-1 rounded-full hover:bg-black hover:text-white transition-colors ${
               showsChannelTile ? "lg:hidden" : ""
             }`}
           >
@@ -121,10 +121,10 @@ export default function CardYoutube() {
 
                   {/* Informações */}
                   <div className="flex flex-col justify-center min-w-0 py-1">
-                    <h3 className="text-xs lg:text-sm font-bold line-clamp-2 leading-snug group-hover:underline">
+                    <h3 className="text-sm font-bold line-clamp-2 leading-snug group-hover:underline">
                       {video.title}
                     </h3>
-                    <div className="flex items-center gap-2 mt-2 text-[11px] text-zinc-400 group-hover:text-black">
+                    <div className="flex items-center gap-2 mt-2 text-xs text-zinc-400 group-hover:text-black">
                       <span className="border border-current px-1.5 py-0.5 rounded bg-black group-hover:bg-white">
                         {t(video.views)}
                       </span>
@@ -143,7 +143,7 @@ export default function CardYoutube() {
                   href={`https://www.youtube.com/channel/${CHANNEL_ID}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hidden lg:flex items-center justify-center gap-2 p-3 rounded-xl border border-dashed border-white text-zinc-400 hover:text-white transition-colors cursor-pointer text-xs uppercase tracking-wider"
+                  className="hidden lg:flex items-center justify-center gap-2 p-3 rounded-xl border border-dashed border-white text-zinc-400 hover:text-white transition-colors cursor-pointer text-sm uppercase tracking-wider"
                 >
                   <PlayIcon size={14} />
                   <span>{t("Ver o canal")}</span>

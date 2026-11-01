@@ -25,19 +25,19 @@ function RankedBars({ rows, total }) {
       {rows.map((row) => (
         <li key={row.value} className="flex flex-col gap-1.5">
           <div className="flex items-baseline gap-2 min-w-0">
-            <span className="text-xs text-white truncate">{row.value}</span>
-            <span className="ml-auto text-xs font-bold text-white tabular-nums shrink-0">
+            <span className="text-sm text-white truncate">{row.value}</span>
+            <span className="ml-auto text-sm font-bold text-cyan-300 tabular-nums shrink-0">
               {row.count}
             </span>
           </div>
 
           <div
-            className="h-1.5 w-full bg-black border border-zinc-800 overflow-hidden"
+            className="h-2 w-full bg-black border border-zinc-800 overflow-hidden"
             role="img"
             aria-label={`${row.value}: ${row.count} de ${total}`}
           >
             <div
-              className="h-full bg-white transition-[width] duration-300"
+              className="h-full bg-cyan-400 transition-[width] duration-300"
               style={{ width: `${Math.max((row.count / top) * 100, 4)}%` }}
             />
           </div>
@@ -93,19 +93,19 @@ export default function CardAdminHardware() {
 
         <div className="p-4 lg:p-5 flex flex-col gap-4 text-white">
           {isLoading && (
-            <p className="text-zinc-500 text-center py-4 text-xs">
+            <p className="text-zinc-500 text-center py-4 text-sm">
               [{t("Carregando...")}]
             </p>
           )}
 
           {error && !isLoading && (
-            <p className="text-white border border-white p-2 text-center text-xs">
+            <p className="text-white border border-white p-2.5 text-center text-sm">
               [!] {t("Erro ao carregar hardware")}
             </p>
           )}
 
           {!isLoading && !error && total === 0 && (
-            <p className="text-zinc-500 text-center py-4 text-xs">
+            <p className="text-zinc-500 text-center py-4 text-sm">
               {t("Nenhum dispositivo registrado ainda")}
             </p>
           )}
@@ -114,13 +114,13 @@ export default function CardAdminHardware() {
             <>
               {profile.length > 0 && (
                 <div className="flex flex-col gap-1 border-b border-zinc-800 pb-3">
-                  <span className="text-[10px] uppercase tracking-wider text-zinc-500">
+                  <span className="text-xs uppercase tracking-wider text-zinc-500">
                     {t("Perfil mais comum")}
                   </span>
-                  <p className="text-sm font-bold text-white leading-snug">
+                  <p className="text-base font-bold text-white leading-snug">
                     {profile.join(" · ")}
                   </p>
-                  <span className="text-[11px] text-zinc-500">
+                  <span className="text-xs text-zinc-400">
                     {t("O mais frequente entre n dispositivos", { n: total })}
                   </span>
                 </div>
@@ -141,10 +141,10 @@ export default function CardAdminHardware() {
                       role="tab"
                       aria-selected={active}
                       onClick={() => setDimension(each.key)}
-                      className={`win-btn rounded-full text-[11px] px-3.5 py-1 ${
+                      className={`cursor-pointer rounded-full text-xs px-3.5 py-1 border transition-colors ${
                         active
-                          ? "bg-white text-black font-bold"
-                          : "text-zinc-400"
+                          ? "bg-cyan-400 border-cyan-400 text-black font-bold"
+                          : "border-zinc-800 bg-black text-zinc-400 hover:text-cyan-400 hover:border-zinc-600"
                       }`}
                     >
                       {t(each.label)}
@@ -156,7 +156,7 @@ export default function CardAdminHardware() {
               {rows.length > 0 ? (
                 <RankedBars rows={rows} total={total} />
               ) : (
-                <p className="text-zinc-500 text-xs py-2">
+                <p className="text-zinc-500 text-sm py-2">
                   {t("Sem dados nesta categoria")}
                 </p>
               )}

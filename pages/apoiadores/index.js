@@ -35,24 +35,24 @@ export default function ApoiadoresPage() {
           <h1 className="text-xl lg:text-2xl font-bold tracking-widest uppercase text-white">
             {t("Apoiadores")}
           </h1>
-          <p className="text-zinc-400 max-w-xl leading-relaxed text-xs lg:text-sm font-mono">
+          <p className="text-zinc-400 max-w-xl leading-relaxed text-sm lg:text-base font-mono">
             {t("Texto agradecimento apoiadores")}
           </p>
         </div>
 
         {/* Lista */}
         {isLoading && (
-          <p className="text-zinc-500 text-xs">[{t("Carregando...")}]</p>
+          <p className="text-zinc-500 text-sm">[{t("Carregando...")}]</p>
         )}
 
         {error && (
-          <p className="text-white border border-white p-2 text-xs">
+          <p className="text-white border border-white p-2.5 text-sm">
             [!] {t("Erro ao carregar apoiadores")}
           </p>
         )}
 
         {!isLoading && !error && supporters.length === 0 && (
-          <p className="text-zinc-500 text-xs">
+          <p className="text-zinc-500 text-sm">
             [{t("Nenhum apoiador ainda")}]
           </p>
         )}
@@ -62,9 +62,9 @@ export default function ApoiadoresPage() {
             {supporters.map((supporterItem) => (
               <span
                 key={supporterItem.username}
-                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white bg-black text-white text-xs font-mono tracking-wider transition-colors hover:bg-white hover:text-black"
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white bg-black text-white text-sm font-mono tracking-wider transition-colors hover:bg-white hover:text-black"
               >
-                <HeartFillIcon size={10} />
+                <HeartFillIcon size={12} />
                 <span>{supporterItem.username}</span>
               </span>
             ))}
@@ -76,7 +76,7 @@ export default function ApoiadoresPage() {
           <div className="mt-10 flex flex-col items-center gap-2 animate-[fadeIn_0.2s_ease-out]">
             <Link
               href="/apoiar"
-              className="win-btn-primary px-6 py-2.5 text-xs inline-flex items-center gap-2"
+              className="win-btn-primary px-6 py-2.5 text-sm inline-flex items-center gap-2 font-bold uppercase tracking-wider"
             >
               <HeartFillIcon size={14} />
               <span>{t("Quero apoiar o Pindorama")}</span>

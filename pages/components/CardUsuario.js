@@ -199,11 +199,11 @@ export default function CardUsuario({ user }) {
               <p className="text-base font-bold uppercase tracking-wider text-white">
                 {t("Excluir conta")}
               </p>
-              <p className="text-xs text-zinc-400 leading-relaxed max-w-xs">
+              <p className="text-sm text-zinc-400 leading-relaxed max-w-xs">
                 {t("Texto excluir conta aviso")}
               </p>
               <label className="flex flex-col gap-1 w-full max-w-xs">
-                <span className="text-xs uppercase tracking-wider text-zinc-500">
+                <span className="text-sm uppercase tracking-wider text-zinc-400">
                   {t("Digite para confirmar", { username: user?.username })}
                 </span>
                 <input
@@ -211,13 +211,13 @@ export default function CardUsuario({ user }) {
                   value={confirmationInput}
                   onChange={(e) => setConfirmationInput(e.target.value)}
                   autoComplete="off"
-                  className="win-input text-center text-sm"
+                  className="win-input text-center text-base"
                   placeholder={user?.username}
                 />
               </label>
 
               {errorMessage && (
-                <div className="border border-white bg-zinc-950 p-2 text-xs text-white">
+                <div className="border border-white bg-zinc-950 p-2 text-sm text-white">
                   {errorMessage}
                 </div>
               )}
@@ -231,14 +231,14 @@ export default function CardUsuario({ user }) {
                     setErrorMessage("");
                   }}
                   disabled={isDeleting}
-                  className="win-btn text-xs"
+                  className="win-btn text-sm"
                 >
                   {t("Cancelar")}
                 </button>
                 <button
                   type="submit"
                   disabled={!confirmationMatches || isDeleting}
-                  className="win-btn-primary text-xs"
+                  className="win-btn-primary text-sm"
                 >
                   <TrashIcon size={14} />
                   <span>{isDeleting ? t("Excluindo...") : t("Excluir")}</span>
@@ -256,12 +256,12 @@ export default function CardUsuario({ user }) {
               <p className="text-base font-bold uppercase tracking-wider text-white">
                 {t("Alterar senha")}
               </p>
-              <p className="text-xs text-zinc-400 leading-relaxed max-w-xs">
+              <p className="text-sm text-zinc-400 leading-relaxed max-w-xs">
                 {t("Texto alterar senha aviso")}
               </p>
 
               <label className="flex flex-col gap-1 w-full max-w-xs text-left">
-                <span className="text-xs uppercase tracking-wider text-zinc-500">
+                <span className="text-sm uppercase tracking-wider text-zinc-400">
                   {t("Senha atual")}
                 </span>
                 <input
@@ -269,12 +269,12 @@ export default function CardUsuario({ user }) {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   autoComplete="current-password"
-                  className="win-input text-sm"
+                  className="win-input text-base"
                 />
               </label>
 
               <label className="flex flex-col gap-1 w-full max-w-xs text-left">
-                <span className="text-xs uppercase tracking-wider text-zinc-500">
+                <span className="text-sm uppercase tracking-wider text-zinc-400">
                   {t("Nova senha")}{" "}
                   <span className="normal-case text-zinc-500">
                     ({t("min_char")})
@@ -286,12 +286,12 @@ export default function CardUsuario({ user }) {
                   onChange={(e) => setNewPassword(e.target.value)}
                   autoComplete="new-password"
                   minLength={8}
-                  className="win-input text-sm"
+                  className="win-input text-base"
                 />
               </label>
 
               <label className="flex flex-col gap-1 w-full max-w-xs text-left">
-                <span className="text-xs uppercase tracking-wider text-zinc-500">
+                <span className="text-sm uppercase tracking-wider text-zinc-400">
                   {t("Confirmar")}
                 </span>
                 <input
@@ -299,12 +299,12 @@ export default function CardUsuario({ user }) {
                   value={newPasswordConfirmation}
                   onChange={(e) => setNewPasswordConfirmation(e.target.value)}
                   autoComplete="new-password"
-                  className="win-input text-sm"
+                  className="win-input text-base"
                 />
               </label>
 
               {passwordError && (
-                <div className="border border-white bg-zinc-950 p-2 text-xs text-white">
+                <div className="border border-white bg-zinc-950 p-2 text-sm text-white">
                   {passwordError}
                 </div>
               )}
@@ -314,14 +314,14 @@ export default function CardUsuario({ user }) {
                   type="button"
                   onClick={resetPasswordForm}
                   disabled={isSavingPassword}
-                  className="win-btn text-xs"
+                  className="win-btn text-sm"
                 >
                   {t("Cancelar")}
                 </button>
                 <button
                   type="submit"
                   disabled={isSavingPassword}
-                  className="win-btn-primary text-xs"
+                  className="win-btn-primary text-sm"
                 >
                   <KeyIcon size={14} />
                   <span>
@@ -343,12 +343,12 @@ export default function CardUsuario({ user }) {
                       {user?.username}
                     </h2>
                     {isSupporter && (
-                      <span className="border border-white px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-white text-black shrink-0">
+                      <span className="border border-amber-400 bg-amber-400 text-black px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider rounded-full shrink-0">
                         {t("Apoiador")}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-zinc-500 break-all">
+                  <p className="text-sm text-zinc-400 break-all">
                     {user?.email}
                   </p>
                 </div>
@@ -357,17 +357,17 @@ export default function CardUsuario({ user }) {
               {/* Seção de Apoiador */}
               {isSupporter && (
                 <div className="flex flex-col gap-3 py-1 border-b border-zinc-800 pb-4">
-                  <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-400">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-zinc-400">
                     <span>STATUS::SUPPORTER</span>
                   </div>
 
                   {discordResult === "connected" && (
-                    <div className="border border-white bg-zinc-950 p-2 text-xs text-white">
+                    <div className="border border-white bg-zinc-950 p-2 text-sm text-white">
                       [OK] {t("Discord conectado com sucesso")}
                     </div>
                   )}
                   {discordResult === "error" && (
-                    <div className="border border-white bg-zinc-950 p-2 text-xs text-white">
+                    <div className="border border-white bg-zinc-950 p-2 text-sm text-white">
                       [!]{" "}
                       {discordReason === "already_linked"
                         ? t("Discord ja vinculado")
@@ -377,14 +377,14 @@ export default function CardUsuario({ user }) {
 
                   <div className="flex flex-wrap items-center gap-2">
                     {user?.discord_connected ? (
-                      <span className="inline-flex items-center gap-1.5 border border-white px-2.5 py-1 text-xs text-white bg-zinc-950">
+                      <span className="inline-flex items-center gap-1.5 border border-white px-2.5 py-1 text-sm text-white bg-zinc-950">
                         <CheckCircleFillIcon size={12} />
                         {t("Discord conectado")}
                       </span>
                     ) : (
                       <a
                         href="/api/v1/discord/connect"
-                        className="win-btn text-xs inline-flex items-center gap-2"
+                        className="win-btn text-sm inline-flex items-center gap-2"
                       >
                         <DiscordIcon size={14} />
                         {t("Entrar no Discord")}
@@ -393,7 +393,7 @@ export default function CardUsuario({ user }) {
 
                     <Link
                       href="/apoiadores"
-                      className="win-btn text-xs inline-flex items-center gap-1.5"
+                      className="win-btn text-sm inline-flex items-center gap-1.5"
                     >
                       <HeartFillIcon size={12} />
                       {t("Ver mural de apoiadores")}
@@ -409,7 +409,7 @@ export default function CardUsuario({ user }) {
                     type="button"
                     onClick={handleExport}
                     disabled={isExporting}
-                    className="win-btn text-xs inline-flex items-center gap-1.5"
+                    className="win-btn text-sm inline-flex items-center gap-1.5"
                   >
                     <PackageIcon size={12} />
                     {isExporting
@@ -423,7 +423,7 @@ export default function CardUsuario({ user }) {
                       setPasswordChanged(false);
                       setIsChangingPassword(true);
                     }}
-                    className="win-btn text-xs inline-flex items-center gap-1.5"
+                    className="win-btn text-sm inline-flex items-center gap-1.5"
                   >
                     <KeyIcon size={12} />
                     {t("Alterar senha")}
@@ -432,7 +432,7 @@ export default function CardUsuario({ user }) {
                   <button
                     type="button"
                     onClick={() => setIsConfirming(true)}
-                    className="win-btn text-xs inline-flex items-center gap-1.5 text-zinc-400 hover:text-white"
+                    className="win-btn text-sm inline-flex items-center gap-1.5 text-zinc-400 hover:text-white"
                   >
                     <TrashIcon size={12} />
                     {t("Excluir conta")}
@@ -440,13 +440,13 @@ export default function CardUsuario({ user }) {
                 </div>
 
                 {exportError && (
-                  <p className="text-white text-xs border border-white p-2 mt-1">
+                  <p className="text-white text-sm border border-white p-2 mt-1">
                     {exportError}
                   </p>
                 )}
 
                 {passwordChanged && (
-                  <p className="text-white text-xs border border-white p-2 mt-1 bg-zinc-900">
+                  <p className="text-white text-sm border border-white p-2 mt-1 bg-zinc-900">
                     [OK] {t("Senha alterada")}
                   </p>
                 )}
