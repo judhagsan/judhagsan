@@ -34,10 +34,10 @@ export default function SupportersTicker() {
             {loop.map((supporterItem, index) => (
               <span
                 key={`${supporterItem.username}-${index}`}
-                className="inline-flex items-center gap-3 pr-6 text-sm font-mono text-white"
+                className="inline-flex items-center gap-3 pr-6 text-lg font-mono text-white"
               >
                 <span>{supporterItem.username}</span>
-                <span className="text-zinc-500 text-xs">✦</span>
+                <span className="text-zinc-500 text-sm">✦</span>
               </span>
             ))}
           </div>
