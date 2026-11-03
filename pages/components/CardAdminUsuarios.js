@@ -11,6 +11,7 @@ import {
   XCircleFillIcon,
 } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
+import CardNormal from "./CardNormal";
 
 const fetcher = (url) =>
   fetch(url, { credentials: "include" }).then((r) =>
@@ -54,19 +55,19 @@ function FunnelBar({ supporters, confirmed, pending, total }) {
   if (total === 0) return null;
 
   const segments = [
-    { value: supporters, className: "bg-amber-300/80" },
-    { value: confirmed, className: "bg-violet-400/70" },
-    { value: pending, className: "bg-white/15" },
+    { value: supporters, className: "bg-amber-400" },
+    { value: confirmed, className: "bg-violet-400" },
+    { value: pending, className: "bg-zinc-700" },
   ];
 
   return (
-    <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-white/5">
+    <div className="flex h-2 w-full overflow-hidden border border-zinc-800 bg-black">
       {segments.map(
         (segment, index) =>
           segment.value > 0 && (
             <div
               key={index}
-              className={`${segment.className} transition-[width] duration-500`}
+              className={`${segment.className} transition-[width] duration-300`}
               style={{ width: `${(segment.value / total) * 100}%` }}
             />
           ),
@@ -77,14 +78,14 @@ function FunnelBar({ supporters, confirmed, pending, total }) {
 
 function Count({ value, label, dotClassName, valueClassName }) {
   return (
-    <span className="inline-flex items-baseline gap-1.5">
+    <span className="inline-flex items-baseline gap-1.5 text-sm">
       <span
-        className={`inline-block w-1.5 h-1.5 rounded-full translate-y-[-1px] ${dotClassName}`}
+        className={`inline-block w-1.5 h-1.5 translate-y-[-1px] ${dotClassName}`}
       />
-      <span className={`font-semibold tabular-nums ${valueClassName}`}>
+      <span className={`font-bold tabular-nums ${valueClassName}`}>
         {value}
       </span>
-      <span className="text-white/40">{label}</span>
+      <span className="text-zinc-500 uppercase">{label}</span>
     </span>
   );
 }
@@ -92,7 +93,7 @@ function Count({ value, label, dotClassName, valueClassName }) {
 function Badge({ icon, label, className }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-[11px] uppercase tracking-wider shrink-0 ${className}`}
+      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-xs uppercase  tracking-wider shrink-0 ${className}`}
     >
       {icon}
       {label}
@@ -101,11 +102,11 @@ function Badge({ icon, label, className }) {
 }
 
 /*
- * Vai para `document.body` por portal, e não fica onde o JSX está.
- * `.glass-card` usa `backdrop-filter`, e um elemento com backdrop-filter vira
- * bloco contentor dos descendentes `fixed` — dentro do card, o overlay
- * "fixo" se posicionaria em relação ao card e ainda seria cortado pelo
- * `overflow-hidden` dele.
+ * Vai para `document.body` por portal, e não fica onde o JSX está. Um
+ * ancestral com `transform` — a entrada `.card-enter`, o deslize dos painéis —
+ * vira bloco contentor dos descendentes `fixed`: dentro do card, o overlay
+ * "fixo" se posicionaria em relação a ele e ainda seria cortado pelo
+ * `overflow-hidden` da janela.
  */
 function ConfirmDialog({
   title,
@@ -116,6 +117,8 @@ function ConfirmDialog({
   onConfirm,
   onCancel,
 }) {
+  const { t } = useLanguage();
+
   useEffect(() => {
     function onKeyDown(event) {
       if (event.key === "Escape") onCancel();
@@ -124,56 +127,68 @@ function ConfirmDialog({
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [onCancel]);
 
-  const confirmClasses =
-    tone === "revoke"
-      ? "bg-red-500/10 hover:bg-red-500/30 border-red-500/30 hover:border-red-500/60 text-red-200"
-      : "bg-amber-400/10 hover:bg-amber-400/30 border-amber-300/30 hover:border-amber-300/60 text-amber-100";
-
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-        onClick={onCancel}
-      />
+      <div className="absolute inset-0 bg-black" onClick={onCancel} />
 
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="glass-card card-enter relative z-10 w-full max-w-sm rounded-[20px] p-6 shadow-2xl flex flex-col items-center text-center gap-4"
+        className="relative z-10 w-full max-w-sm"
       >
-        <div
-          className={`w-14 h-14 rounded-full flex items-center justify-center border ${
-            tone === "revoke"
-              ? "bg-red-500/15 border-red-400/40 text-red-200"
-              : "bg-amber-400/15 border-amber-300/40 text-amber-100"
-          }`}
+        {/* Durante a requisição o círculo de voltar vira decoração, como o
+            "Cancelar" desabilitado logo abaixo. */}
+        <CardNormal
+          title={t("Confirmar")}
+          onBack={busy ? undefined : onCancel}
+          backLabel={confirmLabel.cancel}
+          className="card-enter"
+          bodyClassName="p-5 flex flex-col items-center text-center gap-3"
         >
-          <HeartFillIcon size={26} />
-        </div>
-
-        <p className="text-lg text-white font-semibold">{title}</p>
-        <p className="text-sm leading-relaxed text-white/60">{description}</p>
-
-        <div className="flex gap-3 mt-1">
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={busy}
-            className="cursor-pointer px-6 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white/70 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm"
+          <div
+            className={`w-12 h-12 rounded-full border flex items-center justify-center ${
+              tone === "revoke"
+                ? "border-red-600 bg-black text-red-500"
+                : "border-amber-400 bg-black text-amber-400"
+            }`}
           >
-            {/* Reaproveita a chave já usada pelo card de exclusão de conta. */}
-            {confirmLabel.cancel}
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            disabled={busy}
-            className={`cursor-pointer px-6 py-2 border rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm ${confirmClasses}`}
-          >
-            {busy ? confirmLabel.busy : confirmLabel.action}
-          </button>
-        </div>
+            {tone === "revoke" ? (
+              <XCircleFillIcon size={22} />
+            ) : (
+              <HeartFillIcon size={22} />
+            )}
+          </div>
+
+          <p className="text-base font-bold uppercase tracking-wider text-white">
+            {title}
+          </p>
+          <p className="text-sm leading-relaxed text-zinc-400">{description}</p>
+
+          <div className="flex gap-3 mt-2 w-full">
+            <button
+              type="button"
+              onClick={onCancel}
+              disabled={busy}
+              className="win-btn flex-1 text-sm"
+            >
+              {/* Reaproveita a chave já usada pelo card de exclusão de conta. */}
+              {confirmLabel.cancel}
+            </button>
+            <button
+              type="button"
+              onClick={onConfirm}
+              disabled={busy}
+              className={`flex-1 py-2 text-sm font-bold uppercase tracking-wider rounded-full border cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                tone === "revoke"
+                  ? "bg-red-600 enabled:hover:bg-red-500 text-white border-red-600"
+                  : "bg-amber-400 enabled:hover:bg-amber-300 text-black border-amber-400"
+              }`}
+            >
+              {busy ? confirmLabel.busy : confirmLabel.action}
+            </button>
+          </div>
+        </CardNormal>
       </div>
     </div>
   );
@@ -266,98 +281,88 @@ export default function CardAdminUsuarios() {
   }
 
   return (
-    <div className="w-full">
-      <div className="glass-card card-enter rounded-[20px] p-5 lg:p-6 shadow-2xl relative overflow-hidden flex flex-col">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
-
-        {/* Cabeçalho. A barra vive aqui, e não numa faixa própria abaixo do
-            título: na mesma linha ela se lê como indicador do card, e não como
-            uma régua decorativa entre o título e a lista. Ocupa a sobra da
-            linha (`flex-1`), então cresce com o card em vez de ficar num
-            tamanho fixo que só serve a uma largura de tela. */}
-        <div className="shrink-0 flex items-center gap-3 relative z-10 min-w-0">
-          <div className="w-8 h-8 rounded-full bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-violet-300 shadow-lg shadow-violet-500/15 shrink-0">
-            <PeopleIcon size={16} />
+    <>
+      <CardNormal
+        title={t("Usuarios cadastrados")}
+        icon={PeopleIcon}
+        className="card-enter"
+        bodyClassName="p-4 lg:p-5 flex flex-col gap-3"
+      >
+        {/* Barra de funil de proporção */}
+        {!isLoading && !error && users.length > 0 && (
+          <div className="flex flex-col gap-1.5">
+            <FunnelBar
+              supporters={supporterCount}
+              confirmed={confirmedCount}
+              pending={pendingCount}
+              total={users.length}
+            />
           </div>
-          <h2 className="text-lg font-bold tracking-tight text-white/90 truncate">
-            {t("Usuarios cadastrados")}
-          </h2>
-
-          {!isLoading && !error && users.length > 0 && (
-            <div className="flex-1 min-w-0">
-              <FunnelBar
-                supporters={supporterCount}
-                confirmed={confirmedCount}
-                pending={pendingCount}
-                total={users.length}
-              />
-            </div>
-          )}
-        </div>
+        )}
 
         {/* Legenda e busca dividem a linha: à esquerda os três estados da
-            barra em número e por extenso — é a legenda que dá nome às cores
-            lá de cima —, à direita o campo de busca.
+              barra em número e por extenso — é a legenda que dá nome às cores
+              da barra —, à direita o campo de busca.
 
-            A condição de fora é a da busca, mais ampla que a da legenda de
-            propósito: numa busca sem resultado a legenda some, mas o campo
-            precisa continuar na tela, senão não há como corrigir o termo. */}
+              A condição de fora é a da busca, mais ampla que a da legenda de
+              propósito: numa busca sem resultado a legenda some, mas o campo
+              precisa continuar na tela, senão não há como corrigir o termo. */}
         {!error && (users.length > 0 || searchTerm) && (
-          <div className="relative z-10 mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 border-b border-zinc-800 pb-3">
             {/* `min-w-0` em vez de `shrink-0`: a legenda tem quebra própria,
-                e com `shrink-0` ela reivindicava a largura de tudo numa linha
-                só — transbordava em vez de quebrar quando as contagens
-                ganhassem dígito. Podendo encolher, ela quebra internamente e a
-                busca mantém seu piso. */}
+                  e com `shrink-0` ela reivindicava a largura de tudo numa
+                  linha só — transbordava em vez de quebrar quando as contagens
+                  ganhassem dígito. Podendo encolher, ela quebra internamente e
+                  a busca mantém seu piso. */}
             {!isLoading && users.length > 0 && (
-              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm min-w-0">
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xs min-w-0">
                 {supporterCount > 0 && (
                   <Count
                     value={supporterCount}
                     label={t("apoiadores")}
-                    dotClassName="bg-amber-300/80"
-                    valueClassName="text-amber-100"
+                    dotClassName="bg-amber-400"
+                    valueClassName="text-amber-300"
                   />
                 )}
                 <Count
                   value={confirmedCount}
                   label={t("confirmados")}
-                  dotClassName="bg-violet-400/70"
-                  valueClassName="text-white/90"
+                  dotClassName="bg-violet-400"
+                  valueClassName="text-violet-300"
                 />
                 <Count
                   value={pendingCount}
                   label={t("pendentes")}
-                  dotClassName="bg-white/15"
-                  valueClassName="text-white/60"
+                  dotClassName="bg-zinc-600"
+                  valueClassName="text-zinc-500"
                 />
               </div>
             )}
 
             {/* `flex-1` sem teto: o campo toma toda a sobra da linha e se
-                reajusta sozinho quando a legenda muda de tamanho — o que
-                acontece o tempo todo, porque as contagens crescem de dígito e
-                a de apoiadores só aparece quando existe algum.
+                  reajusta sozinho quando a legenda muda de tamanho — o que
+                  acontece o tempo todo, porque as contagens crescem de dígito
+                  e a de apoiadores só aparece quando existe algum.
 
-                `min-w-[8rem]` é o piso: abaixo disso o campo deixa de ser
-                utilizável, e aí o `flex-wrap` do contêiner joga ele para a
-                própria linha, onde volta a ocupar a largura inteira. */}
-            <label className="flex-1 min-w-[8rem] flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 focus-within:border-violet-400/50 focus-within:bg-white/10 transition-colors">
-              <SearchIcon size={14} className="text-white/30 shrink-0" />
+                  `min-w-[8rem]` é o piso: abaixo disso o campo deixa de ser
+                  utilizável, e aí o `flex-wrap` do contêiner joga ele para a
+                  própria linha, onde volta a ocupar a largura inteira. */}
+            <label className="flex-1 min-w-[8rem] flex items-center gap-2 px-2.5 py-1.5 bg-black border border-white focus-within:border-white transition-colors">
+              <SearchIcon size={14} className="text-zinc-500 shrink-0" />
               <input
                 type="search"
                 value={searchInput}
                 onChange={(event) => setSearchInput(event.target.value)}
                 placeholder={t("Buscar por nome ou email")}
                 aria-label={t("Buscar por nome ou email")}
-                className="flex-1 min-w-0 bg-transparent outline-none text-white placeholder-white/30 text-sm"
+                className="flex-1 min-w-0 bg-transparent outline-none text-white placeholder-zinc-600 text-sm"
               />
               {searchInput && (
                 <button
                   type="button"
                   onClick={() => setSearchInput("")}
                   aria-label={t("Limpar busca")}
-                  className="cursor-pointer text-white/30 hover:text-white/70 transition-colors shrink-0"
+                  className="cursor-pointer text-zinc-500 hover:text-white transition-colors shrink-0"
                 >
                   <XCircleFillIcon size={14} />
                 </button>
@@ -366,31 +371,32 @@ export default function CardAdminUsuarios() {
           </div>
         )}
 
-        <div className="relative z-10 mt-4 flex flex-col gap-2 text-white/70">
+        {/* Conteúdo / Lista */}
+        <div className="flex flex-col gap-2 text-white">
           {isLoading && (
-            <p className="text-white/40 text-center py-4">
-              {t("Carregando...")}
+            <p className="text-zinc-500 text-center py-4 text-sm">
+              [{t("Carregando...")}]
             </p>
           )}
 
           {error && !isLoading && (
-            <p className="text-red-300 text-center py-4 text-sm">
-              {t("Erro ao carregar usuarios")}
+            <p className="text-white border border-white p-2.5 text-center text-sm">
+              [!] {t("Erro ao carregar usuarios")}
             </p>
           )}
 
           {!isLoading && !error && users.length === 0 && (
-            <p className="text-white/40 text-center py-4 text-sm">
+            <p className="text-zinc-500 text-center py-4 text-sm">
               {searchTerm
                 ? t("Nenhum usuario encontrado", { termo: searchTerm })
                 : t("Nenhum usuario cadastrado")}
             </p>
           )}
 
-          {/* A lista rola dentro do card: com a base crescendo, o card não pode
-              empurrar o resto do painel para fora da tela. */}
+          {/* A lista rola dentro do card: com a base crescendo, o card não
+                pode empurrar o resto do painel para fora da tela. */}
           {users.length > 0 && (
-            <ul className="flex flex-col max-h-[20rem] overflow-y-auto -mx-1 px-1">
+            <ul className="flex flex-col max-h-[18rem] overflow-y-auto divide-y divide-zinc-800">
               {users.map((userFound) => {
                 const pending = isPending(userFound.features);
                 const supporter = Boolean(
@@ -400,67 +406,72 @@ export default function CardAdminUsuarios() {
                 return (
                   <li
                     key={userFound.id}
-                    className="flex items-center gap-3 py-2.5 border-b border-white/5 last:border-b-0"
+                    className="flex items-center gap-3 py-2.5"
                   >
-                    {/* O trilho repete, no começo da linha, a cor que o estado
-                        tem na barra do cabeçalho. */}
+                    {/* O trilho repete, no começo da linha, a cor que o
+                          estado tem na barra do cabeçalho. */}
                     <span
                       aria-hidden="true"
-                      className={`w-0.5 self-stretch rounded-full shrink-0 ${
-                        pending ? "bg-white/10" : "bg-violet-400/40"
+                      className={`w-1 self-stretch shrink-0 ${
+                        pending
+                          ? "bg-zinc-800"
+                          : supporter
+                            ? "bg-amber-400"
+                            : "bg-violet-400"
                       }`}
                     />
 
                     <div className="flex flex-col min-w-0 flex-1 gap-0.5">
-                      {/* `flex-wrap`: com os dois selos, a linha pede ~150px
-                          só para eles, e num celular sobram ~128px para tudo.
-                          Sem quebrar, o username (que encolhe) sumia e os
-                          selos (que não encolhem) eram cortados pelo
-                          `overflow-hidden` do card. Descer de linha custa
-                          altura, que é justamente o que sobra no celular.
+                      {/* `flex-wrap`: com os dois selos, a linha pede
+                            ~150px só para eles, e num celular sobram ~128px
+                            para tudo. Sem quebrar, o username (que encolhe)
+                            sumia e os selos (que não encolhem) eram cortados
+                            pelo `overflow-hidden` do card. Descer de linha
+                            custa altura, que é justamente o que sobra no
+                            celular.
 
-                          Ícone com rótulo em vez de só ícone de propósito:
-                          tooltip não existe em toque. */}
+                            Ícone com rótulo em vez de só ícone de propósito:
+                            tooltip não existe em toque. */}
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
-                        <span className="font-semibold truncate text-white/90">
+                        <span className="font-bold text-sm truncate text-white">
                           {userFound.username}
                         </span>
 
                         {userFound.features?.includes("admin") && (
                           <Badge
-                            icon={<ShieldLockIcon size={10} />}
+                            icon={<ShieldLockIcon size={9} />}
                             label={t("Admin")}
-                            className="bg-violet-500/10 border-violet-400/30 text-violet-200"
+                            className="border-violet-400 bg-violet-400 text-black font-bold"
                           />
                         )}
                         {supporter && (
                           <Badge
-                            icon={<HeartFillIcon size={10} />}
+                            icon={<HeartFillIcon size={9} />}
                             label={t("Apoiador")}
-                            className="bg-amber-400/10 border-amber-300/30 text-amber-100"
+                            className="border-amber-400 bg-amber-400 text-black font-bold"
                           />
                         )}
                         {pending && (
                           <Badge
-                            icon={<ClockIcon size={10} />}
+                            icon={<ClockIcon size={9} />}
                             label={t("Pendente")}
-                            className="bg-white/5 border-white/15 text-white/40"
+                            className="border-zinc-700 bg-zinc-800 text-zinc-400"
                           />
                         )}
                       </div>
-                      <span className="text-sm text-white/55 truncate">
+                      <span className="text-sm text-zinc-400 truncate">
                         {userFound.email}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-sm text-white/50 tabular-nums">
+                      <span className="text-sm text-zinc-400 tabular-nums">
                         {formatDate(userFound.created_at, language)}
                       </span>
 
                       {/* Escondido para cadastros pendentes: dar benefício a
-                          quem nunca confirmou o email é conceder acesso a uma
-                          conta que ainda não se provou de ninguém. */}
+                            quem nunca confirmou o email é conceder acesso a
+                            uma conta que ainda não se provou de ninguém. */}
                       {!pending && (
                         <button
                           type="button"
@@ -480,16 +491,16 @@ export default function CardAdminUsuarios() {
                               ? t("Revogar apoio")
                               : t("Tornar apoiador")
                           }
-                          className={`cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-300 ${
+                          className={`cursor-pointer inline-flex items-center justify-center w-7 h-7 rounded-full border transition-colors ${
                             supporter
-                              ? "bg-amber-400/10 border-amber-300/30 text-amber-200 hover:bg-amber-400/20"
-                              : "bg-white/5 border-white/10 text-white/40 hover:text-amber-200 hover:border-amber-300/30"
+                              ? "border-amber-400 bg-amber-400 text-black hover:bg-amber-300"
+                              : "border-zinc-800 bg-black text-zinc-500 hover:text-amber-400 hover:border-amber-400"
                           }`}
                         >
                           {supporter ? (
-                            <HeartFillIcon size={14} />
+                            <HeartFillIcon size={12} />
                           ) : (
-                            <HeartIcon size={14} />
+                            <HeartIcon size={12} />
                           )}
                         </button>
                       )}
@@ -501,13 +512,15 @@ export default function CardAdminUsuarios() {
           )}
 
           {actionError && (
-            <p className="text-red-300 text-sm pt-1">{actionError}</p>
+            <p className="text-white border border-white p-2.5 text-sm">
+              [!] {actionError}
+            </p>
           )}
 
-          {/* Só aparece quando existe mais coisa do que a página trouxe — dizer
-              "2 de 2" seria ruído. */}
+          {/* Só aparece quando existe mais coisa do que a página trouxe —
+                dizer "2 de 2" seria ruído. */}
           {data && data.total > users.length && (
-            <p className="text-xs uppercase tracking-widest text-white/30 text-center pt-1">
+            <p className="text-xs uppercase tracking-widest text-zinc-500 text-center pt-2">
               {t("Mostrando n de total", {
                 n: users.length,
                 total: data.total,
@@ -515,7 +528,7 @@ export default function CardAdminUsuarios() {
             </p>
           )}
         </div>
-      </div>
+      </CardNormal>
 
       {mounted &&
         confirming &&
@@ -547,6 +560,6 @@ export default function CardAdminUsuarios() {
           />,
           document.body,
         )}
-    </div>
+    </>
   );
 }

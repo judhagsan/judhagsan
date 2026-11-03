@@ -1,74 +1,54 @@
 import Link from "next/link";
 import { DownloadIcon } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
+import CardNormal from "./CardNormal";
 
 export default function CardPindorama({ onDownloadClick }) {
   const { t } = useLanguage();
 
   return (
-    <div className="w-full h-auto lg:h-auto">
-      <div className="glass-card group rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-auto">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10"></div>
-
-        {/* Header */}
-        <div className="shrink-0 mb-3 flex items-center gap-3 relative z-10">
-          <div className="w-8 h-8 rounded-full bg-yellow-500/30 border border-yellow-400/40 flex items-center justify-center text-yellow-300 shadow-lg shadow-yellow-400/25 shrink-0">
-            <img
-              src="/PinLogo.svg"
-              alt="PinLogo"
-              className="w-full h-full object-cover rounded-full"
-            />
-          </div>
-          <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
-            Pindorama
-          </h2>
-        </div>
-
-        {/* Content - Centered in remaining space */}
-        <div className="flex-1 flex flex-col items-center justify-center text-center mt-4 mb-2">
-          <p className="text-zinc-300 mb-6 lg:mb-10 max-w-2xl leading-relaxed text-base lg:text-lg font-medium">
-            {t("pindorama_desc")}
-          </p>
-
-          <div className="flex flex-col items-center gap-4">
-            <div className="flex flex-wrap gap-3 lg:gap-4 justify-center">
-              {/* Download (opens login card) */}
-              {onDownloadClick ? (
-                <button
-                  type="button"
-                  onClick={onDownloadClick}
-                  className="cursor-pointer flex items-center gap-3 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 group"
-                >
-                  <DownloadIcon
-                    size={20}
-                    className="group-hover:text-cyan-400 transition-colors"
-                  />
-                  <span className="font-semibold text-base">
-                    {t("Download")}
-                  </span>
-                </button>
-              ) : (
-                <Link
-                  href="/login"
-                  className="cursor-pointer flex items-center gap-3 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 group"
-                >
-                  <DownloadIcon
-                    size={20}
-                    className="group-hover:text-cyan-400 transition-colors"
-                  />
-                  <span className="font-semibold text-base">
-                    {t("Download")}
-                  </span>
-                </Link>
-              )}
-            </div>
-
-            <p className="text-xs text-zinc-400 tracking-wide select-none">
-              {t("pindorama_footer")}
-            </p>
-          </div>
-        </div>
+    <CardNormal
+      title="Pindorama"
+      bodyClassName="p-5 lg:p-6 flex flex-col items-center justify-center text-center"
+    >
+      {/* Logo Pindorama com moldura técnica monocromática */}
+      <div className="w-16 h-16 rounded-xl border-2 border-white p-2 mb-4 bg-black flex items-center justify-center">
+        <img
+          src="/PinLogo.svg"
+          alt="Pindorama Logo"
+          className="w-full h-full object-contain invert contrast-200"
+        />
       </div>
-    </div>
+
+      <p className="text-white mb-6 max-w-xl leading-relaxed text-base lg:text-lg">
+        {t("pindorama_desc")}
+      </p>
+
+      <div className="flex flex-col items-center gap-3 w-full">
+        {/* Botão de Download de Alto Contraste */}
+        {onDownloadClick ? (
+          <button
+            type="button"
+            onClick={onDownloadClick}
+            className="win-btn-primary w-full sm:w-auto px-10 py-3 text-base gap-3"
+          >
+            <DownloadIcon size={18} />
+            <span>{t("Download")}</span>
+          </button>
+        ) : (
+          <Link
+            href="/login"
+            className="win-btn-primary w-full sm:w-auto px-10 py-3 text-base gap-3"
+          >
+            <DownloadIcon size={18} />
+            <span>{t("Download")}</span>
+          </Link>
+        )}
+
+        <p className="text-xs text-zinc-500 tracking-wider select-none mt-2">
+          {t("pindorama_footer")}
+        </p>
+      </div>
+    </CardNormal>
   );
 }

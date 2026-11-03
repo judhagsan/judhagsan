@@ -24,14 +24,12 @@ export default function ApoiarPage() {
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      <div className="relative z-10 w-full h-full rounded-[20px] overflow-hidden border border-white/5 shadow-[inset_0px_0px_50px_rgba(0,0,0,0.9)] flex">
-        <div className="relative z-10 flex-1 flex items-center justify-center p-4 lg:p-6 overflow-y-auto">
-          {isLoggedIn && (
-            <div className="w-full max-w-md">
-              <CardApoiar />
-            </div>
-          )}
-        </div>
+      <div className="relative z-10 w-full h-full flex items-center justify-center p-4 lg:p-6 overflow-y-auto">
+        {isLoggedIn && (
+          <div className="w-full max-w-md">
+            <CardApoiar />
+          </div>
+        )}
       </div>
     </MainFrame>
   );

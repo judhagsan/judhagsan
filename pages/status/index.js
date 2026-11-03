@@ -21,24 +21,16 @@ export default function StatusPage() {
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      {/* Main Container */}
-      <div className="relative z-10 w-full h-full rounded-[20px] overflow-hidden border border-white/5 shadow-[inset_0px_0px_50px_rgba(0,0,0,0.9)] flex">
-        <div className="relative z-10 flex-1 flex flex-col p-4 lg:p-6 overflow-y-auto w-full items-center">
-          <div className="w-full max-w-4xl flex flex-col items-center mt-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-10">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span className="text-xs font-medium text-emerald-400/90 tracking-wide uppercase">
-                {t("Status do Sistema")}
-              </span>
-            </div>
+      <div className="relative z-10 w-full h-full flex flex-col p-4 lg:p-6 overflow-y-auto items-center">
+        <div className="w-full max-w-4xl flex flex-col items-center mt-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white bg-black text-white mb-8 text-xs uppercase tracking-widest">
+            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+            <span>{t("Status do Sistema")}</span>
+          </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-              <UpdatedAt />
-              <DatabaseStatus />
-            </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+            <UpdatedAt />
+            <DatabaseStatus />
           </div>
         </div>
       </div>
@@ -61,45 +53,31 @@ function UpdatedAt() {
   }
 
   return (
-    <CardNormal title={t("Visao Geral")} icon={PulseIcon}>
-      <div className="flex flex-col gap-1.5 bg-black/20 p-4 rounded-xl border border-white/5 h-full justify-center">
-        <span className="text-white/40 uppercase text-[10px] tracking-wider">
+    <CardNormal title={t("Visao Geral")} icon={PulseIcon} className="lg:h-full">
+      <div className="flex flex-col gap-2 p-3 border border-zinc-800 bg-black h-full justify-center">
+        <span className="text-zinc-400 uppercase text-xs tracking-wider">
           {t("Ultima Atualizacao")}
         </span>
-        <span className="text-lg text-cyan-400 font-medium">
+        <span className="text-base text-white font-bold tabular-nums">
           {updatedAtText}
         </span>
 
-        <div className="h-[1px] w-full bg-white/5 my-2"></div>
+        <div className="h-px w-full bg-zinc-800 my-1" />
 
-        <span className="text-white/40 uppercase text-[10px] tracking-wider mt-1">
+        <span className="text-zinc-400 uppercase text-xs tracking-wider">
           {t("Status Report")}
         </span>
-        <div className="flex items-center gap-2 mt-1">
-          <span className="relative flex h-2.5 w-2.5">
-            <span
-              className={
-                isLoading
-                  ? "animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"
-                  : "animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
-              }
-            ></span>
-            <span
-              className={
-                isLoading
-                  ? "relative inline-flex rounded-full h-2.5 w-2.5 bg-yellow-500"
-                  : "relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"
-              }
-            ></span>
+        <div className="flex items-center gap-2">
+          {/* O ping se expande e some; o ponto fixo por baixo é o que fica
+              visível entre um pulso e outro. */}
+          <span className="relative flex w-2 h-2 shrink-0">
+            <span className="absolute inline-flex w-full h-full rounded-full bg-white opacity-75 animate-ping" />
+            <span className="relative inline-flex w-2 h-2 rounded-full bg-white" />
           </span>
-          <span
-            className={
-              isLoading ? "text-yellow-400 text-sm" : "text-emerald-400 text-sm"
-            }
-          >
+          <span className="text-sm text-white">
             {isLoading
               ? t("Buscando telemetria...")
-              : t("Sistemas Operacionais")}
+              : `[OK] ${t("Sistemas Operacionais")}`}
           </span>
         </div>
       </div>
@@ -114,63 +92,63 @@ function DatabaseStatus() {
   const { t } = useLanguage();
 
   return (
-    <CardNormal title={t("Banco de Dados")} icon={DatabaseIcon}>
+    <CardNormal
+      title={t("Banco de Dados")}
+      icon={DatabaseIcon}
+      className="lg:h-full"
+    >
       {isLoading || !data ? (
-        <div className="flex items-center justify-center h-full min-h-[140px] text-white/30 bg-black/20 rounded-xl border border-white/5">
-          <span className="animate-pulse text-sm">
-            {t("Carregando metricas...")}
-          </span>
+        <div className="flex items-center justify-center h-full min-h-[140px] text-zinc-500 border border-zinc-800 bg-black">
+          <span className="text-sm">[{t("Carregando metricas...")}]</span>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3 h-full">
-          <div className="flex flex-col gap-1 bg-black/20 p-3 rounded-xl border border-white/5 justify-center">
-            <span className="text-white/40 uppercase text-[10px] tracking-wider">
+          <div className="flex flex-col gap-1 p-3 border border-zinc-800 bg-black justify-center">
+            <span className="text-zinc-400 uppercase text-xs tracking-wider">
               {t("Versao (PostgreSQL)")}
             </span>
             <span
-              className="text-base text-white/90 truncate"
+              className="text-base font-bold text-white truncate"
               title={data?.dependencies?.database?.version || "—"}
             >
               {data?.dependencies?.database?.version?.split(" ")[0] || "—"}
             </span>
           </div>
 
-          <div className="flex flex-col gap-1 bg-black/20 p-3 rounded-xl border border-white/5 justify-center">
-            <span className="text-white/40 uppercase text-[10px] tracking-wider">
+          <div className="flex flex-col gap-1 p-3 border border-zinc-800 bg-black justify-center">
+            <span className="text-zinc-400 uppercase text-xs tracking-wider">
               {t("Max Conexoes")}
             </span>
-            <span className="text-base text-white/90">
+            <span className="text-base font-bold text-white">
               {data?.dependencies?.database?.max_connections ?? "—"}
             </span>
           </div>
 
-          <div className="flex flex-col gap-1 bg-black/20 p-4 rounded-xl border border-white/5 col-span-2">
+          <div className="flex flex-col gap-1 p-3 border border-zinc-800 bg-black col-span-2">
             <div className="flex justify-between items-end mb-1">
-              <span className="text-white/40 uppercase text-[10px] tracking-wider">
+              <span className="text-zinc-400 uppercase text-xs tracking-wider">
                 {t("Conexoes Ativas")}
               </span>
-              <span className="text-cyan-400 font-bold text-xl leading-none">
+              <span className="text-white font-bold text-lg leading-none tabular-nums">
                 {data?.dependencies?.database?.opened_connections ?? "—"}
               </span>
             </div>
 
-            <div className="w-full h-1.5 bg-black/40 rounded-full mt-2 overflow-hidden">
+            <div className="w-full h-2 bg-black border border-white overflow-hidden mt-1">
               <div
-                className="h-full bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-full relative shadow-[0_0_8px_rgba(34,211,238,0.45)]"
+                className="h-full bg-white transition-[width] duration-300"
                 style={{
                   width: `${Math.min(((data?.dependencies?.database?.opened_connections || 0) / (data?.dependencies?.database?.max_connections || 1)) * 100, 100)}%`,
                   minWidth:
                     (data?.dependencies?.database?.opened_connections || 0) > 0
-                      ? "6px"
+                      ? "4px"
                       : undefined,
                 }}
-              >
-                <div className="absolute top-0 right-0 bottom-0 left-0 bg-white/20 animate-pulse"></div>
-              </div>
+              />
             </div>
-            <div className="flex justify-between mt-1.5">
-              <span className="text-[9px] text-white/30">0%</span>
-              <span className="text-[9px] text-white/30">
+            <div className="flex justify-between mt-1 text-xs text-zinc-400">
+              <span>0%</span>
+              <span>
                 {t("Uso")}:{" "}
                 {data?.dependencies?.database?.opened_connections !== undefined
                   ? Math.round(

@@ -3,10 +3,11 @@ import Link from "next/link";
 import {
   CheckCircleFillIcon,
   MailIcon,
-  ArrowLeftIcon,
   PersonFillIcon,
+  AlertFillIcon,
 } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
+import CardNormal from "./CardNormal";
 
 export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
   const { t } = useLanguage();
@@ -76,193 +77,174 @@ export default function CardCadastro({ onPrivacyClick, onLoginClick, onBack }) {
   }
 
   return (
-    <div className="w-full h-auto lg:h-auto">
-      <div className="glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto lg:h-auto group">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
-
-        <div className="shrink-0 mb-3 flex items-center gap-3 relative z-10">
-          {onBack && (
-            <button
-              type="button"
-              onClick={onBack}
-              aria-label="Voltar"
-              className="cursor-pointer text-white/50 hover:text-white transition-colors flex items-center justify-center -ml-1 pr-1"
-            >
-              <ArrowLeftIcon size={18} />
-            </button>
-          )}
-          <div className="w-8 h-8 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
-            <PersonFillIcon size={16} />
+    <CardNormal
+      title={t("Cadastro")}
+      icon={PersonFillIcon}
+      onBack={onBack}
+      bodyClassName={registeredEmail ? "p-6" : "p-5"}
+    >
+      {registeredEmail ? (
+        <div className="flex flex-col items-center justify-center text-center gap-3">
+          <div className="w-12 h-12 rounded-xl border-2 border-white flex items-center justify-center text-white bg-black">
+            <CheckCircleFillIcon size={24} />
           </div>
-          <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
-            {t("Cadastro")}
-          </h2>
-        </div>
-
-        {registeredEmail ? (
-          <div className="flex flex-col items-center justify-center text-center gap-3 text-white/70 text-sm relative z-10 flex-1">
-            <div className="w-12 h-12 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-200 animate-[fadeIn_0.4s_ease-out]">
-              <CheckCircleFillIcon size={24} />
-            </div>
-            <p className="text-base text-white/90 font-semibold">
-              {t("Verifique seu email")}
-            </p>
-            <p className="text-xs leading-relaxed max-w-xs flex items-start gap-2 justify-center">
-              <MailIcon size={14} className="mt-0.5 text-cyan-300 shrink-0" />
-              <span>
-                {t("Email de ativacao enviado", { email: registeredEmail })}
-              </span>
-            </p>
-            <button
-              type="button"
-              onClick={() => setRegisteredEmail("")}
-              className="cursor-pointer mt-2 text-xs uppercase tracking-widest text-white/50 hover:text-white transition-colors"
-            >
-              {t("Cadastrar outra conta")}
-            </button>
-          </div>
-        ) : (
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col gap-4 text-white/70 text-sm relative z-10 flex-1"
+          <p className="text-base font-bold uppercase tracking-wider text-white">
+            {t("Verifique seu email")}
+          </p>
+          <p className="text-sm text-zinc-400 leading-relaxed max-w-xs flex items-center gap-2 justify-center">
+            <MailIcon size={14} className="shrink-0" />
+            <span>
+              {t("Email de ativacao enviado", { email: registeredEmail })}
+            </span>
+          </p>
+          <button
+            type="button"
+            onClick={() => setRegisteredEmail("")}
+            className="win-btn mt-4 text-sm"
           >
+            {t("Cadastrar outra conta")}
+          </button>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <label className="flex flex-col gap-1">
+            <span className="text-sm uppercase tracking-wider text-zinc-400">
+              {t("Username")}
+            </span>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              autoComplete="username"
+              className="win-input rounded-xl py-2"
+              placeholder={t("seu_usuario")}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1">
+            <span className="text-sm uppercase tracking-wider text-zinc-400">
+              {t("Email")}
+            </span>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              className="win-input rounded-xl py-2"
+              placeholder="usuario@exemplo.com"
+            />
+          </label>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <label className="flex flex-col gap-1">
-              <span className="text-xs uppercase tracking-widest text-white/50">
-                {t("Username")}
+              <span className="text-sm uppercase tracking-wider text-zinc-400">
+                {t("Senha")}
               </span>
               <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
-                autoComplete="username"
-                className="px-3 py-3 lg:py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-base lg:text-sm"
-                placeholder={t("seu_usuario")}
+                autoComplete="new-password"
+                minLength={8}
+                className="win-input rounded-xl py-2"
+                placeholder={t("min_char")}
               />
             </label>
 
             <label className="flex flex-col gap-1">
-              <span className="text-xs uppercase tracking-widest text-white/50">
-                {t("Email")}
+              <span className="text-sm uppercase tracking-wider text-zinc-400">
+                {t("Confirmar")}
               </span>
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                autoComplete="email"
-                className="px-3 py-3 lg:py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-base lg:text-sm"
-                placeholder="voce@exemplo.com"
+                autoComplete="new-password"
+                className={`win-input rounded-xl py-2 ${
+                  passwordsMismatch ? "border-red-400" : ""
+                }`}
+                placeholder="••••••••"
               />
             </label>
+          </div>
 
-            <div className="flex flex-col lg:flex-row gap-3">
-              <label className="flex flex-col gap-1 flex-1">
-                <span className="text-xs uppercase tracking-widest text-white/50">
-                  {t("Senha")}
-                </span>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete="new-password"
-                  minLength={8}
-                  className="px-3 py-3 lg:py-2 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-base lg:text-sm"
-                  placeholder={t("min_char")}
-                />
-              </label>
+          {passwordsMismatch && (
+            <p className="text-red-400 text-sm">
+              {t("As senhas nao conferem")}
+            </p>
+          )}
 
-              <label className="flex flex-col gap-1 flex-1">
-                <span className="text-xs uppercase tracking-widest text-white/50">
-                  {t("Confirmar")}
-                </span>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  autoComplete="new-password"
-                  className={`px-3 py-3 lg:py-2 rounded-xl bg-white/5 border outline-none text-white placeholder-white/30 transition-colors focus:bg-white/10 text-base lg:text-sm ${
-                    passwordsMismatch
-                      ? "border-red-400/60 focus:border-red-400"
-                      : "border-white/10 focus:border-cyan-400/60"
-                  }`}
-                  placeholder="••••••••"
-                />
-              </label>
-            </div>
-
-            {passwordsMismatch && (
-              <p className="text-red-300 text-xs -mt-2">
-                {t("As senhas nao conferem")}
-              </p>
-            )}
-
-            <label className="flex items-start gap-2 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={privacyAccepted}
-                onChange={(e) => setPrivacyAccepted(e.target.checked)}
-                className="mt-0.5 w-4 h-4 accent-cyan-400 cursor-pointer shrink-0"
-              />
-              <span className="text-xs text-white/60 leading-relaxed">
-                {t("Li e aceito os")}{" "}
-                {onPrivacyClick ? (
-                  <button
-                    type="button"
-                    onClick={onPrivacyClick}
-                    className="cursor-pointer text-cyan-300 hover:text-cyan-200 transition-colors"
-                  >
-                    {t("Termos de Uso")}
-                  </button>
-                ) : (
-                  <Link
-                    href="/privacidade"
-                    target="_blank"
-                    className="text-cyan-300 hover:text-cyan-200 transition-colors"
-                  >
-                    {t("Termos de Uso")}
-                  </Link>
-                )}
-                .
-              </span>
-            </label>
-
-            {errorMessage && (
-              <p className="text-red-300 text-xs">{errorMessage}</p>
-            )}
-
-            <button
-              type="submit"
-              disabled={isSubmitting || passwordsMismatch || !privacyAccepted}
-              className="cursor-pointer mt-2 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-semibold text-base w-full lg:w-auto"
-            >
-              {isSubmitting ? t("Cadastrando...") : t("Cadastrar")}
-            </button>
-
-            <p className="text-xs text-white/50 text-center mt-2">
-              {t("Ja tem conta?")}{" "}
-              {onLoginClick ? (
+          <label className="flex items-start gap-2 cursor-pointer select-none mt-1">
+            <input
+              type="checkbox"
+              checked={privacyAccepted}
+              onChange={(e) => setPrivacyAccepted(e.target.checked)}
+              className="mt-0.5 accent-white w-4 h-4 cursor-pointer"
+            />
+            <span className="text-sm text-zinc-400 leading-relaxed">
+              {t("Li e aceito os")}{" "}
+              {onPrivacyClick ? (
                 <button
                   type="button"
-                  onClick={onLoginClick}
-                  className="cursor-pointer text-cyan-300 hover:text-cyan-200 transition-colors"
+                  onClick={onPrivacyClick}
+                  className="cursor-pointer text-white underline font-semibold"
                 >
-                  {t("Entrar")}
+                  {t("Termos de Uso")}
                 </button>
               ) : (
                 <Link
-                  href="/login"
-                  className="text-cyan-300 hover:text-cyan-200 transition-colors"
+                  href="/privacidade"
+                  target="_blank"
+                  className="text-white underline font-semibold"
                 >
-                  {t("Entrar")}
+                  {t("Termos de Uso")}
                 </Link>
               )}
-            </p>
-          </form>
-        )}
-      </div>
-    </div>
+              .
+            </span>
+          </label>
+
+          {errorMessage && (
+            <div className="border border-white bg-black rounded-xl p-2 text-sm text-white flex items-start gap-2">
+              <AlertFillIcon size={14} className="mt-0.5 shrink-0" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={isSubmitting || passwordsMismatch || !privacyAccepted}
+            className="win-btn-primary w-full py-2.5 text-sm mt-2"
+          >
+            <PersonFillIcon size={16} />
+            <span>{isSubmitting ? t("Cadastrando...") : t("Cadastrar")}</span>
+          </button>
+
+          <p className="text-sm text-zinc-400 text-center mt-1">
+            {t("Ja tem conta?")}{" "}
+            {onLoginClick ? (
+              <button
+                type="button"
+                onClick={onLoginClick}
+                className="cursor-pointer text-white underline hover:text-zinc-300 font-semibold"
+              >
+                {t("Entrar")}
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="text-white underline hover:text-zinc-300 font-semibold"
+              >
+                {t("Entrar")}
+              </Link>
+            )}
+          </p>
+        </form>
+      )}
+    </CardNormal>
   );
 }

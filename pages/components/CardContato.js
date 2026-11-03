@@ -4,21 +4,21 @@ import {
   CommentDiscussionIcon,
   QuestionIcon,
   ShieldIcon,
-  ArrowLeftIcon,
   SyncIcon,
   CheckCircleFillIcon,
   AlertFillIcon,
 } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
+import CardNormal from "./CardNormal";
 
 function Section({ icon: Icon, title, children }) {
   return (
     <section className="flex flex-col gap-2">
-      <h3 className="text-base font-semibold text-white/90 flex items-center gap-2">
-        <Icon size={16} className="text-cyan-300" />
-        {title}
+      <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+        <Icon size={14} className="text-white shrink-0" />
+        <span>{title}</span>
       </h3>
-      <div className="text-white/70 leading-relaxed text-sm flex flex-col gap-2">
+      <div className="text-zinc-400 leading-relaxed text-sm flex flex-col gap-2">
         {children}
       </div>
     </section>
@@ -66,238 +66,218 @@ export default function CardContato({ onClose }) {
   }
 
   return (
-    <div className="w-full h-auto lg:h-full">
-      <div className="glass-card rounded-[20px] p-4 lg:p-5 shadow-2xl relative overflow-hidden flex flex-col h-auto group">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent -z-10 pointer-events-none"></div>
-
-        {/* Header */}
-        <div className="shrink-0 mb-3 flex items-center gap-3 relative z-10">
-          {onClose && (
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Voltar"
-              className="cursor-pointer text-white/50 hover:text-white transition-colors flex items-center justify-center -ml-1 pr-1"
+    <CardNormal
+      title={t("Contato")}
+      icon={CommentDiscussionIcon}
+      onBack={onClose}
+      className="lg:h-full card-enter"
+      bodyClassName="p-4 lg:p-6 flex-1 min-h-0 overflow-y-auto pr-3"
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Formulário (2/3 da largura no desktop) */}
+        <div className="lg:col-span-2 flex flex-col justify-start">
+          {status === "success" ? (
+            <div className="flex flex-col items-center justify-center text-center p-6 gap-3 text-white text-sm flex-1 h-full min-h-[300px] border border-white bg-black animate-[fadeIn_0.2s_ease-out]">
+              <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black">
+                <CheckCircleFillIcon size={24} />
+              </div>
+              <p className="text-lg font-bold uppercase tracking-wider text-white">
+                {t("Mensagem enviada!")}
+              </p>
+              <p className="text-sm text-zinc-400 leading-relaxed max-w-xs">
+                {t("Sucesso ao enviar mensagem")}
+              </p>
+              <button
+                type="button"
+                onClick={() => setStatus("idle")}
+                className="win-btn mt-4 text-sm"
+              >
+                {t("Enviar outra mensagem")}
+              </button>
+            </div>
+          ) : (
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col gap-4 text-white text-sm"
             >
-              <ArrowLeftIcon size={18} />
-            </button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label className="flex flex-col gap-1.5">
+                  <span className="text-sm uppercase tracking-wider text-zinc-400">
+                    {t("Nome")}
+                  </span>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    disabled={status === "loading"}
+                    className="win-input"
+                    placeholder={t("Seu nome")}
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1.5">
+                  <span className="text-sm uppercase tracking-wider text-zinc-400">
+                    {t("Email")}
+                  </span>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={status === "loading"}
+                    className="win-input"
+                    placeholder="voce@exemplo.com"
+                  />
+                </label>
+              </div>
+
+              <label className="flex flex-col gap-1.5">
+                <span className="text-sm uppercase tracking-wider text-zinc-400">
+                  {t("Mensagem")}
+                </span>
+                <textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  required
+                  rows={8}
+                  disabled={status === "loading"}
+                  className="win-input resize-none"
+                  placeholder={t("Escreva sua mensagem aqui...")}
+                />
+              </label>
+
+              {status === "error" && (
+                <div className="border border-white bg-black p-2 text-sm text-white flex items-start gap-2">
+                  <AlertFillIcon size={14} className="mt-0.5 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={status === "loading"}
+                className="win-btn-primary w-full md:w-auto self-start py-2.5 text-sm"
+              >
+                {status === "loading" ? (
+                  <>
+                    <SyncIcon size={14} className="animate-spin" />
+                    <span>{t("Enviando...")}</span>
+                  </>
+                ) : (
+                  <>
+                    <MailIcon size={14} />
+                    <span>{t("Enviar mensagem")}</span>
+                  </>
+                )}
+              </button>
+            </form>
           )}
-          <div className="w-8 h-8 rounded-full bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-lg shadow-cyan-500/15 shrink-0">
-            <CommentDiscussionIcon size={16} />
-          </div>
-          <h2 className="text-base lg:text-lg font-bold tracking-tight text-white/90">
-            {t("Contato")}
-          </h2>
         </div>
 
-        {/* Main Content Area */}
-        <div className="flex-1 min-h-0 overflow-y-auto pr-3 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column: Form (2/3 width on desktop) */}
-            <div className="lg:col-span-2 flex flex-col justify-start">
-              {status === "success" ? (
-                <div className="flex flex-col items-center justify-center text-center p-6 gap-3 text-white/70 text-sm flex-1 h-full min-h-[300px] border border-cyan-500/10 rounded-2xl bg-cyan-950/10 animate-[fadeIn_0.3s_ease-out]">
-                  <div className="w-12 h-12 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-200 animate-[fadeIn_0.4s_ease-out]">
-                    <CheckCircleFillIcon size={24} />
-                  </div>
-                  <p className="text-base text-white/90 font-semibold">
-                    {t("Mensagem enviada!")}
-                  </p>
-                  <p className="text-xs leading-relaxed max-w-xs">
-                    {t("Sucesso ao enviar mensagem")}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setStatus("idle")}
-                    className="cursor-pointer mt-4 inline-flex items-center gap-2 px-6 py-2.5 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 active:scale-95 font-semibold text-sm"
+        {/* Informações da Direita (1/3 da largura no desktop) */}
+        <div className="flex flex-col gap-6 lg:border-l lg:border-zinc-800 lg:pl-6">
+          {language === "en" ? (
+            <>
+              <Section icon={QuestionIcon} title="General questions">
+                <p>
+                  For questions regarding the website, the{" "}
+                  <span className="text-white font-bold underline">
+                    Pindorama
+                  </span>{" "}
+                  software, or partnerships, send an email through the form or
+                  directly to{" "}
+                  <a
+                    href="mailto:contato@judhagsan.com"
+                    className="text-white underline hover:text-zinc-400 transition-colors inline-flex items-center gap-1 font-semibold"
                   >
-                    {t("Enviar outra mensagem")}
-                  </button>
-                </div>
-              ) : (
-                <form
-                  onSubmit={handleSubmit}
-                  className="flex flex-col gap-4 text-white/70 text-sm"
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <label className="flex flex-col gap-1.5">
-                      <span className="text-xs uppercase tracking-widest text-white/50">
-                        {t("Nome")}
-                      </span>
-                      <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                        disabled={status === "loading"}
-                        className="px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-sm"
-                        placeholder={t("Seu nome")}
-                      />
-                    </label>
+                    <MailIcon size={12} />
+                    contato@judhagsan.com
+                  </a>
+                  .
+                </p>
+                <p>We will respond within 5 business days.</p>
+              </Section>
 
-                    <label className="flex flex-col gap-1.5">
-                      <span className="text-xs uppercase tracking-widest text-white/50">
-                        {t("Email")}
-                      </span>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        disabled={status === "loading"}
-                        className="px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-sm"
-                        placeholder="voce@exemplo.com"
-                      />
-                    </label>
-                  </div>
-
-                  <label className="flex flex-col gap-1.5">
-                    <span className="text-xs uppercase tracking-widest text-white/50">
-                      {t("Mensagem")}
-                    </span>
-                    <textarea
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      required
-                      rows={8}
-                      disabled={status === "loading"}
-                      className="px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400/60 focus:bg-white/10 outline-none text-white placeholder-white/30 transition-colors text-sm resize-none"
-                      placeholder={t("Escreva sua mensagem aqui...")}
-                    />
-                  </label>
-
-                  {status === "error" && (
-                    <p className="text-red-300 text-xs flex items-start gap-2 animate-[fadeIn_0.3s_ease-out]">
-                      <AlertFillIcon size={14} className="mt-0.5 shrink-0" />
-                      <span>{errorMessage}</span>
-                    </p>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={status === "loading"}
-                    className="cursor-pointer mt-2 inline-flex items-center justify-center gap-2 px-8 py-3 bg-cyan-500/10 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-200 rounded-xl transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_0_20px_rgba(6,182,212,0.2)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-semibold text-sm w-full md:w-auto self-start"
+              <Section icon={ShieldIcon} title="Security vulnerabilities">
+                <p>
+                  If you found a security vulnerability in the website or in
+                  Pindorama, please report it{" "}
+                  <span className="text-white font-bold">privately</span> to{" "}
+                  <a
+                    href="mailto:contato@judhagsan.com?subject=Security%20-%20Vulnerability"
+                    className="text-white underline hover:text-zinc-400 transition-colors inline-flex items-center gap-1 font-semibold"
                   >
-                    {status === "loading" ? (
-                      <>
-                        <SyncIcon size={16} className="animate-spin" />
-                        {t("Enviando...")}
-                      </>
-                    ) : (
-                      <>
-                        <MailIcon size={16} />
-                        {t("Enviar mensagem")}
-                      </>
-                    )}
-                  </button>
-                </form>
-              )}
-            </div>
-
-            {/* Right Column: Info (1/3 width on desktop) */}
-            <div className="flex flex-col gap-6 lg:border-l lg:border-white/10 lg:pl-6">
-              {language === "en" ? (
-                <>
-                  <Section icon={QuestionIcon} title="General questions">
-                    <p>
-                      For questions regarding the website, the{" "}
-                      <span className="text-cyan-300">Pindorama</span> software,
-                      or partnerships, send an email through the form or
-                      directly to{" "}
-                      <a
-                        href="mailto:contato@judhagsan.com"
-                        className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
-                      >
-                        <MailIcon size={14} />
-                        contato@judhagsan.com
-                      </a>
-                      .
-                    </p>
-                    <p>We will respond within 5 business days.</p>
-                  </Section>
-
-                  <Section icon={ShieldIcon} title="Security vulnerabilities">
-                    <p>
-                      If you found a security vulnerability in the website or in
-                      Pindorama, please report it{" "}
-                      <span className="text-white/90">privately</span> to{" "}
-                      <a
-                        href="mailto:contato@judhagsan.com?subject=Security%20-%20Vulnerability"
-                        className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
-                      >
-                        <MailIcon size={14} />
-                        contato@judhagsan.com
-                      </a>{" "}
-                      with the subject{" "}
-                      <span className="text-white/90">
-                        &quot;Security - Vulnerability&quot;
-                      </span>
-                      .
-                    </p>
-                    <p>
-                      We ask you{" "}
-                      <span className="text-white/90">
-                        not to disclose publicly
-                      </span>{" "}
-                      before we have a chance to patch it.
-                    </p>
-                  </Section>
-                </>
-              ) : (
-                <>
-                  <Section icon={QuestionIcon} title="Dúvidas gerais">
-                    <p>
-                      Para perguntas sobre o site, o software{" "}
-                      <span className="text-cyan-300">Pindorama</span> ou
-                      parcerias, envie o email pelo formulário ou diretamente
-                      para o email{" "}
-                      <a
-                        href="mailto:contato@judhagsan.com"
-                        className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
-                      >
-                        <MailIcon size={14} />
-                        contato@judhagsan.com
-                      </a>
-                      .
-                    </p>
-                    <p>Responderemos em até 5 dias úteis.</p>
-                  </Section>
-
-                  <Section
-                    icon={ShieldIcon}
-                    title="Vulnerabilidades de segurança"
+                    <MailIcon size={12} />
+                    contato@judhagsan.com
+                  </a>{" "}
+                  with the subject{" "}
+                  <span className="text-white font-bold">
+                    &quot;Security - Vulnerability&quot;
+                  </span>
+                  .
+                </p>
+                <p>
+                  We ask you{" "}
+                  <span className="text-white font-bold">
+                    not to disclose publicly
+                  </span>{" "}
+                  before we have a chance to patch it.
+                </p>
+              </Section>
+            </>
+          ) : (
+            <>
+              <Section icon={QuestionIcon} title="Dúvidas gerais">
+                <p>
+                  Para perguntas sobre o site, o software{" "}
+                  <span className="text-white font-bold underline">
+                    Pindorama
+                  </span>{" "}
+                  ou parcerias, envie o email pelo formulário ou diretamente
+                  para o email{" "}
+                  <a
+                    href="mailto:contato@judhagsan.com"
+                    className="text-white underline hover:text-zinc-400 transition-colors inline-flex items-center gap-1 font-semibold"
                   >
-                    <p>
-                      Se você encontrou uma vulnerabilidade de segurança no site
-                      ou no Pindorama, por favor reporte de forma{" "}
-                      <span className="text-white/90">privada</span> para{" "}
-                      <a
-                        href="mailto:contato@judhagsan.com?subject=Security%20-%20Vulnerabilidade"
-                        className="text-cyan-300 hover:text-cyan-200 transition-colors inline-flex items-center gap-1"
-                      >
-                        <MailIcon size={14} />
-                        contato@judhagsan.com
-                      </a>{" "}
-                      com o assunto{" "}
-                      <span className="text-white/90">
-                        &quot;Security - Vulnerabilidade&quot;
-                      </span>
-                      .
-                    </p>
-                    <p>
-                      Pedimos para{" "}
-                      <span className="text-white/90">
-                        não divulgar publicamente
-                      </span>{" "}
-                      antes de termos chance de corrigir.
-                    </p>
-                  </Section>
-                </>
-              )}
-            </div>
-          </div>
+                    <MailIcon size={12} />
+                    contato@judhagsan.com
+                  </a>
+                  .
+                </p>
+                <p>Responderemos em até 5 dias úteis.</p>
+              </Section>
+
+              <Section icon={ShieldIcon} title="Vulnerabilidades de segurança">
+                <p>
+                  Se você encontrou uma vulnerabilidade de segurança no site ou
+                  no Pindorama, por favor reporte de forma{" "}
+                  <span className="text-white font-bold">privada</span> para{" "}
+                  <a
+                    href="mailto:contato@judhagsan.com?subject=Security%20-%20Vulnerabilidade"
+                    className="text-white underline hover:text-zinc-400 transition-colors inline-flex items-center gap-1 font-semibold"
+                  >
+                    <MailIcon size={12} />
+                    contato@judhagsan.com
+                  </a>{" "}
+                  com o assunto{" "}
+                  <span className="text-white font-bold">
+                    &quot;Security - Vulnerabilidade&quot;
+                  </span>
+                  .
+                </p>
+                <p>
+                  Pedimos para{" "}
+                  <span className="text-white font-bold">
+                    não divulgar publicamente
+                  </span>{" "}
+                  antes de termos chance de corrigir.
+                </p>
+              </Section>
+            </>
+          )}
         </div>
       </div>
-    </div>
+    </CardNormal>
   );
 }
