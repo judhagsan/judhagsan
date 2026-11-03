@@ -35,13 +35,14 @@ export default function SessaoPage() {
       </Head>
 
       {/* Área de Conteúdo com Janelas Flutuantes */}
-      <div className="relative z-10 w-full h-full flex flex-col p-2 lg:p-4 gap-6 overflow-y-auto lg:overflow-hidden font-mono">
+      <div className="relative z-10 w-full h-full flex flex-col p-2 lg:p-4 gap-6 overflow-y-auto lg:overflow-hidden">
         {/* Seção Central */}
         <div className="lg:flex-1 lg:min-h-0 lg:-mt-8 relative flex flex-col lg:block gap-4 lg:gap-0 overflow-visible shrink-0">
           {/* Coluna da esquerda: Usuário + Apoio (ou Pindorama compact para Admin) */}
           <div className="w-full lg:absolute lg:top-8 lg:left-0 lg:w-1/4 lg:max-h-[calc(100%-2rem)] flex flex-col gap-4 lg:overflow-y-auto lg:pr-4">
             {isLoggedIn && <CardUsuario user={user} />}
             {isLoggedIn && isAdmin && <CardSessao compact />}
+
             {isLoggedIn && !isAdmin && <CardApoiar />}
           </div>
 

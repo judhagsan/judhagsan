@@ -24,7 +24,7 @@ export default function ApoiarPage() {
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      <div className="relative z-10 w-full h-full flex items-center justify-center p-4 lg:p-6 overflow-y-auto font-mono">
+      <div className="relative z-10 w-full h-full flex items-center justify-center p-4 lg:p-6 overflow-y-auto">
         {isLoggedIn && (
           <div className="w-full max-w-md">
             <CardApoiar />

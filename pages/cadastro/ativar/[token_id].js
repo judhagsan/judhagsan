@@ -17,7 +17,7 @@ export default function AtivarPage() {
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      <div className="relative z-10 w-full h-full flex flex-col p-2 lg:p-4 gap-6 overflow-y-auto lg:overflow-hidden font-mono">
+      <div className="relative z-10 w-full h-full flex flex-col p-2 lg:p-4 gap-6 overflow-y-auto lg:overflow-hidden">
         <div className="lg:flex-1 flex items-start lg:items-center justify-center pt-2 lg:pt-0 shrink-0">
           <div className="w-full max-w-md lg:w-1/3">
             <CardAtivacao tokenId={tokenId} />

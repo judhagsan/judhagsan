@@ -8,6 +8,7 @@ import {
   TrashIcon,
 } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
+import CardNormal from "./CardNormal";
 
 const fetcher = (url) =>
   fetch(url, { credentials: "include" }).then((r) =>
@@ -91,146 +92,127 @@ export default function CardDispositivos() {
   }
 
   return (
-    <div className="w-full font-mono">
-      <div className="rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col relative animate-[fadeIn_0.2s_ease-out]">
-        {/* Barra de Título Branca com Texto Preto */}
-        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
-          <div className="flex items-center gap-2.5 shrink-0">
-            <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />
-            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
-            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
-          </div>
+    <CardNormal
+      title={t("Dispositivos")}
+      icon={DevicesIcon}
+      className="animate-[fadeIn_0.2s_ease-out]"
+      bodyClassName="p-4 flex flex-col gap-3 text-white text-sm"
+    >
+      {isLoading && (
+        <p className="text-zinc-500 text-center py-2 text-sm">
+          [{t("Carregando...")}]
+        </p>
+      )}
 
-          <div className="flex items-center gap-2 min-w-0 mx-2">
-            <DevicesIcon size={17} className="shrink-0 text-black" />
-            <h2 className="text-sm lg:text-base font-mono font-bold tracking-wider uppercase text-black truncate">
-              {t("Dispositivos")}
-            </h2>
-          </div>
+      {error && (
+        <p className="text-white border border-white p-2 text-center text-sm">
+          [!] {t("Erro ao carregar dispositivos")}
+        </p>
+      )}
 
-          <div
-            className="w-20 shrink-0 pointer-events-none"
-            aria-hidden="true"
-          />
-        </div>
+      {!isLoading && !error && data?.length === 0 && (
+        <p className="text-zinc-500 text-center py-4 text-sm leading-relaxed">
+          {t("Nenhum dispositivo registrado")}
+        </p>
+      )}
 
-        {/* Lista de Dispositivos */}
-        <div className="p-4 flex flex-col gap-3 text-white text-sm">
-          {isLoading && (
-            <p className="text-zinc-500 text-center py-2 text-sm">
-              [{t("Carregando...")}]
-            </p>
-          )}
+      {data?.map((device) => (
+        <div
+          key={device.id}
+          className={`border p-3 flex flex-col gap-3 bg-black ${
+            device.upload_paused
+              ? "border-zinc-700 text-zinc-400"
+              : "border-white"
+          }`}
+        >
+          <div className="flex items-start gap-3">
+            <DeviceDesktopIcon
+              size={18}
+              className="text-white mt-0.5 shrink-0"
+            />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-2 border-b border-zinc-800 pb-1.5 mb-2">
+                <span className="font-bold text-sm uppercase tracking-wider text-white">
+                  {osLabel(device.os)}
+                </span>
+                {device.upload_paused && (
+                  <span className="border border-white px-1 text-xs text-zinc-400">
+                    {t("pausado")}
+                  </span>
+                )}
+              </div>
 
-          {error && (
-            <p className="text-white border border-white p-2 text-center text-sm">
-              [!] {t("Erro ao carregar dispositivos")}
-            </p>
-          )}
-
-          {!isLoading && !error && data?.length === 0 && (
-            <p className="text-zinc-500 text-center py-4 text-sm leading-relaxed">
-              {t("Nenhum dispositivo registrado")}
-            </p>
-          )}
-
-          {data?.map((device) => (
-            <div
-              key={device.id}
-              className={`border border-white p-3 flex flex-col gap-3 bg-black ${
-                device.upload_paused ? "text-zinc-400 border-zinc-700" : ""
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <DeviceDesktopIcon
-                  size={18}
-                  className="text-white mt-0.5 shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2 border-b border-zinc-800 pb-1.5 mb-2">
-                    <span className="font-bold text-sm uppercase tracking-wider text-white">
-                      {osLabel(device.os)}
-                    </span>
-                    {device.upload_paused && (
-                      <span className="border border-white px-1 text-xs text-zinc-400">
-                        {t("pausado")}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex flex-col gap-0.5 text-sm text-white leading-relaxed font-mono">
-                    {device.cpu && (
-                      <p className="break-all">
-                        <span className="text-zinc-500">{t("CPU")}:</span>{" "}
-                        {device.cpu}
-                      </p>
-                    )}
-                    {device.ram_bytes != null && (
-                      <p>
-                        <span className="text-zinc-500">{t("RAM")}:</span>{" "}
-                        {formatRam(device.ram_bytes)}
-                      </p>
-                    )}
-                    {device.gpu && (
-                      <p className="break-all">
-                        <span className="text-zinc-500">{t("GPU")}:</span>{" "}
-                        {device.gpu}
-                      </p>
-                    )}
-                    {device.monitor && (
-                      <p className="break-all">
-                        <span className="text-zinc-500">{t("Monitor")}:</span>{" "}
-                        {device.monitor}
-                      </p>
-                    )}
-                    {device.tablet && (
-                      <p className="break-all">
-                        <span className="text-zinc-500">{t("Mesa")}:</span>{" "}
-                        {device.tablet}
-                      </p>
-                    )}
-                  </div>
-
-                  <p className="text-zinc-500 text-xs mt-2 pt-1 border-t border-zinc-800">
-                    Pindorama v{device.pindorama_version || "?"} ·{" "}
-                    {formatRelative(device.last_seen_at, language)}
+              <div className="flex flex-col gap-0.5 text-sm text-white leading-relaxed">
+                {device.cpu && (
+                  <p className="break-all">
+                    <span className="text-zinc-500">{t("CPU")}:</span>{" "}
+                    {device.cpu}
                   </p>
-                </div>
+                )}
+                {device.ram_bytes != null && (
+                  <p>
+                    <span className="text-zinc-500">{t("RAM")}:</span>{" "}
+                    {formatRam(device.ram_bytes)}
+                  </p>
+                )}
+                {device.gpu && (
+                  <p className="break-all">
+                    <span className="text-zinc-500">{t("GPU")}:</span>{" "}
+                    {device.gpu}
+                  </p>
+                )}
+                {device.monitor && (
+                  <p className="break-all">
+                    <span className="text-zinc-500">{t("Monitor")}:</span>{" "}
+                    {device.monitor}
+                  </p>
+                )}
+                {device.tablet && (
+                  <p className="break-all">
+                    <span className="text-zinc-500">{t("Mesa")}:</span>{" "}
+                    {device.tablet}
+                  </p>
+                )}
               </div>
 
-              <div className="flex gap-2 pt-1">
-                <button
-                  type="button"
-                  onClick={() => togglePause(device)}
-                  disabled={busyId === device.id}
-                  className="win-btn text-sm flex-1 inline-flex items-center justify-center gap-1.5"
-                >
-                  {device.upload_paused ? (
-                    <>
-                      <PlayIcon size={12} />
-                      <span>{t("Retomar")}</span>
-                    </>
-                  ) : (
-                    <>
-                      <PauseIcon size={12} />
-                      <span>{t("Pausar")}</span>
-                    </>
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => deleteDevice(device)}
-                  disabled={busyId === device.id}
-                  className="win-btn text-sm flex-1 inline-flex items-center justify-center gap-1.5 text-zinc-400 hover:text-white"
-                >
-                  <TrashIcon size={12} />
-                  <span>{t("Excluir")}</span>
-                </button>
-              </div>
+              <p className="text-zinc-500 text-xs mt-2 pt-1 border-t border-zinc-800">
+                Pindorama v{device.pindorama_version || "?"} ·{" "}
+                {formatRelative(device.last_seen_at, language)}
+              </p>
             </div>
-          ))}
+          </div>
+
+          <div className="flex gap-2 pt-1">
+            <button
+              type="button"
+              onClick={() => togglePause(device)}
+              disabled={busyId === device.id}
+              className="win-btn text-sm flex-1 gap-1.5"
+            >
+              {device.upload_paused ? (
+                <>
+                  <PlayIcon size={12} />
+                  <span>{t("Retomar")}</span>
+                </>
+              ) : (
+                <>
+                  <PauseIcon size={12} />
+                  <span>{t("Pausar")}</span>
+                </>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => deleteDevice(device)}
+              disabled={busyId === device.id}
+              className="win-btn win-btn-muted text-sm flex-1 gap-1.5"
+            >
+              <TrashIcon size={12} />
+              <span>{t("Excluir")}</span>
+            </button>
+          </div>
         </div>
-      </div>
-    </div>
+      ))}
+    </CardNormal>
   );
 }

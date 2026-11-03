@@ -59,7 +59,7 @@ export default function SamuraiDashboard() {
       </Head>
 
       {/* Área Central com Janelas Flutuantes */}
-      <div className="relative z-10 w-full h-full flex flex-col p-2 lg:p-4 gap-6 overflow-y-auto lg:overflow-hidden font-mono">
+      <div className="relative z-10 w-full h-full flex flex-col p-2 lg:p-4 gap-6 overflow-y-auto lg:overflow-hidden">
         {/* Seção Central - Card Ativo + Painel Lateral */}
         <div className="lg:flex-1 flex flex-col lg:flex-row items-stretch justify-start min-h-0 gap-4 lg:gap-6 shrink-0">
           <div

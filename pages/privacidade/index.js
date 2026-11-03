@@ -14,7 +14,7 @@ export default function PrivacidadePage() {
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      <div className="relative z-10 w-full h-full flex flex-col p-2 lg:p-4 gap-6 overflow-y-auto lg:overflow-hidden font-mono">
+      <div className="relative z-10 w-full h-full flex flex-col p-2 lg:p-4 gap-6 overflow-y-auto lg:overflow-hidden">
         <div className="lg:flex-1 flex items-start lg:items-center justify-center min-h-0 shrink-0">
           <div className="w-full h-full">
             <CardPrivacidade />

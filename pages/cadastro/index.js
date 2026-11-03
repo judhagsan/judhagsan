@@ -20,7 +20,7 @@ export default function CadastroPage() {
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      <div className="relative z-10 w-full h-full flex flex-col p-2 lg:p-4 gap-6 overflow-y-auto lg:overflow-hidden font-mono">
+      <div className="relative z-10 w-full h-full flex flex-col p-2 lg:p-4 gap-6 overflow-y-auto lg:overflow-hidden">
         <div className="lg:flex-1 flex flex-col lg:flex-row items-stretch justify-start min-h-0 gap-4 lg:gap-6 shrink-0">
           <div
             className={`w-full lg:w-1/3 lg:h-auto lg:self-center shrink-0 lg:relative lg:z-10 lg:transition-transform lg:duration-[300ms] lg:ease-out ${

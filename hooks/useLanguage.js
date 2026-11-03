@@ -21,6 +21,9 @@ const translations = {
     Cadastrar: "Cadastrar",
     Sair: "Sair",
     Voltar: "Voltar",
+    Menu: "Menu",
+    "Abrir menu": "Abrir menu",
+    "Fechar menu": "Fechar menu",
 
     // Pindorama Card
     pindorama_desc:
@@ -275,6 +278,9 @@ const translations = {
     Cadastrar: "Register",
     Sair: "Sign Out",
     Voltar: "Back",
+    Menu: "Menu",
+    "Abrir menu": "Open menu",
+    "Fechar menu": "Close menu",
 
     // Pindorama Card
     pindorama_desc:

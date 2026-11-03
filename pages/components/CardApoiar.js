@@ -8,6 +8,7 @@ import {
   CreditCardIcon,
 } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
+import CardNormal from "./CardNormal";
 
 const ADVANTAGES = ["Vantagem selo", "Vantagem discord", "Vantagem mural"];
 
@@ -18,7 +19,7 @@ const SDK_URL = "https://sdk.mercadopago.com/js/v2";
 // formulário no próximo carregamento.
 const LIVE_STATUSES = ["authorized", "paused", "pending"];
 
-const INPUT_CLASS = "win-input w-full text-base font-mono";
+const INPUT_CLASS = "win-input w-full";
 
 // Apoio mensal ao Pindorama, cobrado pelo Mercado Pago.
 //
@@ -373,7 +374,7 @@ export default function CardApoiar() {
               type={expanded ? "submit" : "button"}
               onClick={expanded ? undefined : () => setExpanded(true)}
               disabled={status !== "pronto"}
-              className="win-btn-primary flex-1 min-w-[9rem] py-2.5 text-sm font-bold uppercase tracking-wider"
+              className="win-btn-primary flex-1 min-w-[9rem] text-sm"
             >
               <CreditCardIcon size={16} />
               <span>
@@ -387,7 +388,7 @@ export default function CardApoiar() {
               type="button"
               onClick={handlePix}
               disabled={status !== "pronto"}
-              className="win-btn flex-1 min-w-[9rem] py-2.5 text-sm font-bold uppercase tracking-wider"
+              className="win-btn flex-1 min-w-[9rem] py-2.5 text-sm font-bold"
             >
               <ZapIcon size={16} />
               <span>{t("Pagar com Pix")}</span>
@@ -593,7 +594,7 @@ function SubscriptionState({
               type="button"
               onClick={onPix}
               disabled={busy}
-              className="win-btn-primary flex-1 min-w-[9rem] py-2.5 text-sm font-bold uppercase tracking-wider"
+              className="win-btn-primary flex-1 min-w-[9rem] text-sm"
             >
               <ZapIcon size={16} />
               <span>{t("Pagar com Pix")}</span>
@@ -604,7 +605,7 @@ function SubscriptionState({
             type="button"
             onClick={onCancel}
             disabled={busy}
-            className="win-btn flex-1 min-w-[9rem] py-2.5 text-sm font-bold uppercase tracking-wider text-zinc-400 hover:text-white"
+            className="win-btn win-btn-muted flex-1 min-w-[9rem] py-2.5 text-sm font-bold"
           >
             <span>
               {cancelling ? t("Cancelando...") : t("Cancelar assinatura")}
@@ -669,7 +670,7 @@ function Advantages({ t }) {
         {ADVANTAGES.map((key) => (
           <li
             key={key}
-            className="flex items-center gap-1.5 text-sm font-mono leading-tight text-white whitespace-nowrap"
+            className="flex items-center gap-1.5 text-sm leading-tight text-white whitespace-nowrap"
           >
             <CheckCircleFillIcon size={14} className="text-white shrink-0" />
             {t(key)}
@@ -682,27 +683,13 @@ function Advantages({ t }) {
 
 function Shell({ title, children }) {
   return (
-    <div className="w-full font-mono">
-      <div className="rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col relative animate-[fadeIn_0.2s_ease-out]">
-        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
-          <div className="flex items-center gap-2.5 shrink-0">
-            <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />
-            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
-            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
-          </div>
-          <div className="flex items-center gap-2 min-w-0 mx-2">
-            <HeartFillIcon size={17} className="shrink-0 text-black" />
-            <h2 className="min-w-0 text-sm lg:text-base font-mono font-bold tracking-wider uppercase truncate text-black">
-              {title}
-            </h2>
-          </div>
-          <div
-            className="w-20 shrink-0 pointer-events-none"
-            aria-hidden="true"
-          />
-        </div>
-        <div className="p-4 lg:p-5 relative z-10 font-mono">{children}</div>
-      </div>
-    </div>
+    <CardNormal
+      title={title}
+      icon={HeartFillIcon}
+      className="animate-[fadeIn_0.2s_ease-out]"
+      bodyClassName="p-4 lg:p-5"
+    >
+      {children}
+    </CardNormal>
   );
 }

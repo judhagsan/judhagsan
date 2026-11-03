@@ -11,6 +11,7 @@ import {
   CheckCircleFillIcon,
 } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
+import CardNormal from "./CardNormal";
 
 function DiscordIcon({ size = 16, className }) {
   return (
@@ -120,9 +121,8 @@ export default function CardUsuario({ user }) {
         }),
       });
 
-      const body = await response.json().catch(() => ({}));
-
       if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
         setPasswordError(body.message || t("Erro alterar senha"));
         return;
       }
@@ -164,297 +164,263 @@ export default function CardUsuario({ user }) {
   }
 
   return (
-    <div className="w-full h-auto font-mono">
-      <div className="rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col h-auto relative">
-        {/* Barra de Título Branca com Texto Preto */}
-        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
-          <div className="flex items-center gap-2.5 shrink-0">
-            <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />
-            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
-            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
+    <CardNormal
+      title={t("Bem vindo", { username: user?.username })}
+      icon={PersonFillIcon}
+      bodyClassName="p-4 lg:p-5 flex flex-col"
+    >
+      {isConfirming ? (
+        <form
+          onSubmit={handleDelete}
+          className="flex flex-col items-center justify-center text-center gap-4 text-white text-sm animate-[fadeIn_0.15s_ease-out]"
+        >
+          <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black">
+            <AlertFillIcon size={24} />
           </div>
-
-          <div className="flex items-center gap-2 min-w-0 mx-2">
-            <PersonFillIcon size={17} className="shrink-0 text-black" />
-            <span className="text-sm lg:text-base font-mono font-bold tracking-wider uppercase text-black truncate">
-              USER::{user?.username}
+          <p className="text-base font-bold uppercase tracking-wider text-white">
+            {t("Excluir conta")}
+          </p>
+          <p className="text-sm text-zinc-400 leading-relaxed max-w-xs">
+            {t("Texto excluir conta aviso")}
+          </p>
+          <label className="flex flex-col gap-1 w-full max-w-xs">
+            <span className="text-sm uppercase tracking-wider text-zinc-400">
+              {t("Digite para confirmar", { username: user?.username })}
             </span>
+            <input
+              type="text"
+              value={confirmationInput}
+              onChange={(e) => setConfirmationInput(e.target.value)}
+              autoComplete="off"
+              className="win-input text-center"
+              placeholder={user?.username}
+            />
+          </label>
+
+          {errorMessage && (
+            <div className="border border-white bg-zinc-950 p-2 text-sm text-white">
+              {errorMessage}
+            </div>
+          )}
+
+          <div className="flex gap-3 mt-2">
+            <button
+              type="button"
+              onClick={() => {
+                setIsConfirming(false);
+                setConfirmationInput("");
+                setErrorMessage("");
+              }}
+              disabled={isDeleting}
+              className="win-btn text-sm"
+            >
+              {t("Cancelar")}
+            </button>
+            <button
+              type="submit"
+              disabled={!confirmationMatches || isDeleting}
+              className="win-btn-primary text-sm"
+            >
+              <TrashIcon size={14} />
+              <span>{isDeleting ? t("Excluindo...") : t("Excluir")}</span>
+            </button>
+          </div>
+        </form>
+      ) : isChangingPassword ? (
+        <form
+          onSubmit={handleChangePassword}
+          className="flex flex-col items-center justify-center text-center gap-4 text-white text-sm animate-[fadeIn_0.15s_ease-out]"
+        >
+          <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black">
+            <KeyIcon size={22} />
+          </div>
+          <p className="text-base font-bold uppercase tracking-wider text-white">
+            {t("Alterar senha")}
+          </p>
+          <p className="text-sm text-zinc-400 leading-relaxed max-w-xs">
+            {t("Texto alterar senha aviso")}
+          </p>
+
+          <label className="flex flex-col gap-1 w-full max-w-xs text-left">
+            <span className="text-sm uppercase tracking-wider text-zinc-400">
+              {t("Senha atual")}
+            </span>
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              autoComplete="current-password"
+              className="win-input"
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 w-full max-w-xs text-left">
+            <span className="text-sm uppercase tracking-wider text-zinc-400">
+              {t("Nova senha")}{" "}
+              <span className="normal-case text-zinc-500">
+                ({t("min_char")})
+              </span>
+            </span>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              autoComplete="new-password"
+              className="win-input"
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 w-full max-w-xs text-left">
+            <span className="text-sm uppercase tracking-wider text-zinc-400">
+              {t("Confirmar nova senha")}
+            </span>
+            <input
+              type="password"
+              value={newPasswordConfirmation}
+              onChange={(e) => setNewPasswordConfirmation(e.target.value)}
+              autoComplete="new-password"
+              className="win-input"
+            />
+          </label>
+
+          {passwordError && (
+            <div className="border border-white bg-zinc-950 p-2 text-sm text-white">
+              {passwordError}
+            </div>
+          )}
+
+          <div className="flex gap-3 mt-2">
+            <button
+              type="button"
+              onClick={resetPasswordForm}
+              disabled={isSavingPassword}
+              className="win-btn text-sm"
+            >
+              {t("Cancelar")}
+            </button>
+            <button
+              type="submit"
+              disabled={isSavingPassword}
+              className="win-btn-primary text-sm"
+            >
+              <KeyIcon size={14} />
+              <span>{isSavingPassword ? t("Salvando...") : t("Salvar")}</span>
+            </button>
+          </div>
+        </form>
+      ) : (
+        <div className="flex flex-col gap-4 text-white text-sm animate-[fadeIn_0.2s_ease-out]">
+          {/* Identidade */}
+          <div className="flex items-center gap-4 text-left border-b border-zinc-800 pb-4">
+            <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black shrink-0">
+              <PersonFillIcon size={24} />
+            </div>
+            <div className="flex flex-col gap-0.5 min-w-0">
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-bold uppercase tracking-wider text-white truncate">
+                  {user?.username}
+                </h2>
+                {isSupporter && (
+                  <span className="border border-amber-400 bg-amber-400 text-black px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider rounded-full shrink-0">
+                    {t("Apoiador")}
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-zinc-400 break-all">{user?.email}</p>
+            </div>
           </div>
 
-          <div
-            className="w-20 shrink-0 pointer-events-none"
-            aria-hidden="true"
-          />
-        </div>
-
-        <div className="p-4 lg:p-5 flex flex-col h-auto">
-          {isConfirming ? (
-            <form
-              onSubmit={handleDelete}
-              className="flex flex-col items-center justify-center text-center gap-4 text-white text-sm animate-[fadeIn_0.15s_ease-out]"
-            >
-              <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black">
-                <AlertFillIcon size={24} />
+          {/* Seção de Apoiador */}
+          {isSupporter && (
+            <div className="flex flex-col gap-3 py-1 border-b border-zinc-800 pb-4">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-zinc-400">
+                <span>{t("Apoiador")}</span>
               </div>
-              <p className="text-base font-bold uppercase tracking-wider text-white">
-                {t("Excluir conta")}
-              </p>
-              <p className="text-sm text-zinc-400 leading-relaxed max-w-xs">
-                {t("Texto excluir conta aviso")}
-              </p>
-              <label className="flex flex-col gap-1 w-full max-w-xs">
-                <span className="text-sm uppercase tracking-wider text-zinc-400">
-                  {t("Digite para confirmar", { username: user?.username })}
-                </span>
-                <input
-                  type="text"
-                  value={confirmationInput}
-                  onChange={(e) => setConfirmationInput(e.target.value)}
-                  autoComplete="off"
-                  className="win-input text-center text-base"
-                  placeholder={user?.username}
-                />
-              </label>
 
-              {errorMessage && (
+              {discordResult === "connected" && (
                 <div className="border border-white bg-zinc-950 p-2 text-sm text-white">
-                  {errorMessage}
+                  [OK] {t("Discord conectado com sucesso")}
                 </div>
               )}
-
-              <div className="flex gap-3 mt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsConfirming(false);
-                    setConfirmationInput("");
-                    setErrorMessage("");
-                  }}
-                  disabled={isDeleting}
-                  className="win-btn text-sm"
-                >
-                  {t("Cancelar")}
-                </button>
-                <button
-                  type="submit"
-                  disabled={!confirmationMatches || isDeleting}
-                  className="win-btn-primary text-sm"
-                >
-                  <TrashIcon size={14} />
-                  <span>{isDeleting ? t("Excluindo...") : t("Excluir")}</span>
-                </button>
-              </div>
-            </form>
-          ) : isChangingPassword ? (
-            <form
-              onSubmit={handleChangePassword}
-              className="flex flex-col items-center justify-center text-center gap-4 text-white text-sm animate-[fadeIn_0.15s_ease-out]"
-            >
-              <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black">
-                <KeyIcon size={22} />
-              </div>
-              <p className="text-base font-bold uppercase tracking-wider text-white">
-                {t("Alterar senha")}
-              </p>
-              <p className="text-sm text-zinc-400 leading-relaxed max-w-xs">
-                {t("Texto alterar senha aviso")}
-              </p>
-
-              <label className="flex flex-col gap-1 w-full max-w-xs text-left">
-                <span className="text-sm uppercase tracking-wider text-zinc-400">
-                  {t("Senha atual")}
-                </span>
-                <input
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  autoComplete="current-password"
-                  className="win-input text-base"
-                />
-              </label>
-
-              <label className="flex flex-col gap-1 w-full max-w-xs text-left">
-                <span className="text-sm uppercase tracking-wider text-zinc-400">
-                  {t("Nova senha")}{" "}
-                  <span className="normal-case text-zinc-500">
-                    ({t("min_char")})
-                  </span>
-                </span>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  autoComplete="new-password"
-                  minLength={8}
-                  className="win-input text-base"
-                />
-              </label>
-
-              <label className="flex flex-col gap-1 w-full max-w-xs text-left">
-                <span className="text-sm uppercase tracking-wider text-zinc-400">
-                  {t("Confirmar")}
-                </span>
-                <input
-                  type="password"
-                  value={newPasswordConfirmation}
-                  onChange={(e) => setNewPasswordConfirmation(e.target.value)}
-                  autoComplete="new-password"
-                  className="win-input text-base"
-                />
-              </label>
-
-              {passwordError && (
+              {discordResult === "error" && (
                 <div className="border border-white bg-zinc-950 p-2 text-sm text-white">
-                  {passwordError}
+                  [!]{" "}
+                  {discordReason === "already_linked"
+                    ? t("Discord ja vinculado")
+                    : t("Erro ao conectar Discord")}
                 </div>
               )}
 
-              <div className="flex gap-3 mt-2">
-                <button
-                  type="button"
-                  onClick={resetPasswordForm}
-                  disabled={isSavingPassword}
-                  className="win-btn text-sm"
-                >
-                  {t("Cancelar")}
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSavingPassword}
-                  className="win-btn-primary text-sm"
-                >
-                  <KeyIcon size={14} />
-                  <span>
-                    {isSavingPassword ? t("Salvando...") : t("Salvar")}
+              <div className="flex flex-wrap items-center gap-2">
+                {user?.discord_connected ? (
+                  <span className="inline-flex items-center gap-1.5 border border-white px-2.5 py-1 text-sm text-white bg-zinc-950">
+                    <CheckCircleFillIcon size={12} />
+                    {t("Discord conectado")}
                   </span>
-                </button>
-              </div>
-            </form>
-          ) : (
-            <div className="flex flex-col gap-4 text-white text-sm animate-[fadeIn_0.2s_ease-out]">
-              {/* Identidade */}
-              <div className="flex items-center gap-4 text-left border-b border-zinc-800 pb-4">
-                <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-white bg-black shrink-0">
-                  <PersonFillIcon size={24} />
-                </div>
-                <div className="flex flex-col gap-0.5 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-base font-bold uppercase tracking-wider text-white truncate">
-                      {user?.username}
-                    </h2>
-                    {isSupporter && (
-                      <span className="border border-amber-400 bg-amber-400 text-black px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider rounded-full shrink-0">
-                        {t("Apoiador")}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-sm text-zinc-400 break-all">
-                    {user?.email}
-                  </p>
-                </div>
-              </div>
-
-              {/* Seção de Apoiador */}
-              {isSupporter && (
-                <div className="flex flex-col gap-3 py-1 border-b border-zinc-800 pb-4">
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-zinc-400">
-                    <span>STATUS::SUPPORTER</span>
-                  </div>
-
-                  {discordResult === "connected" && (
-                    <div className="border border-white bg-zinc-950 p-2 text-sm text-white">
-                      [OK] {t("Discord conectado com sucesso")}
-                    </div>
-                  )}
-                  {discordResult === "error" && (
-                    <div className="border border-white bg-zinc-950 p-2 text-sm text-white">
-                      [!]{" "}
-                      {discordReason === "already_linked"
-                        ? t("Discord ja vinculado")
-                        : t("Erro ao conectar Discord")}
-                    </div>
-                  )}
-
-                  <div className="flex flex-wrap items-center gap-2">
-                    {user?.discord_connected ? (
-                      <span className="inline-flex items-center gap-1.5 border border-white px-2.5 py-1 text-sm text-white bg-zinc-950">
-                        <CheckCircleFillIcon size={12} />
-                        {t("Discord conectado")}
-                      </span>
-                    ) : (
-                      <a
-                        href="/api/v1/discord/connect"
-                        className="win-btn text-sm inline-flex items-center gap-2"
-                      >
-                        <DiscordIcon size={14} />
-                        {t("Entrar no Discord")}
-                      </a>
-                    )}
-
-                    <Link
-                      href="/apoiadores"
-                      className="win-btn text-sm inline-flex items-center gap-1.5"
-                    >
-                      <HeartFillIcon size={12} />
-                      {t("Ver mural de apoiadores")}
-                    </Link>
-                  </div>
-                </div>
-              )}
-
-              {/* Ações de Conta */}
-              <div className="flex flex-col items-start gap-2 pt-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={handleExport}
-                    disabled={isExporting}
-                    className="win-btn text-sm inline-flex items-center gap-1.5"
-                  >
-                    <PackageIcon size={12} />
-                    {isExporting
-                      ? t("Exportando...")
-                      : t("Exportar meus dados")}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPasswordChanged(false);
-                      setIsChangingPassword(true);
-                    }}
-                    className="win-btn text-sm inline-flex items-center gap-1.5"
-                  >
-                    <KeyIcon size={12} />
-                    {t("Alterar senha")}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setIsConfirming(true)}
-                    className="win-btn text-sm inline-flex items-center gap-1.5 text-zinc-400 hover:text-white"
-                  >
-                    <TrashIcon size={12} />
-                    {t("Excluir conta")}
-                  </button>
-                </div>
-
-                {exportError && (
-                  <p className="text-white text-sm border border-white p-2 mt-1">
-                    {exportError}
-                  </p>
+                ) : (
+                  <a href="/api/v1/discord/connect" className="win-btn text-sm">
+                    <DiscordIcon size={14} />
+                    {t("Entrar no Discord")}
+                  </a>
                 )}
 
-                {passwordChanged && (
-                  <p className="text-white text-sm border border-white p-2 mt-1 bg-zinc-900">
-                    [OK] {t("Senha alterada")}
-                  </p>
-                )}
+                <Link href="/apoiadores" className="win-btn text-sm gap-1.5">
+                  <HeartFillIcon size={12} />
+                  {t("Ver mural de apoiadores")}
+                </Link>
               </div>
             </div>
           )}
+
+          {/* Ações de Conta */}
+          <div className="flex flex-col items-start gap-2 pt-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={handleExport}
+                disabled={isExporting}
+                className="win-btn text-sm gap-1.5"
+              >
+                <PackageIcon size={12} />
+                {isExporting ? t("Exportando...") : t("Exportar meus dados")}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setPasswordChanged(false);
+                  setIsChangingPassword(true);
+                }}
+                className="win-btn text-sm gap-1.5"
+              >
+                <KeyIcon size={12} />
+                {t("Alterar senha")}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsConfirming(true)}
+                className="win-btn win-btn-muted text-sm gap-1.5"
+              >
+                <TrashIcon size={12} />
+                {t("Excluir conta")}
+              </button>
+            </div>
+
+            {exportError && (
+              <p className="text-white text-sm border border-white p-2 mt-1">
+                {exportError}
+              </p>
+            )}
+
+            {passwordChanged && (
+              <p className="text-white text-sm border border-white p-2 mt-1 bg-zinc-900">
+                [OK] {t("Senha alterada")}
+              </p>
+            )}
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </CardNormal>
   );
 }

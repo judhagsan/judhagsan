@@ -2,6 +2,7 @@ import { useState } from "react";
 import useSWR from "swr";
 import { DeviceDesktopIcon } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
+import CardNormal from "./CardNormal";
 
 const fetcher = (url) =>
   fetch(url, { credentials: "include" }).then((r) =>
@@ -21,7 +22,7 @@ function RankedBars({ rows, total }) {
   const top = rows[0]?.count || 1;
 
   return (
-    <ul className="flex flex-col gap-3 font-mono">
+    <ul className="flex flex-col gap-3">
       {rows.map((row) => (
         <li key={row.value} className="flex flex-col gap-1.5">
           <div className="flex items-baseline gap-2 min-w-0">
@@ -68,102 +69,82 @@ export default function CardAdminHardware() {
     .filter(Boolean);
 
   return (
-    <div className="w-full font-mono">
-      <div className="rounded-2xl overflow-hidden border-2 border-white bg-black bg-noise flex flex-col relative card-enter">
-        {/* Barra de Título Branca com Texto Preto */}
-        <div className="h-10 shrink-0 flex items-center justify-between px-3.5 border-b-2 border-black bg-white text-black select-none">
-          <div className="flex items-center gap-2.5 shrink-0">
-            <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />
-            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
-            <span className="w-5 h-5 rounded-full bg-black shrink-0" />
-          </div>
+    <CardNormal
+      title={t("Hardware dos usuarios")}
+      icon={DeviceDesktopIcon}
+      className="card-enter"
+      bodyClassName="p-4 lg:p-5 flex flex-col gap-4 text-white"
+    >
+      {isLoading && (
+        <p className="text-zinc-500 text-center py-4 text-sm">
+          [{t("Carregando...")}]
+        </p>
+      )}
 
-          <div className="flex items-center gap-2 min-w-0 mx-2">
-            <DeviceDesktopIcon size={17} className="shrink-0 text-black" />
-            <h2 className="text-sm lg:text-base font-mono font-bold tracking-wider uppercase text-black truncate">
-              {t("Hardware dos usuarios")}
-            </h2>
-          </div>
+      {error && !isLoading && (
+        <p className="text-white border border-white p-2.5 text-center text-sm">
+          [!] {t("Erro ao carregar hardware")}
+        </p>
+      )}
 
+      {!isLoading && !error && total === 0 && (
+        <p className="text-zinc-500 text-center py-4 text-sm">
+          {t("Nenhum dispositivo registrado ainda")}
+        </p>
+      )}
+
+      {total > 0 && (
+        <>
+          {profile.length > 0 && (
+            <div className="flex flex-col gap-1 border-b border-zinc-800 pb-3">
+              <span className="text-xs uppercase tracking-wider text-zinc-500">
+                {t("Perfil mais comum")}
+              </span>
+              <p className="text-base font-bold text-white leading-snug">
+                {profile.join(" · ")}
+              </p>
+              <span className="text-xs text-zinc-400">
+                {t("O mais frequente entre n dispositivos", { n: total })}
+              </span>
+            </div>
+          )}
+
+          {/* Filtros em botões estilo retro */}
           <div
-            className="w-20 shrink-0 pointer-events-none"
-            aria-hidden="true"
-          />
-        </div>
+            className="flex flex-wrap gap-1.5"
+            role="tablist"
+            aria-label={t("Hardware dos usuarios")}
+          >
+            {DIMENSIONS.map((each) => {
+              const active = each.key === dimension;
+              return (
+                <button
+                  key={each.key}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setDimension(each.key)}
+                  className={`cursor-pointer rounded-full text-xs px-3.5 py-1 border transition-colors ${
+                    active
+                      ? "bg-cyan-400 border-cyan-400 text-black font-bold"
+                      : "border-zinc-800 bg-black text-zinc-400 hover:text-cyan-400 hover:border-zinc-600"
+                  }`}
+                >
+                  {t(each.label)}
+                </button>
+              );
+            })}
+          </div>
 
-        <div className="p-4 lg:p-5 flex flex-col gap-4 text-white">
-          {isLoading && (
-            <p className="text-zinc-500 text-center py-4 text-sm">
-              [{t("Carregando...")}]
+          {rows.length > 0 ? (
+            <RankedBars rows={rows} total={total} />
+          ) : (
+            <p className="text-zinc-500 text-sm py-2">
+              {t("Sem dados nesta categoria")}
             </p>
           )}
-
-          {error && !isLoading && (
-            <p className="text-white border border-white p-2.5 text-center text-sm">
-              [!] {t("Erro ao carregar hardware")}
-            </p>
-          )}
-
-          {!isLoading && !error && total === 0 && (
-            <p className="text-zinc-500 text-center py-4 text-sm">
-              {t("Nenhum dispositivo registrado ainda")}
-            </p>
-          )}
-
-          {total > 0 && (
-            <>
-              {profile.length > 0 && (
-                <div className="flex flex-col gap-1 border-b border-zinc-800 pb-3">
-                  <span className="text-xs uppercase tracking-wider text-zinc-500">
-                    {t("Perfil mais comum")}
-                  </span>
-                  <p className="text-base font-bold text-white leading-snug">
-                    {profile.join(" · ")}
-                  </p>
-                  <span className="text-xs text-zinc-400">
-                    {t("O mais frequente entre n dispositivos", { n: total })}
-                  </span>
-                </div>
-              )}
-
-              {/* Filtros em botões estilo retro */}
-              <div
-                className="flex flex-wrap gap-1.5"
-                role="tablist"
-                aria-label={t("Hardware dos usuarios")}
-              >
-                {DIMENSIONS.map((each) => {
-                  const active = each.key === dimension;
-                  return (
-                    <button
-                      key={each.key}
-                      type="button"
-                      role="tab"
-                      aria-selected={active}
-                      onClick={() => setDimension(each.key)}
-                      className={`cursor-pointer rounded-full text-xs px-3.5 py-1 border transition-colors ${
-                        active
-                          ? "bg-cyan-400 border-cyan-400 text-black font-bold"
-                          : "border-zinc-800 bg-black text-zinc-400 hover:text-cyan-400 hover:border-zinc-600"
-                      }`}
-                    >
-                      {t(each.label)}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {rows.length > 0 ? (
-                <RankedBars rows={rows} total={total} />
-              ) : (
-                <p className="text-zinc-500 text-sm py-2">
-                  {t("Sem dados nesta categoria")}
-                </p>
-              )}
-            </>
-          )}
-        </div>
-      </div>
-    </div>
+        </>
+      )}
+    </CardNormal>
   );
 }

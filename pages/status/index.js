@@ -21,9 +21,9 @@ export default function StatusPage() {
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      <div className="relative z-10 w-full h-full flex flex-col p-4 lg:p-6 overflow-y-auto w-full items-center font-mono">
+      <div className="relative z-10 w-full h-full flex flex-col p-4 lg:p-6 overflow-y-auto items-center">
         <div className="w-full max-w-4xl flex flex-col items-center mt-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white bg-black text-white mb-8 text-xs font-mono uppercase tracking-widest">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white bg-black text-white mb-8 text-xs uppercase tracking-widest">
             <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
             <span>{t("Status do Sistema")}</span>
           </div>
@@ -53,8 +53,8 @@ function UpdatedAt() {
   }
 
   return (
-    <CardNormal title={t("Visao Geral")} icon={PulseIcon}>
-      <div className="flex flex-col gap-2 p-3 border border-zinc-800 bg-black h-full justify-center font-mono">
+    <CardNormal title={t("Visao Geral")} icon={PulseIcon} className="lg:h-full">
+      <div className="flex flex-col gap-2 p-3 border border-zinc-800 bg-black h-full justify-center">
         <span className="text-zinc-400 uppercase text-xs tracking-wider">
           {t("Ultima Atualizacao")}
         </span>
@@ -68,7 +68,12 @@ function UpdatedAt() {
           {t("Status Report")}
         </span>
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-white shrink-0 animate-ping" />
+          {/* O ping se expande e some; o ponto fixo por baixo é o que fica
+              visível entre um pulso e outro. */}
+          <span className="relative flex w-2 h-2 shrink-0">
+            <span className="absolute inline-flex w-full h-full rounded-full bg-white opacity-75 animate-ping" />
+            <span className="relative inline-flex w-2 h-2 rounded-full bg-white" />
+          </span>
           <span className="text-sm text-white">
             {isLoading
               ? t("Buscando telemetria...")
@@ -87,13 +92,17 @@ function DatabaseStatus() {
   const { t } = useLanguage();
 
   return (
-    <CardNormal title={t("Banco de Dados")} icon={DatabaseIcon}>
+    <CardNormal
+      title={t("Banco de Dados")}
+      icon={DatabaseIcon}
+      className="lg:h-full"
+    >
       {isLoading || !data ? (
-        <div className="flex items-center justify-center h-full min-h-[140px] text-zinc-500 border border-zinc-800 bg-black font-mono">
+        <div className="flex items-center justify-center h-full min-h-[140px] text-zinc-500 border border-zinc-800 bg-black">
           <span className="text-sm">[{t("Carregando metricas...")}]</span>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3 h-full font-mono">
+        <div className="grid grid-cols-2 gap-3 h-full">
           <div className="flex flex-col gap-1 p-3 border border-zinc-800 bg-black justify-center">
             <span className="text-zinc-400 uppercase text-xs tracking-wider">
               {t("Versao (PostgreSQL)")}
@@ -137,7 +146,7 @@ function DatabaseStatus() {
                 }}
               />
             </div>
-            <div className="flex justify-between mt-1 text-xs text-zinc-400 font-mono">
+            <div className="flex justify-between mt-1 text-xs text-zinc-400">
               <span>0%</span>
               <span>
                 {t("Uso")}:{" "}

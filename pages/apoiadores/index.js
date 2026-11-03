@@ -26,7 +26,7 @@ export default function ApoiadoresPage() {
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      <div className="relative z-10 w-full h-full flex flex-col items-center p-4 lg:p-10 overflow-y-auto animate-[fadeIn_0.2s_ease-out] font-mono">
+      <div className="relative z-10 w-full h-full flex flex-col items-center p-4 lg:p-10 overflow-y-auto animate-[fadeIn_0.2s_ease-out]">
         {/* Header */}
         <div className="flex flex-col items-center text-center gap-3 mt-6 lg:mt-12 mb-8">
           <div className="w-14 h-14 border-2 border-white flex items-center justify-center text-white bg-black">
@@ -35,7 +35,7 @@ export default function ApoiadoresPage() {
           <h1 className="text-xl lg:text-2xl font-bold tracking-widest uppercase text-white">
             {t("Apoiadores")}
           </h1>
-          <p className="text-zinc-400 max-w-xl leading-relaxed text-sm lg:text-base font-mono">
+          <p className="text-zinc-400 max-w-xl leading-relaxed text-sm lg:text-base">
             {t("Texto agradecimento apoiadores")}
           </p>
         </div>
@@ -62,7 +62,7 @@ export default function ApoiadoresPage() {
             {supporters.map((supporterItem) => (
               <span
                 key={supporterItem.username}
-                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white bg-black text-white text-sm font-mono tracking-wider transition-colors hover:bg-white hover:text-black"
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white bg-black text-white text-sm tracking-wider transition-colors hover:bg-white hover:text-black"
               >
                 <HeartFillIcon size={12} />
                 <span>{supporterItem.username}</span>
@@ -74,10 +74,7 @@ export default function ApoiadoresPage() {
         {/* CTA para quem ainda não apoia */}
         {!isSupporter && (
           <div className="mt-10 flex flex-col items-center gap-2 animate-[fadeIn_0.2s_ease-out]">
-            <Link
-              href="/apoiar"
-              className="win-btn-primary px-6 py-2.5 text-sm inline-flex items-center gap-2 font-bold uppercase tracking-wider"
-            >
+            <Link href="/apoiar" className="win-btn-primary text-sm">
               <HeartFillIcon size={14} />
               <span>{t("Quero apoiar o Pindorama")}</span>
             </Link>

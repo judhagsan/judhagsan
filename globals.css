@@ -17,6 +17,9 @@
   --font-size-lg: 1.225rem;
   --font-size-xl: 1.375rem;
   --font-size-2xl: 1.625rem;
+  /* Grão analógico estático. Como token do tema ele gera o utilitário
+     `bg-noise`, que também vale dentro de `@apply`. O PNG tem 128px e repete
+     no tamanho natural, então não precisa de `background-size`. */
   --background-image-noise: url("/noise.png");
 }
 
@@ -72,66 +75,48 @@
   }
 }
 
-@layer utilities {
-  /* Textura de grão estática de filme analógico */
-  .bg-noise {
-    background-image: url("/noise.png");
-    background-size: 128px 128px;
-    background-repeat: repeat;
-  }
-
-  /* Painel de janela padrão inspirado na vinheta do Pindorama */
+/* Peças da linguagem de janelas. Ficam na camada `components`, e não em
+   `utilities`, de propósito: o utilitário escrito junto no JSX (`text-sm`,
+   `py-3`, `border-red-400`) precisa vencer o padrão da classe. Dentro de uma
+   mesma camada vence a regra declarada por último, e estas vinham depois de
+   todo o Tailwind — anulavam qualquer ajuste feito no ponto de uso. */
+@layer components {
+  /* Moldura de janela. A barra de título mora no CardNormal. */
   .win-panel {
-    @apply bg-black border border-white text-white relative bg-noise;
+    @apply relative flex w-full flex-col overflow-hidden rounded-2xl border-2 border-white bg-black bg-noise;
   }
 
-  /* Janela em destaque com borda dupla / traço nítido */
-  .win-panel-active {
-    @apply bg-black border-2 border-white text-white relative bg-noise;
-  }
-
-  /* Barra de título de janela escura */
-  .win-titlebar {
-    @apply shrink-0 flex items-center justify-between px-3 py-2 border-b border-zinc-700 bg-black text-white text-xs uppercase tracking-wider select-none;
-  }
-
-  /* Barra de título invertida (fundo branco, texto preto - como o Main Window "JUDHAGSAN") */
-  .win-titlebar-inverted {
-    @apply shrink-0 flex items-center justify-between px-3 py-2 border-b-2 border-white bg-white text-black text-xs font-bold uppercase tracking-wider select-none;
-  }
-
-  /* Botão clássico estilo pílula com inversão de contraste no hover */
+  /* Botão em pílula com inversão de contraste no hover */
   .win-btn {
-    @apply cursor-pointer inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full border border-white bg-black text-white text-xs uppercase tracking-wider transition-colors hover:bg-white hover:text-black hover:border-white active:scale-95 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:text-white;
+    @apply cursor-pointer inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full border border-white bg-black text-white text-xs uppercase tracking-wider transition-colors hover:bg-white hover:text-black active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-black disabled:hover:text-white;
   }
 
-  /* Botão principal de ação em pílula (já nasce invertido: fundo branco, texto preto) */
+  /* Variante discreta do .win-btn para ações secundárias (excluir, cancelar):
+     muda só o repouso. Vem depois do .win-btn para vencer a cor dele com a
+     mesma especificidade, enquanto o hover do .win-btn, mais específico,
+     continua invertendo para preto no branco. */
+  .win-btn-muted {
+    @apply text-zinc-400 disabled:hover:text-zinc-400;
+  }
+
+  /* Botão principal em pílula (já nasce invertido: fundo branco, texto preto) */
   .win-btn-primary {
-    @apply cursor-pointer inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full border-2 border-white bg-white text-black text-xs font-bold uppercase tracking-wider transition-colors hover:bg-black hover:text-white active:scale-95 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-black;
+    @apply cursor-pointer inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full border-2 border-white bg-white text-black text-xs font-bold uppercase tracking-wider transition-colors hover:bg-black hover:text-white active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-black;
   }
 
-  /* Input de dados com estética de terminal */
+  /* Campo de dados. `text-base` (16px) de propósito: abaixo disso o Safari
+     do iPhone dá zoom na página ao focar o campo. */
   .win-input {
-    @apply px-3 py-2 bg-black border border-zinc-700 text-white placeholder-zinc-500 text-sm font-mono transition-colors focus:border-white focus:outline-none;
-  }
-
-  /* Retrocompatibilidade com .glass-card e .glass-button adaptados ao novo padrão */
-  .glass-card {
-    @apply bg-black border border-white text-white bg-noise;
-  }
-
-  .glass-button {
-    @apply bg-black text-white border border-white hover:bg-white hover:text-black transition-colors;
-  }
-
-  .text-glow {
-    text-shadow: 0 0 10px #ffffff;
+    @apply px-3 py-2 bg-black border border-zinc-700 text-white placeholder-zinc-500 text-base transition-colors focus:border-white focus:outline-none;
   }
 }
 
-/* Transições e entradas de janela */
-.card-enter.glass-card,
-.card-enter .glass-card,
+/* Entrada das janelas. A classe vale aplicada na própria janela ou num
+   wrapper, mas só anima a moldura (.win-panel): o wrapper do painel lateral
+   já tem animação própria (panelIn no desktop), e esta regra, por estar fora
+   de camada, passaria por cima dela. A escala é discreta de propósito; o
+   "pop" maior é do fadeIn, que segue servindo a ícones e mensagens. A
+   duração acompanha a entrada dos cards centrais (fadeIn 0.12s). */
 .card-enter.win-panel,
 .card-enter .win-panel {
   animation: cardIn 0.12s ease-out;
