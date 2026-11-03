@@ -62,6 +62,9 @@ export default function SamuraiDashboard() {
       <div className="relative z-10 w-full h-full flex flex-col p-2 lg:p-4 gap-6 overflow-y-auto lg:overflow-hidden">
         {/* Seção Central - Card Ativo + Painel Lateral */}
         <div className="lg:flex-1 flex flex-col lg:flex-row items-stretch justify-start min-h-0 gap-4 lg:gap-6 shrink-0">
+          {/* Sem painel aberto, o deslocamento de 100% da própria largura
+              (w-1/3) deixa o card exatamente centralizado; ao abrir o painel
+              ele desliza de volta para a esquerda, abrindo espaço. */}
           <div
             className={`w-full lg:w-1/3 lg:self-center shrink-0 flex flex-col gap-4 lg:relative lg:z-10 lg:transition-transform lg:duration-[300ms] lg:ease-out ${
               activePanel ? "lg:translate-x-0" : "lg:translate-x-full"
@@ -73,7 +76,8 @@ export default function SamuraiDashboard() {
             </div>
           </div>
 
-          {/* Painel lateral para mobile e desktop */}
+          {/* Painel lateral — tela cheia no celular, ao lado do card no
+              desktop. */}
           {activePanel && (
             <div
               className="fixed inset-0 z-[52] bg-black lg:hidden"

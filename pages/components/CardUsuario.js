@@ -97,6 +97,8 @@ export default function CardUsuario({ user }) {
     event.preventDefault();
     if (isSavingPassword) return;
 
+    // Validação no cliente só para o que dá para responder na hora; o resto
+    // (senha atual, complexidade) é a API que decide.
     if (newPassword.length < 8) {
       setPasswordError(t("A senha deve ter no minimo 8 caracteres"));
       return;
@@ -351,6 +353,9 @@ export default function CardUsuario({ user }) {
                 </div>
               )}
 
+              {/* As duas ações do apoiador lado a lado. `flex-wrap` cobre a
+                  coluna estreita do /sessao, onde as duas não cabem na mesma
+                  linha. */}
               <div className="flex flex-wrap items-center gap-2">
                 {user?.discord_connected ? (
                   <span className="inline-flex items-center gap-1.5 border border-white px-2.5 py-1 text-sm text-white bg-zinc-950">
@@ -372,7 +377,8 @@ export default function CardUsuario({ user }) {
             </div>
           )}
 
-          {/* Ações de Conta */}
+          {/* Ações de conta, lado a lado. O erro de exportação fica embaixo
+              para não empurrar os botões de linha. */}
           <div className="flex flex-col items-start gap-2 pt-1">
             <div className="flex flex-wrap items-center gap-2">
               <button

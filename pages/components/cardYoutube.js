@@ -8,11 +8,13 @@ export default function CardYoutube() {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const CHANNEL_ID = "UCVqzru2hZO3pX7IjjkSGDyQ";
+  const CHANNEL_ID = "UCVqzru2hZO3pX7IjjkSGDyQ"; // Channel: @Judhagsan
 
   useEffect(() => {
     const fetchVideos = async () => {
       try {
+        // Server-side proxy do feed RSS do canal (sem chave de API, sem
+        // quota, com cache CDN) — ver pages/api/v1/youtube.
         const response = await fetch("/api/v1/youtube");
         if (!response.ok) throw new Error("API call failed");
 
@@ -31,6 +33,7 @@ export default function CardYoutube() {
         setLoading(false);
       } catch (error) {
         console.error("Error loading videos:", error);
+        // Fallback to mock data on error so the UI doesn't break
         setVideos([
           {
             id: 1,
@@ -47,6 +50,8 @@ export default function CardYoutube() {
     fetchVideos();
   }, [language, t]);
 
+  // Tile "Ver o canal" preenche colunas vazias no desktop; quando ele está
+  // visível, o pill do header some no desktop para não duplicar o link.
   const showsChannelTile = !loading && videos.length > 0 && videos.length < 3;
 
   return (

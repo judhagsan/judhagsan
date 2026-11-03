@@ -1,4 +1,5 @@
-/* Custom Web Fonts — precisa vir antes do import do Tailwind */
+/* Custom Web Fonts — precisa vir antes do import do Tailwind, que é
+   expandido em regras concretas antes da checagem de ordem dos @import */
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap");
 
 @import "tailwindcss";
@@ -9,6 +10,10 @@
 
 @theme {
   --font-outfit: "Outfit", sans-serif;
+  /* O site tem uma fonte só. `font-sans` e `font-mono` continuam existindo
+     como classes do Tailwind, e por padrão cairiam no stack do sistema — o que
+     colocava uma segunda e uma terceira fonte na tela sem ninguém pedir.
+     Apontadas para a Outfit, escrevê-las por hábito não quebra a unidade. */
   --font-sans: "Outfit", sans-serif;
   --font-mono: "Outfit", sans-serif;
   --font-size-xs: 0.8rem;
@@ -144,6 +149,10 @@
   }
 }
 
+/* Entrada do painel lateral (privacidade/contato) no desktop: o painel vem
+   da profundidade, crescendo até o tamanho final enquanto o card central
+   desliza para a esquerda. O card fica na frente pelo z-index, então o painel
+   emerge por trás dele. */
 @keyframes panelIn {
   from {
     transform: scale(0.92);
@@ -153,7 +162,8 @@
   }
 }
 
-/* Letreiro contínuo para apoiadores */
+/* Letreiro dos apoiadores: translada exatamente uma cópia do conteúdo
+   (duplicado no componente) para um loop sem emenda. */
 @keyframes marquee {
   from {
     transform: translateX(0);

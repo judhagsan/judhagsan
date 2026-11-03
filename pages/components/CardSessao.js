@@ -88,6 +88,12 @@ function PlatformButton({ platformKey, primary, compact }) {
   );
 }
 
+/*
+ * `compact` é o modo do painel administrativo: sem o parágrafo de descrição,
+ * só título e botões. O card sai da área central larga e vai para a coluna
+ * estreita da esquerda, onde o texto de divulgação não cabe nem faz sentido —
+ * quem está no painel já conhece o produto.
+ */
 export default function CardSessao({ compact = false }) {
   const { t } = useLanguage();
   const [platform, setPlatform] = useState(null);

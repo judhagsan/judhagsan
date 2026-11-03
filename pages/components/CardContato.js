@@ -30,7 +30,7 @@ export default function CardContato({ onClose }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [status, setStatus] = useState("idle");
+  const [status, setStatus] = useState("idle"); // idle, loading, success, error
   const [errorMessage, setErrorMessage] = useState("");
 
   async function handleSubmit(e) {

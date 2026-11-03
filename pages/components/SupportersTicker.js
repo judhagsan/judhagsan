@@ -4,6 +4,9 @@ import useLanguage from "hooks/useLanguage";
 const fetcher = (url) =>
   fetch(url).then((r) => (r.ok ? r.json() : Promise.reject(r)));
 
+// Faixa de "créditos" da home: os nomes de quem apoia rolam continuamente,
+// como os créditos finais de uma animação. Some quando não há apoiadores
+// públicos e para de rolar com prefers-reduced-motion.
 export default function SupportersTicker() {
   const { t } = useLanguage();
   const { data } = useSWR("/api/v1/supporters", fetcher, {
@@ -13,6 +16,8 @@ export default function SupportersTicker() {
   const supporters = data?.supporters || [];
   if (supporters.length === 0) return null;
 
+  // Repete o conjunto até ter corpo suficiente e duplica para o loop
+  // contínuo (a animação translada exatamente uma cópia: -50%).
   const repeats = Math.max(1, Math.ceil(8 / supporters.length));
   const segment = Array.from({ length: repeats }).flatMap(() => supporters);
   const loop = [...segment, ...segment];
@@ -28,7 +33,9 @@ export default function SupportersTicker() {
           </span>
         </div>
 
-        {/* Letreiro contínuo */}
+        {/* Créditos rolando. O espaçamento entre nomes vem do `pr-6` de cada
+            item (não de `gap` no container): assim cada item tem largura
+            idêntica e o translateX(-50%) fecha o loop sem emenda visível. */}
         <div className="flex-1 min-w-0 overflow-hidden">
           <div className="flex w-max items-center whitespace-nowrap animate-[marquee_45s_linear_infinite] hover:[animation-play-state:paused] motion-reduce:animate-none">
             {loop.map((supporterItem, index) => (

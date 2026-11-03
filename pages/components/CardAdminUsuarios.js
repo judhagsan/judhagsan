@@ -22,6 +22,12 @@ function formatDate(iso, language) {
   if (!iso) return "—";
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "—";
+  /*
+   * Numérica, não por extenso: "24 de ago. de 26" gasta uns 112px numa linha
+   * que tem 310 no celular, e essa coluna disputa espaço com o username e os
+   * selos. "24/08/26" cabe em metade disso e, com `tabular-nums`, alinha em
+   * coluna — que é o que se quer de uma data numa lista de dados.
+   */
   return date.toLocaleDateString(language === "pt" ? "pt-BR" : "en-US", {
     day: "2-digit",
     month: "2-digit",
@@ -29,10 +35,22 @@ function formatDate(iso, language) {
   });
 }
 
+/*
+ * Uma conta recém-criada carrega `read:activation_token` e nada mais — é o que
+ * `activation.activateUserByUserId()` troca pelas features de verdade. Então a
+ * presença dessa feature é o sinal de que o cadastro nunca foi confirmado.
+ */
 function isPending(features) {
   return Boolean(features?.includes("read:activation_token"));
 }
 
+/*
+ * A barra é o elemento que dá identidade ao card: em vez de três números
+ * soltos, mostra a proporção entre apoiadores, confirmados e pendentes. É o
+ * funil que a tabela `users` já contém — o `features` de cada conta é, na
+ * prática, em que etapa ela parou. Some quando não há ninguém, porque uma
+ * barra vazia não informa nada.
+ */
 function FunnelBar({ supporters, confirmed, pending, total }) {
   if (total === 0) return null;
 
@@ -83,6 +101,13 @@ function Badge({ icon, label, className }) {
   );
 }
 
+/*
+ * Vai para `document.body` por portal, e não fica onde o JSX está. Um
+ * ancestral com `transform` — a entrada `.card-enter`, o deslize dos painéis —
+ * vira bloco contentor dos descendentes `fixed`: dentro do card, o overlay
+ * "fixo" se posicionaria em relação a ele e ainda seria cortado pelo
+ * `overflow-hidden` da janela.
+ */
 function ConfirmDialog({
   title,
   description,
@@ -147,6 +172,7 @@ function ConfirmDialog({
               disabled={busy}
               className="win-btn flex-1 text-sm"
             >
+              {/* Reaproveita a chave já usada pelo card de exclusão de conta. */}
               {confirmLabel.cancel}
             </button>
             <button
@@ -171,6 +197,8 @@ function ConfirmDialog({
 export default function CardAdminUsuarios() {
   const { language, t } = useLanguage();
 
+  // Dois estados para a busca: o que se digita e o que vira requisição. Sem o
+  // atraso, cada tecla dispara uma consulta à base inteira.
   const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -179,13 +207,20 @@ export default function CardAdminUsuarios() {
     return () => clearTimeout(timeoutId);
   }, [searchInput]);
 
+  // A busca roda no servidor, não sobre a lista já carregada: com a paginação
+  // de 50, filtrar no cliente diria "nenhum resultado" para quem existe mas
+  // ficou fora da página — errado de um jeito que parece certo.
   const listKey = searchTerm
     ? `/api/v1/users?search=${encodeURIComponent(searchTerm)}`
     : "/api/v1/users";
 
   const { data, error, isLoading, mutate } = useSWR(listKey, fetcher, {
     revalidateOnFocus: false,
+    // Segura a lista anterior enquanto a busca nova chega, em vez de piscar
+    // vazio a cada letra.
     keepPreviousData: true,
+    // Mesmo critério do card de dispositivos: 4xx é determinístico (sessão
+    // expirada ou conta sem a feature), re-tentar só martela o servidor.
     onErrorRetry: (err, _key, _config, revalidate, { retryCount }) => {
       if (err?.status >= 400 && err?.status < 500) return;
       if (retryCount >= 3) return;
@@ -193,6 +228,8 @@ export default function CardAdminUsuarios() {
     },
   });
 
+  // O portal só existe depois da montagem: no render do servidor não há
+  // `document` para receber o diálogo.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -202,6 +239,8 @@ export default function CardAdminUsuarios() {
 
   const users = data?.users || [];
 
+  // Contagens da página carregada, não da base inteira: quando as duas
+  // divergem, o rodapé diz quantos estão à vista.
   const pendingCount = users.filter((each) => isPending(each.features)).length;
   const supporterCount = users.filter((each) =>
     each.features?.includes("apoiador"),
@@ -229,6 +268,9 @@ export default function CardAdminUsuarios() {
         return;
       }
 
+      // Relê do servidor em vez de remendar a lista na mão: a resposta muda a
+      // barra e a legenda também, e reconstruir isso no cliente é onde as duas
+      // versões do mesmo dado começam a divergir.
       await mutate();
     } catch {
       setActionError(t("Erro de conexao"));
@@ -258,9 +300,20 @@ export default function CardAdminUsuarios() {
           </div>
         )}
 
-        {/* Legenda e Busca */}
+        {/* Legenda e busca dividem a linha: à esquerda os três estados da
+              barra em número e por extenso — é a legenda que dá nome às cores
+              da barra —, à direita o campo de busca.
+
+              A condição de fora é a da busca, mais ampla que a da legenda de
+              propósito: numa busca sem resultado a legenda some, mas o campo
+              precisa continuar na tela, senão não há como corrigir o termo. */}
         {!error && (users.length > 0 || searchTerm) && (
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 border-b border-zinc-800 pb-3">
+            {/* `min-w-0` em vez de `shrink-0`: a legenda tem quebra própria,
+                  e com `shrink-0` ela reivindicava a largura de tudo numa
+                  linha só — transbordava em vez de quebrar quando as contagens
+                  ganhassem dígito. Podendo encolher, ela quebra internamente e
+                  a busca mantém seu piso. */}
             {!isLoading && users.length > 0 && (
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xs min-w-0">
                 {supporterCount > 0 && (
@@ -286,6 +339,14 @@ export default function CardAdminUsuarios() {
               </div>
             )}
 
+            {/* `flex-1` sem teto: o campo toma toda a sobra da linha e se
+                  reajusta sozinho quando a legenda muda de tamanho — o que
+                  acontece o tempo todo, porque as contagens crescem de dígito
+                  e a de apoiadores só aparece quando existe algum.
+
+                  `min-w-[8rem]` é o piso: abaixo disso o campo deixa de ser
+                  utilizável, e aí o `flex-wrap` do contêiner joga ele para a
+                  própria linha, onde volta a ocupar a largura inteira. */}
             <label className="flex-1 min-w-[8rem] flex items-center gap-2 px-2.5 py-1.5 bg-black border border-white focus-within:border-white transition-colors">
               <SearchIcon size={14} className="text-zinc-500 shrink-0" />
               <input
@@ -332,6 +393,8 @@ export default function CardAdminUsuarios() {
             </p>
           )}
 
+          {/* A lista rola dentro do card: com a base crescendo, o card não
+                pode empurrar o resto do painel para fora da tela. */}
           {users.length > 0 && (
             <ul className="flex flex-col max-h-[18rem] overflow-y-auto divide-y divide-zinc-800">
               {users.map((userFound) => {
@@ -345,6 +408,8 @@ export default function CardAdminUsuarios() {
                     key={userFound.id}
                     className="flex items-center gap-3 py-2.5"
                   >
+                    {/* O trilho repete, no começo da linha, a cor que o
+                          estado tem na barra do cabeçalho. */}
                     <span
                       aria-hidden="true"
                       className={`w-1 self-stretch shrink-0 ${
@@ -357,6 +422,16 @@ export default function CardAdminUsuarios() {
                     />
 
                     <div className="flex flex-col min-w-0 flex-1 gap-0.5">
+                      {/* `flex-wrap`: com os dois selos, a linha pede
+                            ~150px só para eles, e num celular sobram ~128px
+                            para tudo. Sem quebrar, o username (que encolhe)
+                            sumia e os selos (que não encolhem) eram cortados
+                            pelo `overflow-hidden` do card. Descer de linha
+                            custa altura, que é justamente o que sobra no
+                            celular.
+
+                            Ícone com rótulo em vez de só ícone de propósito:
+                            tooltip não existe em toque. */}
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
                         <span className="font-bold text-sm truncate text-white">
                           {userFound.username}
@@ -394,6 +469,9 @@ export default function CardAdminUsuarios() {
                         {formatDate(userFound.created_at, language)}
                       </span>
 
+                      {/* Escondido para cadastros pendentes: dar benefício a
+                            quem nunca confirmou o email é conceder acesso a
+                            uma conta que ainda não se provou de ninguém. */}
                       {!pending && (
                         <button
                           type="button"
@@ -439,6 +517,8 @@ export default function CardAdminUsuarios() {
             </p>
           )}
 
+          {/* Só aparece quando existe mais coisa do que a página trouxe —
+                dizer "2 de 2" seria ruído. */}
           {data && data.total > users.length && (
             <p className="text-xs uppercase tracking-widest text-zinc-500 text-center pt-2">
               {t("Mostrando n de total", {
@@ -467,6 +547,8 @@ export default function CardAdminUsuarios() {
             confirmLabel={{
               cancel: t("Cancelar"),
               busy: t("Salvando..."),
+              // O botão do diálogo repete o nome da ação que o abriu: quem
+              // clicou em "Revogar apoio" confirma em "Revogar apoio".
               action: confirming.isSupporter
                 ? t("Revogar apoio")
                 : t("Tornar apoiador"),

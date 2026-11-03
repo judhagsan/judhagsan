@@ -384,6 +384,10 @@ export default function CardApoiar() {
               </span>
             </button>
 
+            {/* Saída para quem teve o cartão recusado e não quer esperar a
+                retentativa automática do Mercado Pago. Fica acima da
+                explicação da recorrência porque é ação, e a explicação é
+                rodapé. */}
             <button
               type="button"
               onClick={handlePix}

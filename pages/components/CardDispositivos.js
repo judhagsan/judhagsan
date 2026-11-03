@@ -42,6 +42,9 @@ function formatRelative(iso, language) {
 
 function osLabel(os) {
   if (!os) return "Dispositivo";
+  // O `sw_vers` no macOS devolve "macOS 26.5" com inicial minúscula
+  // (branding oficial da Apple). Capitalizamos pra deixar consistente com o
+  // restante das linhas, que começam com a label do componente em maiúscula.
   return os.charAt(0).toUpperCase() + os.slice(1);
 }
 
@@ -52,6 +55,9 @@ export default function CardDispositivos() {
     fetcher,
     {
       revalidateOnFocus: false,
+      // 4xx é determinístico (sessão expirada ou conta sem a feature) —
+      // re-tentar só martela o servidor e polui o console. Erros de rede
+      // e 5xx mantêm retry com backoff, limitado a 3 tentativas.
       onErrorRetry: (err, _key, _config, revalidate, { retryCount }) => {
         if (err?.status >= 400 && err?.status < 500) return;
         if (retryCount >= 3) return;

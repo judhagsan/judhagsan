@@ -38,15 +38,27 @@ export default function SessaoPage() {
       <div className="relative z-10 w-full h-full flex flex-col p-2 lg:p-4 gap-6 overflow-y-auto lg:overflow-hidden">
         {/* Seção Central */}
         <div className="lg:flex-1 lg:min-h-0 lg:-mt-8 relative flex flex-col lg:block gap-4 lg:gap-0 overflow-visible shrink-0">
-          {/* Coluna da esquerda: Usuário + Apoio (ou Pindorama compact para Admin) */}
+          {/* Coluna da esquerda: Usuário + Apoio (ou Pindorama compacto para
+              o admin). `top-8` compensa o `-mt-8` da seção para os cards não
+              entrarem por baixo da borda superior do MainFrame. */}
           <div className="w-full lg:absolute lg:top-8 lg:left-0 lg:w-1/4 lg:max-h-[calc(100%-2rem)] flex flex-col gap-4 lg:overflow-y-auto lg:pr-4">
             {isLoggedIn && <CardUsuario user={user} />}
+            {/* No painel o Pindorama sobe para cá, logo abaixo do card do
+                usuário, e vem sem o texto de divulgação: a área central fica
+                livre para os cards de administração. */}
             {isLoggedIn && isAdmin && <CardSessao compact />}
 
+            {/* Apoio não é assunto de painel administrativo. Para os demais,
+                o card fica sem condição de propósito: ele decide sozinho o
+                que mostrar. Quem não apoia vê o formulário; quem tem
+                assinatura vê o estado dela e o botão de cancelar. Escondê-lo
+                de quem já é apoiador deixava justamente quem paga sem lugar
+                nenhum para gerenciar o próprio apoio. */}
             {isLoggedIn && !isAdmin && <CardApoiar />}
           </div>
 
-          {/* Coluna da direita: Dispositivos */}
+          {/* Coluna da direita: Dispositivos. Escondida enquanto o painel
+              lateral estiver aberto para não sobrepor. */}
           {isLoggedIn && (
             <div
               className={`w-full lg:absolute lg:top-8 lg:right-0 lg:w-1/4 lg:max-h-[calc(100%-2rem)] flex-col gap-4 lg:overflow-y-auto lg:pl-4 ${
@@ -57,8 +69,24 @@ export default function SessaoPage() {
             </div>
           )}
 
-          {/* Área Central: Pindorama (usuário comum) ou Painel Admin (administrador) ou Painel Lateral */}
+          {/* Área central: Pindorama (usuário comum), painel admin ou painel
+              lateral.
+
+              my-auto + overflow-y-auto = centralização segura: com pouca
+              altura o card rola em vez de estourar por cima do MainFrame.
+
+              `lg:gap-0` é o que mantém o card centralizado de verdade. O
+              painel lateral fechado continua sendo item flex (`lg:w-0`), e um
+              item de largura zero não ocupa espaço — mas o `gap` antes dele
+              ocupa. O grupo centralizado virava [card + 24px + nada], jogando
+              o card 24px para a esquerda e deixando a sobra à direita. No
+              desktop o gap nunca é necessário: card e painel se escondem um
+              ao outro, então nunca aparecem lado a lado. */}
           <div className="w-full lg:h-full lg:min-h-0 flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-0 lg:overflow-y-auto lg:pt-8">
+            {/* Painel administrativo — ocupa a área central que o Pindorama
+                liberou. Some quando um painel lateral abre, pelo mesmo motivo
+                do card do Pindorama: os dois disputam o mesmo espaço no
+                desktop. */}
             {isLoggedIn && isAdmin && (
               <div
                 className={`w-full lg:w-1/2 shrink-0 lg:self-start flex flex-col gap-4 ${
@@ -70,6 +98,9 @@ export default function SessaoPage() {
               </div>
             )}
 
+            {/* Pindorama — no desktop dá lugar ao painel quando um está
+                aberto, que passa a ocupar toda a área central. Para o admin
+                não aparece aqui: foi para a coluna da esquerda. */}
             {isLoggedIn && !isAdmin && (
               <div
                 className={`w-full lg:w-1/3 shrink-0 lg:my-auto ${
@@ -80,7 +111,9 @@ export default function SessaoPage() {
               </div>
             )}
 
-            {/* Painel lateral (Privacidade ou Contato) */}
+            {/* Painel lateral (Privacidade ou Contato) — tela cheia no
+                celular; no desktop toma o lugar do card do Pindorama e ocupa
+                toda a área central. */}
             {activePanel && (
               <div
                 className="fixed inset-0 z-[52] bg-black lg:hidden"
@@ -107,7 +140,10 @@ export default function SessaoPage() {
           </div>
         </div>
 
-        {/* Seção inferior - YouTube */}
+        {/* Seção inferior - YouTube. Fora para o admin: o painel usa esta
+            faixa, e divulgação de canal não é ferramenta de operação. Preso
+            ao `!isLoading` de propósito — sem isso o card aparece no
+            primeiro render e some quando o usuário chega, com uma piscada. */}
         {!isLoading && !isAdmin && (
           <div className="lg:mt-auto flex flex-col w-full shrink-0 gap-4">
             <CardYoutube />
