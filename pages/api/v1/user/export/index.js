@@ -78,7 +78,11 @@ async function getHandler(request, response) {
   };
 
   const today = new Date().toISOString().split("T")[0];
-  const filename = `judhagsan-export-${userFound.username}-${today}.json`;
+  const safeUsername = String(userFound.username || "usuario").replace(
+    /[^a-zA-Z0-9._-]/g,
+    "_",
+  );
+  const filename = `judhagsan-export-${safeUsername}-${today}.json`;
 
   response.setHeader("Content-Type", "application/json; charset=utf-8");
   response.setHeader(

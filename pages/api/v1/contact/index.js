@@ -16,32 +16,35 @@ export default createRouter()
   .handler(controller.errorHandlers);
 
 async function postHandler(request, response) {
-  const { name, email: senderEmail, message } = request.body;
+  const { name, email: senderEmail, message } = request.body || {};
 
-  if (!name || !name.trim()) {
+  if (typeof name !== "string" || !name.trim()) {
     throw new ValidationError({
       message: "O nome é obrigatório.",
       action: "Preencha o campo nome.",
     });
   }
 
-  if (!senderEmail || !senderEmail.trim()) {
+  if (typeof senderEmail !== "string" || !senderEmail.trim()) {
     throw new ValidationError({
       message: "O email é obrigatório.",
       action: "Preencha o campo email com um email válido.",
     });
   }
 
+  const normalizedName = name.replace(/[\r\n]+/g, " ").trim();
+  const normalizedEmail = senderEmail.replace(/[\r\n]+/g, "").trim();
+
   // Basic email validation regex
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(senderEmail)) {
+  if (!emailRegex.test(normalizedEmail)) {
     throw new ValidationError({
       message: "O formato do email é inválido.",
       action: "Insira um email válido.",
     });
   }
 
-  if (!message || !message.trim()) {
+  if (typeof message !== "string" || !message.trim()) {
     throw new ValidationError({
       message: "A mensagem é obrigatória.",
       action: "Preencha o campo de mensagem.",
@@ -52,10 +55,10 @@ async function postHandler(request, response) {
   await email.send({
     from: "Formulário de Contato <contato@judhagsan.com>",
     to: "contato@judhagsan.com",
-    replyTo: `${name} <${senderEmail}>`,
-    subject: `Novo contato de ${name}`,
-    text: `Nome: ${name}
-Email: ${senderEmail}
+    replyTo: `${normalizedName} <${normalizedEmail}>`,
+    subject: `Novo contato de ${normalizedName}`,
+    text: `Nome: ${normalizedName}
+Email: ${normalizedEmail}
 
 Mensagem:
 ${message}
