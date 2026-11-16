@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react";
 import useSWR from "swr";
 import useLanguage from "hooks/useLanguage";
 
@@ -7,20 +8,24 @@ const fetcher = (url) =>
 // Faixa de "créditos" da home: os nomes de quem apoia rolam continuamente,
 // como os créditos finais de uma animação. Some quando não há apoiadores
 // públicos e para de rolar com prefers-reduced-motion.
-export default function SupportersTicker() {
+function SupportersTicker() {
   const { t } = useLanguage();
   const { data } = useSWR("/api/v1/supporters", fetcher, {
     revalidateOnFocus: false,
   });
 
-  const supporters = data?.supporters || [];
-  if (supporters.length === 0) return null;
+  const loop = useMemo(() => {
+    const supporters = data?.supporters || [];
+    if (supporters.length === 0) return [];
 
-  // Repete o conjunto até ter corpo suficiente e duplica para o loop
-  // contínuo (a animação translada exatamente uma cópia: -50%).
-  const repeats = Math.max(1, Math.ceil(8 / supporters.length));
-  const segment = Array.from({ length: repeats }).flatMap(() => supporters);
-  const loop = [...segment, ...segment];
+    // Repete o conjunto até ter corpo suficiente e duplica para o loop
+    // contínuo (a animação translada exatamente uma cópia: -50%).
+    const repeats = Math.max(1, Math.ceil(8 / supporters.length));
+    const segment = Array.from({ length: repeats }).flatMap(() => supporters);
+    return [...segment, ...segment];
+  }, [data]);
+
+  if (loop.length === 0) return null;
 
   return (
     <div className="w-full animate-[fadeIn_0.2s_ease-out]">
@@ -53,3 +58,5 @@ export default function SupportersTicker() {
     </div>
   );
 }
+
+export default memo(SupportersTicker);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import useSWR from "swr";
 import { DeviceDesktopIcon } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
@@ -86,9 +86,13 @@ export default function CardAdminHardware() {
   // O perfil junta o primeiro colocado de cada categoria. Pode descrever uma
   // máquina que ninguém tem — por isso a legenda diz "o mais frequente em cada
   // categoria" em vez de fingir que é um aparelho real.
-  const profile = ["os", "gpu", "ram"]
-    .map((key) => data?.dimensions?.[key]?.[0]?.value)
-    .filter(Boolean);
+  const profile = useMemo(
+    () =>
+      ["os", "gpu", "ram"]
+        .map((key) => data?.dimensions?.[key]?.[0]?.value)
+        .filter(Boolean),
+    [data],
+  );
 
   return (
     <CardNormal

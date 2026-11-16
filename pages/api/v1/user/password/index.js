@@ -25,9 +25,8 @@ async function postHandler(request, response) {
   const { current_password, new_password } = request.body || {};
   const ip = controller.getClientIp(request);
 
-  const sessionToken = request.cookies.session_id;
-  const sessionObject = await session.findOneValidByToken(sessionToken);
-  const storedUser = await user.findOneById(sessionObject.user_id);
+  const sessionObject = request.context.session;
+  const storedUser = request.context.user;
 
   if (typeof current_password !== "string" || current_password.length === 0) {
     throw new ValidationError({
@@ -73,10 +72,12 @@ async function postHandler(request, response) {
   // Trocar a senha derruba as outras sessões: se alguém tinha acesso indevido
   // à conta, a troca precisa expulsá-lo. A sessão de quem trocou sobrevive e é
   // renovada, para não obrigar um login logo em seguida.
-  await session.expireAllByUserId(updatedUser.id, {
-    exceptSessionId: sessionObject.id,
-  });
-  const renewedSession = await session.renew(sessionObject.id);
+  const [, renewedSession] = await Promise.all([
+    session.expireAllByUserId(updatedUser.id, {
+      exceptSessionId: sessionObject.id,
+    }),
+    session.renew(sessionObject.id),
+  ]);
   controller.setSessionCookie(renewedSession.token, response);
 
   await auditLog.record({

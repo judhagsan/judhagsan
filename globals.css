@@ -1,21 +1,17 @@
-/* Custom Web Fonts — precisa vir antes do import do Tailwind, que é
-   expandido em regras concretas antes da checagem de ordem dos @import */
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap");
-
 @import "tailwindcss";
 
 @plugin "daisyui" {
   themes: black;
 }
 
-@theme {
-  --font-outfit: "Outfit", sans-serif;
+@theme inline {
+  --font-outfit: var(--font-outfit-next, "Outfit"), sans-serif;
   /* O site tem uma fonte só. `font-sans` e `font-mono` continuam existindo
      como classes do Tailwind, e por padrão cairiam no stack do sistema — o que
      colocava uma segunda e uma terceira fonte na tela sem ninguém pedir.
      Apontadas para a Outfit, escrevê-las por hábito não quebra a unidade. */
-  --font-sans: "Outfit", sans-serif;
-  --font-mono: "Outfit", sans-serif;
+  --font-sans: var(--font-outfit-next, "Outfit"), sans-serif;
+  --font-mono: var(--font-outfit-next, "Outfit"), sans-serif;
   --font-size-xs: 0.8rem;
   --font-size-sm: 0.95rem;
   --font-size-base: 1.075rem;
@@ -113,6 +109,12 @@
      do iPhone dá zoom na página ao focar o campo. */
   .win-input {
     @apply px-3 py-2 bg-black border border-zinc-700 text-white placeholder-zinc-500 text-base transition-colors focus:border-white focus:outline-none;
+  }
+
+  /* Evita layout e pintura de itens fora da área visível em listas longas. */
+  .user-row-item {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 58px;
   }
 }
 

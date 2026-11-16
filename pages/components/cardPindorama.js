@@ -16,6 +16,8 @@ export default function CardPindorama({ onDownloadClick }) {
         <img
           src="/PinLogo.svg"
           alt="Pindorama Logo"
+          width={64}
+          height={64}
           className="w-full h-full object-contain invert contrast-200"
         />
       </div>

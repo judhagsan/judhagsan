@@ -42,6 +42,8 @@ function getAuthorizationUrl(state) {
   return `${AUTHORIZE_URL}?${params}`;
 }
 
+const DISCORD_TIMEOUT_MS = 8000;
+
 async function exchangeCodeForToken(code) {
   const configuration = getConfiguration();
 
@@ -57,6 +59,7 @@ async function exchangeCodeForToken(code) {
       code,
       redirect_uri: configuration.redirectUri,
     }),
+    signal: AbortSignal.timeout(DISCORD_TIMEOUT_MS),
   });
 
   if (!tokenResponse.ok) {
@@ -75,6 +78,7 @@ async function fetchProfile(accessToken) {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
+    signal: AbortSignal.timeout(DISCORD_TIMEOUT_MS),
   });
 
   if (!profileResponse.ok) {
@@ -111,6 +115,7 @@ async function addToGuildWithSupporterRole(discordUserId, accessToken) {
         access_token: accessToken,
         roles: [configuration.supporterRoleId],
       }),
+      signal: AbortSignal.timeout(DISCORD_TIMEOUT_MS),
     },
   );
 
@@ -130,6 +135,7 @@ async function addToGuildWithSupporterRole(discordUserId, accessToken) {
     {
       method: "PUT",
       headers: botHeaders,
+      signal: AbortSignal.timeout(DISCORD_TIMEOUT_MS),
     },
   );
 
@@ -151,6 +157,7 @@ async function removeSupporterRole(discordUserId) {
       headers: {
         Authorization: `Bot ${configuration.botToken}`,
       },
+      signal: AbortSignal.timeout(DISCORD_TIMEOUT_MS),
     },
   );
 

@@ -43,6 +43,13 @@ export default function CardApoiar() {
   // feature à mão — precisa continuar vendo o formulário para poder assinar.
   const [showPanel, setShowPanel] = useState(false);
   const fieldsRef = useRef(null);
+  const copyTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -230,7 +237,8 @@ export default function CardApoiar() {
   async function copyPixCode() {
     await navigator.clipboard.writeText(pix.qr_code);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
   }
 
   // Havendo assinatura, o painel dela é a tela — inclusive durante um cancelamento
@@ -425,35 +433,58 @@ function splitSentences(text) {
   );
 }
 
+const CURRENCY_FORMATTER = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+});
+
+const DATE_FORMATTERS = {
+  pt: new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }),
+  en: new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }),
+};
+
 function formatValue(value) {
   if (typeof value !== "number") return "";
 
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
+  return CURRENCY_FORMATTER.format(value);
 }
+
+let sdkLoadPromise = null;
 
 function loadScript() {
   if (window.MercadoPago) return Promise.resolve();
+  if (sdkLoadPromise) return sdkLoadPromise;
 
   const existing = document.querySelector('script[src="' + SDK_URL + '"]');
 
-  if (existing) {
-    return new Promise((resolve, reject) => {
-      existing.addEventListener("load", resolve);
-      existing.addEventListener("error", reject);
-    });
-  }
+  sdkLoadPromise = new Promise((resolve, reject) => {
+    const script = existing || document.createElement("script");
 
-  return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src = SDK_URL;
-    script.async = true;
-    script.onload = resolve;
-    script.onerror = reject;
-    document.head.appendChild(script);
+    const onLoad = () => resolve();
+    const onError = (error) => {
+      sdkLoadPromise = null;
+      reject(error);
+    };
+
+    script.addEventListener("load", onLoad, { once: true });
+    script.addEventListener("error", onError, { once: true });
+
+    if (!existing) {
+      script.src = SDK_URL;
+      script.async = true;
+      document.head.appendChild(script);
+    }
   });
+
+  return sdkLoadPromise;
 }
 
 function Field({ label, children }) {
@@ -626,11 +657,7 @@ function formatDate(value, language) {
 
   if (Number.isNaN(date.getTime())) return "";
 
-  return date.toLocaleDateString(language === "en" ? "en-US" : "pt-BR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
+  return (DATE_FORMATTERS[language] || DATE_FORMATTERS.pt).format(date);
 }
 
 function PixPayment({ t, pix, copied, onCopy }) {

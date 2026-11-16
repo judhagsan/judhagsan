@@ -47,7 +47,9 @@ async function patchHandler(request, response) {
     });
   }
 
-  const updatedUser = await user.update(username, userInputValues);
+  const updatedUser = await user.update(username, userInputValues, {
+    currentUser: targetUser,
+  });
 
   await auditLog.record({
     action: "user.updated",

@@ -15,6 +15,7 @@ export default defineConfig([
       "package-lock.json",
       "README.md",
       "globals.css",
+      ".agents/**",
     ],
   },
   {
@@ -28,6 +29,11 @@ export default defineConfig([
   {
     files: ["**/*.{js,mjs,cjs,jsx}"],
     ...pluginReact.configs.flat.recommended,
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
     rules: {
       ...pluginReact.configs.flat.recommended.rules,
       "react/react-in-jsx-scope": "off",

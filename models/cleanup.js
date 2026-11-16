@@ -7,6 +7,7 @@ async function runCleanup() {
     activationTokensResult,
     rateLimitsResult,
     auditLogsResult,
+    supportersExpired,
   ] = await Promise.all([
     database.query({
       text: `
@@ -36,11 +37,10 @@ async function runCleanup() {
         RETURNING id
       ;`,
     }),
+    // Apoio vencido perde a feature aqui, não no webhook: assim uma renovação
+    // que nunca chega também expira.
+    supporter.expireOverdue(),
   ]);
-
-  // Apoio vencido perde a feature aqui, não no webhook: assim uma renovação
-  // que nunca chega também expira.
-  const supportersExpired = await supporter.expireOverdue();
 
   return {
     supporters_expired: supportersExpired,

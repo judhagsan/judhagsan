@@ -1,4 +1,10 @@
-import { createContext, useCallback, useContext, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 
 const SidePanelContext = createContext({
   activePanel: null,
@@ -10,8 +16,14 @@ export function SidePanelProvider({ children }) {
   const [activePanel, setActivePanelState] = useState(null);
   const setActivePanel = useCallback((panel) => setActivePanelState(panel), []);
   const close = useCallback(() => setActivePanelState(null), []);
+
+  const value = useMemo(
+    () => ({ activePanel, setActivePanel, close }),
+    [activePanel, setActivePanel, close],
+  );
+
   return (
-    <SidePanelContext.Provider value={{ activePanel, setActivePanel, close }}>
+    <SidePanelContext.Provider value={value}>
       {children}
     </SidePanelContext.Provider>
   );

@@ -1,7 +1,5 @@
 import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
-import user from "models/user.js";
-import session from "models/session.js";
 import auditLog from "models/auditLog.js";
 import database from "infra/database.js";
 
@@ -11,56 +9,55 @@ export default createRouter()
   .handler(controller.errorHandlers);
 
 async function getHandler(request, response) {
-  const sessionToken = request.cookies.session_id;
-  const sessionObject = await session.findOneValidByToken(sessionToken);
-  const userFound = await user.findOneById(sessionObject.user_id);
+  const userFound = request.context.user;
 
-  const sessionsResult = await database.query({
-    text: `
-      SELECT
-        created_at,
-        expires_at
-      FROM
-        sessions
-      WHERE
-        user_id = $1
-      ORDER BY
-        created_at DESC
-    ;`,
-    values: [userFound.id],
-  });
-
-  const activationTokensResult = await database.query({
-    text: `
-      SELECT
-        used_at,
-        expires_at,
-        created_at
-      FROM
-        user_activation_tokens
-      WHERE
-        user_id = $1
-      ORDER BY
-        created_at DESC
-    ;`,
-    values: [userFound.id],
-  });
-
-  const devicesResult = await database.query({
-    text: `
-      SELECT
-        hardware_uuid, os, cpu, ram_bytes, gpu, pindorama_version,
-        tablet, monitor,
-        upload_paused, first_seen_at, last_seen_at
-      FROM
-        user_devices
-      WHERE
-        user_id = $1
-      ORDER BY
-        last_seen_at DESC
-    ;`,
-    values: [userFound.id],
-  });
+  const [sessionsResult, activationTokensResult, devicesResult] =
+    await Promise.all([
+      database.query({
+        text: `
+          SELECT
+            created_at,
+            expires_at
+          FROM
+            sessions
+          WHERE
+            user_id = $1
+          ORDER BY
+            created_at DESC
+        ;`,
+        values: [userFound.id],
+      }),
+      database.query({
+        text: `
+          SELECT
+            used_at,
+            expires_at,
+            created_at
+          FROM
+            user_activation_tokens
+          WHERE
+            user_id = $1
+          ORDER BY
+            created_at DESC
+        ;`,
+        values: [userFound.id],
+      }),
+      database.query({
+        text: `
+          SELECT
+            hardware_uuid, os, cpu, ram_bytes, gpu, pindorama_version,
+            tablet, monitor,
+            upload_paused, first_seen_at, last_seen_at
+          FROM
+            user_devices
+          WHERE
+            user_id = $1
+          ORDER BY
+            last_seen_at DESC
+        ;`,
+        values: [userFound.id],
+      }),
+    ]);
 
   const exportData = {
     _meta: {
@@ -81,7 +78,11 @@ async function getHandler(request, response) {
   };
 
   const today = new Date().toISOString().split("T")[0];
-  const filename = `judhagsan-export-${userFound.username}-${today}.json`;
+  const safeUsername = String(userFound.username || "usuario").replace(
+    /[^a-zA-Z0-9._-]/g,
+    "_",
+  );
+  const filename = `judhagsan-export-${safeUsername}-${today}.json`;
 
   response.setHeader("Content-Type", "application/json; charset=utf-8");
   response.setHeader(

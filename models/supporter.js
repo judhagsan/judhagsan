@@ -2,7 +2,7 @@ import database from "infra/database.js";
 import email from "infra/email.js";
 import webserver from "infra/webserver.js";
 import user from "models/user.js";
-import { ValidationError } from "infra/errors.js";
+import { NotFoundError, ValidationError } from "infra/errors.js";
 
 // Feature concedida a quem apoia o Pindorama. Vem da assinatura mensal no
 // Mercado Pago (ver `models/mercadopago.js`) e também pode ser concedida à mão.
@@ -93,14 +93,16 @@ async function revoke(userId) {
 // Pago retenta uma cobrança rejeitada por até 10 dias, e ninguém pode perder o
 // acesso enquanto essa régua ainda está rodando. Quem revoga é o cron.
 async function grantUntil(userId, until) {
-  await grant(userId);
-
   const results = await database.query({
     text: `
       UPDATE
         users
       SET
-        supporter_until = $2,
+        features = CASE
+          WHEN $2 = ANY(features) THEN features
+          ELSE array_append(features, $2)
+        END,
+        supporter_until = $3,
         -- Cobrança aprovada fecha o ciclo da recusa anterior: some o alerta
         -- da tela e a próxima falha volta a poder avisar.
         supporter_charge_declined_at = NULL,
@@ -111,8 +113,15 @@ async function grantUntil(userId, until) {
       RETURNING
         *
       ;`,
-    values: [userId, until],
+    values: [userId, FEATURE, until],
   });
+
+  if (results.rowCount === 0) {
+    throw new NotFoundError({
+      message: "O id informado não foi encontrado no sistema.",
+      action: "Verifique se o id está digitado corretamente.",
+    });
+  }
 
   return results.rows[0];
 }
@@ -125,13 +134,12 @@ async function grantUntil(userId, until) {
 // mais. As marcas de recusa saem junto, para a tela não alarmar sobre uma
 // cobrança de uma assinatura que acabou.
 async function revokeNow(userId) {
-  await revoke(userId);
-
   const results = await database.query({
     text: `
       UPDATE
         users
       SET
+        features = array_remove(features, $2),
         supporter_until = NULL,
         supporter_charge_declined_at = NULL,
         supporter_declined_notified_at = NULL,
@@ -141,8 +149,15 @@ async function revokeNow(userId) {
       RETURNING
         *
       ;`,
-    values: [userId],
+    values: [userId, FEATURE],
   });
+
+  if (results.rowCount === 0) {
+    throw new NotFoundError({
+      message: "O id informado não foi encontrado no sistema.",
+      action: "Verifique se o id está digitado corretamente.",
+    });
+  }
 
   return results.rows[0];
 }

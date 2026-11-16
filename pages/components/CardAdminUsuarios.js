@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import useSWR from "swr";
 import {
@@ -12,6 +12,21 @@ import {
 } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
 import CardNormal from "./CardNormal";
+
+const EMPTY_USERS = [];
+
+const DATE_FORMATTERS = {
+  pt: new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+  }),
+  en: new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+  }),
+};
 
 const fetcher = (url) =>
   fetch(url, { credentials: "include" }).then((r) =>
@@ -28,11 +43,7 @@ function formatDate(iso, language) {
    * selos. "24/08/26" cabe em metade disso e, com `tabular-nums`, alinha em
    * coluna — que é o que se quer de uma data numa lista de dados.
    */
-  return date.toLocaleDateString(language === "pt" ? "pt-BR" : "en-US", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
-  });
+  return (DATE_FORMATTERS[language] || DATE_FORMATTERS.pt).format(date);
 }
 
 /*
@@ -194,6 +205,118 @@ function ConfirmDialog({
   );
 }
 
+const UsersList = memo(function UsersList({
+  users,
+  language,
+  t,
+  onToggleSupporter,
+}) {
+  return (
+    <ul className="flex flex-col max-h-[18rem] overflow-y-auto divide-y divide-zinc-800">
+      {users.map((userFound) => {
+        const pending = isPending(userFound.features);
+        const supporter = Boolean(userFound.features?.includes("apoiador"));
+
+        return (
+          <li
+            key={userFound.id}
+            className="user-row-item flex items-center gap-3 py-2.5"
+          >
+            {/* O trilho repete, no começo da linha, a cor que o
+                  estado tem na barra do cabeçalho. */}
+            <span
+              aria-hidden="true"
+              className={`w-1 self-stretch shrink-0 ${
+                pending
+                  ? "bg-zinc-800"
+                  : supporter
+                    ? "bg-amber-400"
+                    : "bg-violet-400"
+              }`}
+            />
+
+            <div className="flex flex-col min-w-0 flex-1 gap-0.5">
+              {/* `flex-wrap`: com os dois selos, a linha pede
+                    ~150px só para eles, e num celular sobram ~128px
+                    para tudo. Sem quebrar, o username (que encolhe)
+                    sumia e os selos (que não encolhem) eram cortados
+                    pelo `overflow-hidden` do card. Descer de linha
+                    custa altura, que é justamente o que sobra no
+                    celular.
+
+                    Ícone com rótulo em vez de só ícone de propósito:
+                    tooltip não existe em toque. */}
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
+                <span className="font-bold text-sm truncate text-white">
+                  {userFound.username}
+                </span>
+
+                {userFound.features?.includes("admin") && (
+                  <Badge
+                    icon={<ShieldLockIcon size={9} />}
+                    label={t("Admin")}
+                    className="border-violet-400 bg-violet-400 text-black font-bold"
+                  />
+                )}
+                {supporter && (
+                  <Badge
+                    icon={<HeartFillIcon size={9} />}
+                    label={t("Apoiador")}
+                    className="border-amber-400 bg-amber-400 text-black font-bold"
+                  />
+                )}
+                {pending && (
+                  <Badge
+                    icon={<ClockIcon size={9} />}
+                    label={t("Pendente")}
+                    className="border-zinc-700 bg-zinc-800 text-zinc-400"
+                  />
+                )}
+              </div>
+              <span className="text-sm text-zinc-400 truncate">
+                {userFound.email}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 shrink-0">
+              <span className="text-sm text-zinc-400 tabular-nums">
+                {formatDate(userFound.created_at, language)}
+              </span>
+
+              {/* Escondido para cadastros pendentes: dar benefício a
+                    quem nunca confirmou o email é conceder acesso a
+                    uma conta que ainda não se provou de ninguém. */}
+              {!pending && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    onToggleSupporter(userFound.username, supporter)
+                  }
+                  title={supporter ? t("Revogar apoio") : t("Tornar apoiador")}
+                  aria-label={
+                    supporter ? t("Revogar apoio") : t("Tornar apoiador")
+                  }
+                  className={`cursor-pointer inline-flex items-center justify-center w-7 h-7 rounded-full border transition-colors ${
+                    supporter
+                      ? "border-amber-400 bg-amber-400 text-black hover:bg-amber-300"
+                      : "border-zinc-800 bg-black text-zinc-500 hover:text-amber-400 hover:border-amber-400"
+                  }`}
+                >
+                  {supporter ? (
+                    <HeartFillIcon size={12} />
+                  ) : (
+                    <HeartIcon size={12} />
+                  )}
+                </button>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+});
+
 export default function CardAdminUsuarios() {
   const { language, t } = useLanguage();
 
@@ -237,15 +360,27 @@ export default function CardAdminUsuarios() {
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState("");
 
-  const users = data?.users || [];
+  const users = data?.users ?? EMPTY_USERS;
 
   // Contagens da página carregada, não da base inteira: quando as duas
   // divergem, o rodapé diz quantos estão à vista.
-  const pendingCount = users.filter((each) => isPending(each.features)).length;
-  const supporterCount = users.filter((each) =>
-    each.features?.includes("apoiador"),
-  ).length;
-  const confirmedCount = users.length - pendingCount - supporterCount;
+  const { pendingCount, supporterCount, confirmedCount } = useMemo(() => {
+    let pending = 0;
+    let supporter = 0;
+    for (const each of users) {
+      if (isPending(each.features)) pending += 1;
+      else if (each.features?.includes("apoiador")) supporter += 1;
+    }
+    return {
+      pendingCount: pending,
+      supporterCount: supporter,
+      confirmedCount: users.length - pending - supporter,
+    };
+  }, [users]);
+
+  const handleToggleSupporter = useCallback((username, isSupporter) => {
+    setConfirming({ username, isSupporter });
+  }, []);
 
   async function confirmToggle() {
     if (busy || !confirming) return;
@@ -396,119 +531,12 @@ export default function CardAdminUsuarios() {
           {/* A lista rola dentro do card: com a base crescendo, o card não
                 pode empurrar o resto do painel para fora da tela. */}
           {users.length > 0 && (
-            <ul className="flex flex-col max-h-[18rem] overflow-y-auto divide-y divide-zinc-800">
-              {users.map((userFound) => {
-                const pending = isPending(userFound.features);
-                const supporter = Boolean(
-                  userFound.features?.includes("apoiador"),
-                );
-
-                return (
-                  <li
-                    key={userFound.id}
-                    className="flex items-center gap-3 py-2.5"
-                  >
-                    {/* O trilho repete, no começo da linha, a cor que o
-                          estado tem na barra do cabeçalho. */}
-                    <span
-                      aria-hidden="true"
-                      className={`w-1 self-stretch shrink-0 ${
-                        pending
-                          ? "bg-zinc-800"
-                          : supporter
-                            ? "bg-amber-400"
-                            : "bg-violet-400"
-                      }`}
-                    />
-
-                    <div className="flex flex-col min-w-0 flex-1 gap-0.5">
-                      {/* `flex-wrap`: com os dois selos, a linha pede
-                            ~150px só para eles, e num celular sobram ~128px
-                            para tudo. Sem quebrar, o username (que encolhe)
-                            sumia e os selos (que não encolhem) eram cortados
-                            pelo `overflow-hidden` do card. Descer de linha
-                            custa altura, que é justamente o que sobra no
-                            celular.
-
-                            Ícone com rótulo em vez de só ícone de propósito:
-                            tooltip não existe em toque. */}
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
-                        <span className="font-bold text-sm truncate text-white">
-                          {userFound.username}
-                        </span>
-
-                        {userFound.features?.includes("admin") && (
-                          <Badge
-                            icon={<ShieldLockIcon size={9} />}
-                            label={t("Admin")}
-                            className="border-violet-400 bg-violet-400 text-black font-bold"
-                          />
-                        )}
-                        {supporter && (
-                          <Badge
-                            icon={<HeartFillIcon size={9} />}
-                            label={t("Apoiador")}
-                            className="border-amber-400 bg-amber-400 text-black font-bold"
-                          />
-                        )}
-                        {pending && (
-                          <Badge
-                            icon={<ClockIcon size={9} />}
-                            label={t("Pendente")}
-                            className="border-zinc-700 bg-zinc-800 text-zinc-400"
-                          />
-                        )}
-                      </div>
-                      <span className="text-sm text-zinc-400 truncate">
-                        {userFound.email}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-sm text-zinc-400 tabular-nums">
-                        {formatDate(userFound.created_at, language)}
-                      </span>
-
-                      {/* Escondido para cadastros pendentes: dar benefício a
-                            quem nunca confirmou o email é conceder acesso a
-                            uma conta que ainda não se provou de ninguém. */}
-                      {!pending && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setConfirming({
-                              username: userFound.username,
-                              isSupporter: supporter,
-                            })
-                          }
-                          title={
-                            supporter
-                              ? t("Revogar apoio")
-                              : t("Tornar apoiador")
-                          }
-                          aria-label={
-                            supporter
-                              ? t("Revogar apoio")
-                              : t("Tornar apoiador")
-                          }
-                          className={`cursor-pointer inline-flex items-center justify-center w-7 h-7 rounded-full border transition-colors ${
-                            supporter
-                              ? "border-amber-400 bg-amber-400 text-black hover:bg-amber-300"
-                              : "border-zinc-800 bg-black text-zinc-500 hover:text-amber-400 hover:border-amber-400"
-                          }`}
-                        >
-                          {supporter ? (
-                            <HeartFillIcon size={12} />
-                          ) : (
-                            <HeartIcon size={12} />
-                          )}
-                        </button>
-                      )}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+            <UsersList
+              users={users}
+              language={language}
+              t={t}
+              onToggleSupporter={handleToggleSupporter}
+            />
           )}
 
           {actionError && (

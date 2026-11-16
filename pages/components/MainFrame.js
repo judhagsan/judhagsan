@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import PerspectiveGrid from "./PerspectiveGrid";
 import CardNormal from "./CardNormal";
@@ -83,7 +84,14 @@ export default function MainFrame({ children }) {
           onClick={resetActiveCard}
           className="cursor-pointer shrink-0 flex items-center justify-center contrast-125"
         >
-          <img src="/Logo.png" alt="Pindorama" className="h-5 lg:h-6 w-auto" />
+          <Image
+            src="/Logo.png"
+            alt="Pindorama"
+            width={224}
+            height={48}
+            priority
+            className="h-5 lg:h-6 w-auto"
+          />
         </Link>
       </div>
 

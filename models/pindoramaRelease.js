@@ -16,6 +16,8 @@ const FILES = {
 // disponível agora?" — não precisamos consultar labels nem PRs abertos.
 const PR_TAG_PREFIX = "pr-";
 
+const GITHUB_TIMEOUT_MS = 8000;
+
 function githubHeaders(accept) {
   const token = process.env.PINDORAMA_RELEASES_PAT;
   if (!token) {
@@ -42,7 +44,10 @@ function githubHeaders(accept) {
 async function findLatestPrerelease() {
   const response = await fetch(
     `https://api.github.com/repos/${REPO}/releases?per_page=30`,
-    { headers: githubHeaders("application/vnd.github+json") },
+    {
+      headers: githubHeaders("application/vnd.github+json"),
+      signal: AbortSignal.timeout(GITHUB_TIMEOUT_MS),
+    },
   );
 
   if (!response.ok) {
@@ -114,10 +119,7 @@ async function prereleaseSummary() {
   };
 }
 
-// URL assinada (efêmera) do asset da plataforma no prerelease mais recente.
-// Lança NotFoundError quando não há build de PR ou quando aquele job não
-// publicou o instalador daquela plataforma.
-async function prereleaseDownloadUrl(platform) {
+function filenameForPlatform(platform) {
   const filename = FILES[platform];
   if (!filename) {
     throw new NotFoundError({
@@ -125,15 +127,10 @@ async function prereleaseDownloadUrl(platform) {
       action: "Use windows, macos ou linux.",
     });
   }
+  return filename;
+}
 
-  const release = await findLatestPrerelease();
-  if (!release) {
-    throw new NotFoundError({
-      message: "Nenhuma build de PR disponível no momento.",
-      action: "Adicione a label build a um PR aberto do Pindorama.",
-    });
-  }
-
+async function resolveSignedAssetUrl(release, filename, platform) {
   const asset = (release.assets || []).find((item) => item.name === filename);
   if (!asset) {
     throw new NotFoundError({
@@ -147,6 +144,7 @@ async function prereleaseDownloadUrl(platform) {
     {
       headers: githubHeaders("application/octet-stream"),
       redirect: "manual",
+      signal: AbortSignal.timeout(GITHUB_TIMEOUT_MS),
     },
   );
 
@@ -161,6 +159,46 @@ async function prereleaseDownloadUrl(platform) {
   return signedUrl;
 }
 
+// URL assinada (efêmera) do asset da plataforma no release estável mais recente.
+async function latestReleaseDownloadUrl(platform) {
+  const filename = filenameForPlatform(platform);
+
+  const releaseResponse = await fetch(
+    `https://api.github.com/repos/${REPO}/releases/latest`,
+    {
+      headers: githubHeaders("application/vnd.github+json"),
+      signal: AbortSignal.timeout(GITHUB_TIMEOUT_MS),
+    },
+  );
+
+  if (!releaseResponse.ok) {
+    throw new ServiceError({
+      message: `GitHub respondeu ${releaseResponse.status} ao consultar release do pindorama.`,
+      action: "Tente novamente em alguns instantes.",
+    });
+  }
+
+  const release = await releaseResponse.json();
+  return await resolveSignedAssetUrl(release, filename, platform);
+}
+
+// URL assinada (efêmera) do asset da plataforma no prerelease mais recente.
+// Lança NotFoundError quando não há build de PR ou quando aquele job não
+// publicou o instalador daquela plataforma.
+async function prereleaseDownloadUrl(platform) {
+  const filename = filenameForPlatform(platform);
+
+  const release = await findLatestPrerelease();
+  if (!release) {
+    throw new NotFoundError({
+      message: "Nenhuma build de PR disponível no momento.",
+      action: "Adicione a label build a um PR aberto do Pindorama.",
+    });
+  }
+
+  return await resolveSignedAssetUrl(release, filename, platform);
+}
+
 const pindoramaRelease = {
   FILES,
   findLatestPrerelease,
@@ -168,6 +206,7 @@ const pindoramaRelease = {
   prNumberFromTag,
   prereleaseSummary,
   prereleaseDownloadUrl,
+  latestReleaseDownloadUrl,
 };
 
 export default pindoramaRelease;

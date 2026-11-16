@@ -1,12 +1,14 @@
 import Head from "next/head";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import CardYoutube from "../components/cardYoutube";
 import CardCadastro from "../components/CardCadastro";
-import CardPrivacidade from "../components/CardPrivacidade";
-import CardContato from "../components/CardContato";
 import MainFrame from "../components/MainFrame";
 import useSidePanel from "hooks/useSidePanel";
 import useLanguage from "hooks/useLanguage";
+
+const CardPrivacidade = dynamic(() => import("../components/CardPrivacidade"));
+const CardContato = dynamic(() => import("../components/CardContato"));
 
 export default function CadastroPage() {
   const router = useRouter();

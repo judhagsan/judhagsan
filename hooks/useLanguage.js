@@ -4,7 +4,10 @@ import {
   useEffect,
   useState,
   useCallback,
+  useMemo,
 } from "react";
+
+const LANGUAGE_STORAGE_KEY = "language";
 
 const LanguageContext = createContext({
   language: "pt",
@@ -523,72 +526,52 @@ const translations = {
   },
 };
 
+function readStoredLanguage() {
+  try {
+    const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    return saved === "pt" || saved === "en" ? saved : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredLanguage(lang) {
+  try {
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
+  } catch {
+    // Navegação privada ou storage bloqueado não deve quebrar a troca de idioma.
+  }
+}
+
+function detectBrowserLanguage() {
+  const browserLang = (
+    navigator.languages?.[0] ||
+    navigator.language ||
+    navigator.userLanguage ||
+    ""
+  ).toLowerCase();
+  return browserLang.startsWith("en") ? "en" : "pt";
+}
+
 export function LanguageProvider({ children }) {
   const [language, setLanguageState] = useState("pt");
 
   useEffect(() => {
-    const saved = localStorage.getItem("language");
-    if (saved === "pt" || saved === "en") {
+    const saved = readStoredLanguage();
+    if (saved) {
       setLanguageState(saved);
       return;
     }
 
-    let isMounted = true;
-
-    async function detectLanguage() {
-      try {
-        const res = await fetch("https://ipapi.co/json/");
-        if (!res.ok) throw new Error("ipapi failed");
-        const data = await res.json();
-        if (isMounted && data && data.country_code) {
-          const code = data.country_code.toUpperCase();
-          if (code === "BR" || code === "PT") {
-            setLanguageState("pt");
-          } else {
-            setLanguageState("en");
-          }
-          return;
-        }
-      } catch {
-        try {
-          const res = await fetch("https://ipinfo.io/json");
-          if (!res.ok) throw new Error("ipinfo failed");
-          const data = await res.json();
-          if (isMounted && data && data.country) {
-            const code = data.country.toUpperCase();
-            if (code === "BR" || code === "PT") {
-              setLanguageState("pt");
-            } else {
-              setLanguageState("en");
-            }
-            return;
-          }
-        } catch {
-          // Both geo-IP API calls failed or were blocked
-        }
-      }
-
-      if (isMounted) {
-        const browserLang = navigator.language || navigator.userLanguage;
-        if (browserLang && browserLang.toLowerCase().startsWith("en")) {
-          setLanguageState("en");
-        } else {
-          setLanguageState("pt");
-        }
-      }
-    }
-
-    detectLanguage();
-
-    return () => {
-      isMounted = false;
-    };
+    const detected = detectBrowserLanguage();
+    setLanguageState(detected);
+    writeStoredLanguage(detected);
   }, []);
 
   const setLanguage = useCallback((lang) => {
     if (lang === "pt" || lang === "en") {
       setLanguageState(lang);
-      localStorage.setItem("language", lang);
+      writeStoredLanguage(lang);
     }
   }, []);
 
@@ -604,8 +587,13 @@ export function LanguageProvider({ children }) {
     [language],
   );
 
+  const value = useMemo(
+    () => ({ language, setLanguage, t }),
+    [language, setLanguage, t],
+  );
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );

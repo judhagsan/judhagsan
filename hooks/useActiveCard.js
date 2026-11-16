@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { useRouter } from "next/router";
@@ -32,8 +33,13 @@ export function ActiveCardProvider({ children }) {
 
   const reset = useCallback(() => setActiveCard("default"), []);
 
+  const value = useMemo(
+    () => ({ activeCard, setActiveCard, reset }),
+    [activeCard, reset],
+  );
+
   return (
-    <ActiveCardContext.Provider value={{ activeCard, setActiveCard, reset }}>
+    <ActiveCardContext.Provider value={value}>
       {children}
     </ActiveCardContext.Provider>
   );

@@ -1,5 +1,22 @@
 import useLanguage from "hooks/useLanguage";
 
+// A seta herda a cor do botão. Um `group-hover` aqui reagiria ao hover de
+// qualquer ancestral com `.group` e deixaria a seta branca sobre o botão branco.
+const BACK_ARROW_ICON = (
+  <svg
+    className="w-3.5 h-3.5"
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M10 3.5L5.5 8L10 12.5" />
+  </svg>
+);
+
 /*
  * Janela padrão do site: moldura `.win-panel`, barra de título branca com os
  * três círculos e o corpo. Todo card monta a sua por aqui, para que barra,
@@ -40,21 +57,7 @@ export default function CardNormal({
               title={label}
               className="cursor-pointer w-5 h-5 rounded-full border-2 border-black bg-white text-black flex items-center justify-center hover:bg-black hover:text-white transition-all shrink-0 active:scale-90"
             >
-              {/* A seta herda a cor do botão. Um `group-hover` aqui reagiria
-                  ao hover de qualquer ancestral com `.group` e deixaria a seta
-                  branca sobre o botão branco. */}
-              <svg
-                className="w-3.5 h-3.5"
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M10 3.5L5.5 8L10 12.5" />
-              </svg>
+              {BACK_ARROW_ICON}
             </button>
           ) : (
             <span className="w-5 h-5 rounded-full border-2 border-black bg-white shrink-0" />

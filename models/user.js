@@ -101,13 +101,15 @@ async function findOneByEmail(email) {
 async function create(userInputValues) {
   validatePrivacyAcceptance(userInputValues);
   validatePasswordComplexity(userInputValues.password);
-  await validateUniqueUsername(userInputValues.username);
-  // Formato + domínio com MX antes de gravar/enviar ativação: evita cadastrar
-  // (e mandar email para) endereços malformados ou de domínios que não existem.
-  userInputValues.email = await emailValidation.assertValidEmail(
-    userInputValues.email,
+  const normalizedEmail = emailValidation.validateFormat(userInputValues.email);
+  await validateUniqueUsernameAndEmail(
+    userInputValues.username,
+    normalizedEmail,
   );
-  await validateUniqueEmail(userInputValues.email);
+  // Domínio com MX só após confirmar que username e email estão livres:
+  // cadastros duplicados não gastam consulta externa de DNS.
+  await emailValidation.validateDomainIsDeliverable(normalizedEmail);
+  userInputValues.email = normalizedEmail;
   await hashPasswordInObject(userInputValues);
   injectDefaultFeaturesInObject(userInputValues);
   stampPrivacyAcceptedAt(userInputValues);
@@ -169,7 +171,11 @@ function validatePasswordComplexity(password) {
   }
 }
 
-async function update(username, userInputValues) {
+async function update(
+  username,
+  userInputValues,
+  { currentUser: providedCurrentUser } = {},
+) {
   // Um PATCH sem corpo chega aqui como `undefined`, e o `in` abaixo estourava
   // TypeError — 500 numa requisição que é só malformada. Normalizar para `{}`
   // faz esse caso terminar igual ao corpo vazio, que já respondia 200.
@@ -187,17 +193,29 @@ async function update(username, userInputValues) {
 
   validateOnlyUpdatableFields(inputValues);
 
-  const currentUser = await findOneByUsername(username);
+  const normalizedInputValues =
+    "email" in inputValues
+      ? {
+          ...inputValues,
+          email: emailValidation.validateFormat(inputValues.email),
+        }
+      : inputValues;
 
-  if ("username" in inputValues) {
-    await validateUniqueUsername(inputValues.username);
+  const currentUser =
+    providedCurrentUser || (await findOneByUsername(username));
+
+  if ("username" in normalizedInputValues && "email" in normalizedInputValues) {
+    await validateUniqueUsernameAndEmail(
+      normalizedInputValues.username,
+      normalizedInputValues.email,
+    );
+  } else if ("username" in normalizedInputValues) {
+    await validateUniqueUsername(normalizedInputValues.username);
+  } else if ("email" in normalizedInputValues) {
+    await validateUniqueEmail(normalizedInputValues.email);
   }
 
-  if ("email" in inputValues) {
-    await validateUniqueEmail(inputValues.email);
-  }
-
-  const userWithNewValues = { ...currentUser, ...inputValues };
+  const userWithNewValues = { ...currentUser, ...normalizedInputValues };
 
   const updatedUser = await runUpdateQuery(userWithNewValues);
   return updatedUser;
@@ -368,6 +386,38 @@ function validateOnlyUpdatableFields(userInputValues) {
     throw new ValidationError({
       message: `Não é possível atualizar: ${unknownFields.join(", ")}.`,
       action: `Este endpoint atualiza apenas: ${UPDATABLE_FIELDS.join(", ")}.`,
+    });
+  }
+}
+
+async function validateUniqueUsernameAndEmail(username, email) {
+  const results = await database.query({
+    text: `
+      SELECT
+        LOWER(username) = LOWER($1) AS username_taken,
+        LOWER(email) = LOWER($2) AS email_taken
+      FROM
+        users
+      WHERE
+        LOWER(username) = LOWER($1)
+        OR LOWER(email) = LOWER($2)
+      LIMIT
+        2
+      ;`,
+    values: [username, email],
+  });
+
+  if (results.rows.some((row) => row.username_taken)) {
+    throw new ValidationError({
+      message: "O username informado já está sendo utilizado.",
+      action: "Utilize outro username para realizar esta operação.",
+    });
+  }
+
+  if (results.rows.some((row) => row.email_taken)) {
+    throw new ValidationError({
+      message: "O email informado já está sendo utilizado.",
+      action: "Utilize outro email para realizar esta operação.",
     });
   }
 }
