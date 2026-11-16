@@ -1,18 +1,20 @@
 import Head from "next/head";
+import dynamic from "next/dynamic";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import CardYoutube from "./components/cardYoutube";
 import CardPindorama from "./components/cardPindorama";
 import SupportersTicker from "./components/SupportersTicker";
-import CardLogin from "./components/CardLogin";
-import CardCadastro from "./components/CardCadastro";
-import CardPrivacidade from "./components/CardPrivacidade";
-import CardContato from "./components/CardContato";
 import MainFrame from "./components/MainFrame";
 import useUser from "hooks/useUser";
 import useSidePanel from "hooks/useSidePanel";
 import useActiveCard from "hooks/useActiveCard";
 import useLanguage from "hooks/useLanguage";
+
+const CardLogin = dynamic(() => import("./components/CardLogin"));
+const CardCadastro = dynamic(() => import("./components/CardCadastro"));
+const CardPrivacidade = dynamic(() => import("./components/CardPrivacidade"));
+const CardContato = dynamic(() => import("./components/CardContato"));
 
 export default function SamuraiDashboard() {
   const router = useRouter();

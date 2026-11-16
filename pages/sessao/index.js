@@ -1,4 +1,5 @@
 import Head from "next/head";
+import dynamic from "next/dynamic";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import CardYoutube from "../components/cardYoutube";
@@ -6,14 +7,19 @@ import CardUsuario from "../components/CardUsuario";
 import CardDispositivos from "../components/CardDispositivos";
 import CardApoiar from "../components/CardApoiar";
 import CardSessao from "../components/CardSessao";
-import CardPrivacidade from "../components/CardPrivacidade";
-import CardContato from "../components/CardContato";
-import CardAdminUsuarios from "../components/CardAdminUsuarios";
-import CardAdminHardware from "../components/CardAdminHardware";
 import MainFrame from "../components/MainFrame";
 import useUser from "hooks/useUser";
 import useSidePanel from "hooks/useSidePanel";
 import useLanguage from "hooks/useLanguage";
+
+const CardPrivacidade = dynamic(() => import("../components/CardPrivacidade"));
+const CardContato = dynamic(() => import("../components/CardContato"));
+const CardAdminUsuarios = dynamic(
+  () => import("../components/CardAdminUsuarios"),
+);
+const CardAdminHardware = dynamic(
+  () => import("../components/CardAdminHardware"),
+);
 
 export default function SessaoPage() {
   const router = useRouter();
