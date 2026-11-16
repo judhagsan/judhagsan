@@ -15,7 +15,9 @@ const FEED_URL = `https://www.youtube.com/feeds/videos.xml?playlist_id=${PLAYLIS
 // CORS pra browser, então o fetch é server-side; o cache CDN segura o
 // tráfego e mantém a home rápida mesmo se o YouTube demorar.
 async function getHandler(request, response) {
-  const feedResponse = await fetch(FEED_URL);
+  const feedResponse = await fetch(FEED_URL, {
+    signal: AbortSignal.timeout(8000),
+  });
   if (!feedResponse.ok) {
     return response.status(502).json({ error: "YouTube feed request failed" });
   }

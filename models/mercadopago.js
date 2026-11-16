@@ -77,6 +77,7 @@ async function request(path, { method = "GET", body, idempotencyKey } = {}) {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(10000),
   });
 
   const responseBody = await response.json().catch(() => null);
@@ -121,6 +122,7 @@ async function request(path, { method = "GET", body, idempotencyKey } = {}) {
 // toa. O valor da chave entra na comparação para o cache não sobreviver a uma
 // troca de credencial no mesmo processo.
 let publicKeyValidation = null;
+let publicKeyValidationInFlight = null;
 
 // Devolve a public key só se o Mercado Pago ainda a reconhecer, senão `null`.
 //
@@ -141,37 +143,53 @@ async function getValidPublicKey() {
     return publicKeyValidation.valid ? publicKey : null;
   }
 
-  let response;
-
-  try {
-    response = await fetch(
-      `${API_BASE_URL}/v1/payment_methods?public_key=${encodeURIComponent(publicKey)}`,
-    );
-  } catch (cause) {
-    // Rede fora não é chave inválida: não cacheia, para a próxima tentativa
-    // poder acertar.
-    console.error({
-      name: "MercadoPagoError",
-      request: "GET /v1/payment_methods",
-      response: cause?.message,
-    });
-    return null;
+  // Deduplica chamadas concorrentes em cold start para não disparar várias
+  // validações simultâneas contra o Mercado Pago.
+  if (publicKeyValidationInFlight?.publicKey === publicKey) {
+    return await publicKeyValidationInFlight.promise;
   }
 
-  const valid = response.ok;
+  const promise = (async () => {
+    let response;
 
-  if (!valid) {
-    console.error({
-      name: "MercadoPagoError",
-      request: "GET /v1/payment_methods",
-      status: response.status,
-      response: await response.json().catch(() => null),
-    });
-  }
+    try {
+      response = await fetch(
+        `${API_BASE_URL}/v1/payment_methods?public_key=${encodeURIComponent(publicKey)}`,
+        { signal: AbortSignal.timeout(8000) },
+      );
+    } catch (cause) {
+      // Rede fora não é chave inválida: não cacheia, para a próxima tentativa
+      // poder acertar.
+      console.error({
+        name: "MercadoPagoError",
+        request: "GET /v1/payment_methods",
+        response: cause?.message,
+      });
+      return null;
+    }
 
-  publicKeyValidation = { publicKey, valid };
+    const valid = response.ok;
 
-  return valid ? publicKey : null;
+    if (!valid) {
+      console.error({
+        name: "MercadoPagoError",
+        request: "GET /v1/payment_methods",
+        status: response.status,
+        response: await response.json().catch(() => null),
+      });
+    }
+
+    publicKeyValidation = { publicKey, valid };
+
+    return valid ? publicKey : null;
+  })().finally(() => {
+    if (publicKeyValidationInFlight?.publicKey === publicKey) {
+      publicKeyValidationInFlight = null;
+    }
+  });
+
+  publicKeyValidationInFlight = { publicKey, promise };
+  return await promise;
 }
 
 function buildExternalReference(userId) {

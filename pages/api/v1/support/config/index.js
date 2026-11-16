@@ -16,6 +16,7 @@ export default createRouter()
 // boa, e sem essa checagem o card só quebraria no envio do formulário. Vindo
 // `null`, o CardApoiar já monta como indisponível.
 async function getHandler(request, response) {
+  response.setHeader("Cache-Control", "private, max-age=60");
   return response.status(200).json({
     public_key: await mercadopago.getValidPublicKey(),
     monthly_value: supporter.MONTHLY_VALUE,

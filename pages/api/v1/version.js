@@ -21,6 +21,7 @@ export default async function handler(request, response) {
           "User-Agent": "judhagsan-version-proxy",
           Accept: "application/vnd.github+json",
         },
+        signal: AbortSignal.timeout(8000),
       },
     );
 
@@ -48,7 +49,10 @@ export default async function handler(request, response) {
     // Mapeamos cada filename para a plataforma do Pindorama.
     const sha256 = await fetchSha256Sums(release, token);
 
-    response.setHeader("Cache-Control", "public, max-age=300");
+    response.setHeader(
+      "Cache-Control",
+      "public, max-age=300, s-maxage=300, stale-while-revalidate=3600",
+    );
     return response.status(200).json({
       tag,
       version: tag.replace(/^v/, ""),
@@ -75,6 +79,7 @@ async function fetchSha256Sums(release, token) {
           "User-Agent": "judhagsan-version-proxy",
           Accept: "application/octet-stream",
         },
+        signal: AbortSignal.timeout(8000),
       },
     );
 
