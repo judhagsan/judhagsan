@@ -2,7 +2,6 @@ import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
 import mercadopago from "models/mercadopago.js";
 import supporter from "models/supporter.js";
-import user from "models/user.js";
 import { ValidationError, NotFoundError, ServiceError } from "infra/errors.js";
 
 export default createRouter()
@@ -23,7 +22,7 @@ const REASON = "Apoio ao Pindorama";
 // fica como reserva para quando a API não responder, porque estado
 // desatualizado ainda informa mais do que uma tela vazia.
 async function getHandler(request, response) {
-  const userTryingToRead = await user.findOneById(request.context.user.id);
+  const userTryingToRead = request.context.user;
 
   const state = {
     status: userTryingToRead.mercadopago_status || null,
@@ -103,7 +102,7 @@ async function postHandler(request, response) {
 // Cancela a assinatura. O acesso não cai na hora: quem já pagou o ciclo fica
 // até o fim dele, e o cron revoga quando `supporter_until` vencer.
 async function deleteHandler(request, response) {
-  const userTryingToCancel = await user.findOneById(request.context.user.id);
+  const userTryingToCancel = request.context.user;
   const preapprovalId = userTryingToCancel.mercadopago_preapproval_id;
 
   if (!preapprovalId) {

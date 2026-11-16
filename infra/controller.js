@@ -99,6 +99,7 @@ async function injectAuthenticatedUser(request) {
 
   request.context = {
     ...request.context,
+    session: sessionObject,
     user: userObject,
   };
 }
