@@ -1,58 +1,63 @@
+import { memo, useMemo } from "react";
+import useSWR from "swr";
 import { PlayIcon } from "@primer/octicons-react";
-import { useState, useEffect } from "react";
 import useLanguage from "hooks/useLanguage";
 import CardNormal from "./CardNormal";
 
-export default function CardYoutube() {
+const CHANNEL_ID = "UCVqzru2hZO3pX7IjjkSGDyQ"; // Channel: @Judhagsan
+
+const DATE_FORMATTERS = {
+  pt: new Intl.DateTimeFormat("pt-BR"),
+  en: new Intl.DateTimeFormat("en-US"),
+};
+
+async function youtubeFetcher(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("API call failed");
+  return await response.json();
+}
+
+function formatPublishedAt(iso, language) {
+  if (!iso) return "";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  return (DATE_FORMATTERS[language] || DATE_FORMATTERS.pt).format(date);
+}
+
+function CardYoutube() {
   const { language, t } = useLanguage();
-  const [videos, setVideos] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data, error, isLoading } = useSWR("/api/v1/youtube", youtubeFetcher, {
+    revalidateOnFocus: false,
+  });
 
-  const CHANNEL_ID = "UCVqzru2hZO3pX7IjjkSGDyQ"; // Channel: @Judhagsan
+  const videos = useMemo(() => {
+    if (error) {
+      return [
+        {
+          id: "fallback",
+          title: t("Nao foi possivel carregar os videos"),
+          thumbnail: "https://img.youtube.com/vi/5qap5aO4i9A/mqdefault.jpg",
+          views: "—",
+          date: t("Hoje"),
+          isFallback: true,
+        },
+      ];
+    }
 
-  useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        // Server-side proxy do feed RSS do canal (sem chave de API, sem
-        // quota, com cache CDN) — ver pages/api/v1/youtube.
-        const response = await fetch("/api/v1/youtube");
-        if (!response.ok) throw new Error("API call failed");
+    if (!Array.isArray(data)) return [];
 
-        const data = await response.json();
-        const formattedVideos = data.map((item) => ({
-          id: item.id,
-          title: item.title,
-          thumbnail: item.thumbnail,
-          views: "Assistir",
-          date: new Date(item.publishedAt).toLocaleDateString(
-            language === "pt" ? "pt-BR" : "en-US",
-          ),
-        }));
-
-        setVideos(formattedVideos);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error loading videos:", error);
-        // Fallback to mock data on error so the UI doesn't break
-        setVideos([
-          {
-            id: 1,
-            title: t("Nao foi possivel carregar os videos"),
-            thumbnail: "https://img.youtube.com/vi/5qap5aO4i9A/mqdefault.jpg",
-            views: "—",
-            date: t("Hoje"),
-          },
-        ]);
-        setLoading(false);
-      }
-    };
-
-    fetchVideos();
-  }, [language, t]);
+    return data.slice(0, 3).map((item) => ({
+      id: item.id,
+      title: item.title,
+      thumbnail: item.thumbnail,
+      views: "Assistir",
+      date: formatPublishedAt(item.publishedAt, language),
+    }));
+  }, [data, error, language, t]);
 
   // Tile "Ver o canal" preenche colunas vazias no desktop; quando ele está
   // visível, o pill do header some no desktop para não duplicar o link.
-  const showsChannelTile = !loading && videos.length > 0 && videos.length < 3;
+  const showsChannelTile = !isLoading && videos.length > 0 && videos.length < 3;
 
   return (
     <CardNormal
@@ -73,7 +78,7 @@ export default function CardYoutube() {
         </a>
       }
     >
-      {loading
+      {isLoading
         ? [1, 2, 3].map((i) => (
             <div
               key={i}
@@ -88,10 +93,14 @@ export default function CardYoutube() {
               </div>
             </div>
           ))
-        : videos.slice(0, 3).map((video, index) => (
+        : videos.map((video, index) => (
             <a
               key={video.id}
-              href={`https://www.youtube.com/watch?v=${video.id}`}
+              href={
+                video.isFallback
+                  ? `https://www.youtube.com/channel/${CHANNEL_ID}`
+                  : `https://www.youtube.com/watch?v=${video.id}`
+              }
               target="_blank"
               rel="noopener noreferrer"
               className={`group gap-3 p-2 rounded-xl border border-white bg-black hover:bg-white text-white hover:text-black transition-colors cursor-pointer ${
@@ -103,6 +112,10 @@ export default function CardYoutube() {
                 <img
                   src={video.thumbnail}
                   alt={video.title}
+                  width={320}
+                  height={180}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover contrast-110 group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -146,3 +159,5 @@ export default function CardYoutube() {
     </CardNormal>
   );
 }
+
+export default memo(CardYoutube);

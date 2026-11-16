@@ -5,10 +5,23 @@ import CardNormal from "../components/CardNormal";
 import { PulseIcon, DatabaseIcon } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
 
+const DATE_TIME_FORMATTERS = {
+  pt: new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "medium",
+  }),
+  en: new Intl.DateTimeFormat("en-US", {
+    dateStyle: "short",
+    timeStyle: "medium",
+  }),
+};
+
 async function fetchAPI(key) {
   const response = await fetch(key);
-  const responseBody = await response.json();
-  return responseBody;
+  if (!response.ok) {
+    throw new Error(`Status fetch failed: ${response.status}`);
+  }
+  return await response.json();
 }
 
 export default function StatusPage() {
@@ -47,9 +60,9 @@ function UpdatedAt() {
   let updatedAtText = t("Carregando...");
 
   if (!isLoading && data) {
-    updatedAtText = new Date(data.updated_at).toLocaleString(
-      language === "pt" ? "pt-BR" : "en-US",
-    );
+    updatedAtText = (
+      DATE_TIME_FORMATTERS[language] || DATE_TIME_FORMATTERS.pt
+    ).format(new Date(data.updated_at));
   }
 
   return (

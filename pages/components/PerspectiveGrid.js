@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 
 const NUM_RECTS = 29;
 const LINES_PER_WALL = 7;
@@ -47,21 +47,38 @@ function radialLines(width, height) {
   return lines;
 }
 
-export default function PerspectiveGrid() {
+function PerspectiveGrid() {
   const [dimensions, setDimensions] = useState({ width: 1920, height: 1080 });
   const rectRefs = useRef([]);
   const offsetRef = useRef(0);
 
   useEffect(() => {
+    let resizeRaf = 0;
+
     const updateDimensions = () => {
-      setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
+      const nextWidth = window.innerWidth;
+      const nextHeight = window.innerHeight;
+      setDimensions((current) =>
+        current.width === nextWidth && current.height === nextHeight
+          ? current
+          : { width: nextWidth, height: nextHeight },
+      );
+    };
+
+    const handleResize = () => {
+      if (resizeRaf) return;
+      resizeRaf = requestAnimationFrame(() => {
+        resizeRaf = 0;
+        updateDimensions();
       });
     };
+
     updateDimensions();
-    window.addEventListener("resize", updateDimensions);
-    return () => window.removeEventListener("resize", updateDimensions);
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (resizeRaf) cancelAnimationFrame(resizeRaf);
+    };
   }, []);
 
   // O avanço mexe direto nos atributos dos <rect>, sem passar pelo estado do
@@ -87,23 +104,45 @@ export default function PerspectiveGrid() {
     // loop é JS, então a preferência é conferida aqui e o túnel fica parado.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    let animationFrame;
+    let animationFrame = 0;
+
     const animate = () => {
+      if (document.hidden) {
+        animationFrame = 0;
+        return;
+      }
       offsetRef.current = (offsetRef.current + SPEED) % 1;
       draw();
       animationFrame = requestAnimationFrame(animate);
     };
-    animationFrame = requestAnimationFrame(animate);
 
-    return () => cancelAnimationFrame(animationFrame);
+    const handleVisibilityChange = () => {
+      if (!document.hidden && !animationFrame) {
+        animationFrame = requestAnimationFrame(animate);
+      }
+    };
+
+    if (!document.hidden) {
+      animationFrame = requestAnimationFrame(animate);
+    }
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [dimensions]);
 
   const { width, height } = dimensions;
-  const lines = radialLines(width, height);
+  const lines = useMemo(() => radialLines(width, height), [width, height]);
   // Posição de partida, igual no servidor e no cliente; o efeito acima assume
   // daí em diante.
-  const rects = Array.from({ length: NUM_RECTS }, (_, i) =>
-    depthRect(i, 0, width, height),
+  const rects = useMemo(
+    () =>
+      Array.from({ length: NUM_RECTS }, (_, i) =>
+        depthRect(i, 0, width, height),
+      ),
+    [width, height],
   );
 
   return (
@@ -157,3 +196,5 @@ export default function PerspectiveGrid() {
     </div>
   );
 }
+
+export default memo(PerspectiveGrid);

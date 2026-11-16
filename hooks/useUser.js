@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
+import useSWR from "swr";
 
 /*
  * Feature explícita, gravada em `users.features` e devolvida pelo
@@ -8,32 +9,47 @@ import { useCallback, useEffect, useState } from "react";
  * servidor — o cliente esconde a interface, não é ele que autoriza.
  */
 const ADMIN_FEATURE = "admin";
+const USER_ENDPOINT = "/api/v1/user";
+
+async function userFetcher(url) {
+  const response = await fetch(url, {
+    credentials: "include",
+  });
+
+  // 401/403 significa visitante anônimo ou sessão expirada — não é erro
+  // transitório e não deve disparar novas tentativas do SWR.
+  if (response.status === 401 || response.status === 403) {
+    return null;
+  }
+
+  if (!response.ok) {
+    const error = new Error("Falha ao buscar usuário.");
+    error.status = response.status;
+    throw error;
+  }
+
+  return await response.json();
+}
 
 export default function useUser() {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data, isLoading, mutate } = useSWR(USER_ENDPOINT, userFetcher, {
+    revalidateOnFocus: false,
+    onErrorRetry: (err, _key, _config, revalidate, { retryCount }) => {
+      if (err?.status >= 400 && err?.status < 500) return;
+      if (retryCount >= 2) return;
+      setTimeout(() => revalidate({ retryCount }), 3000 * (retryCount + 1));
+    },
+  });
 
-  const fetchUser = useCallback(async () => {
-    try {
-      const response = await fetch("/api/v1/user", {
-        credentials: "include",
-      });
+  const user = data ?? null;
 
-      if (!response.ok) {
-        setUser(null);
-        return null;
-      }
+  const refresh = useCallback(async () => {
+    return (await mutate()) ?? null;
+  }, [mutate]);
 
-      const body = await response.json();
-      setUser(body);
-      return body;
-    } catch {
-      setUser(null);
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const clear = useCallback(async () => {
+    await mutate(null, { revalidate: false });
+  }, [mutate]);
 
   const logout = useCallback(async () => {
     try {
@@ -42,20 +58,17 @@ export default function useUser() {
         credentials: "include",
       });
     } finally {
-      setUser(null);
+      await mutate(null, { revalidate: false });
     }
-  }, []);
-
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+  }, [mutate]);
 
   return {
     user,
     isLoading,
-    isLoggedIn: !!user,
+    isLoggedIn: Boolean(user),
     isAdmin: Boolean(user?.features?.includes(ADMIN_FEATURE)),
-    refresh: fetchUser,
+    refresh,
+    clear,
     logout,
   };
 }

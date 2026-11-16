@@ -13,6 +13,7 @@ export default function CardAtivacao({ tokenId }) {
   const { t } = useLanguage();
   const [status, setStatus] = useState("loading");
   const [errorMessage, setErrorMessage] = useState("");
+  const [errorFallbackKey, setErrorFallbackKey] = useState("");
 
   useEffect(() => {
     if (!tokenId) return;
@@ -29,7 +30,8 @@ export default function CardAtivacao({ tokenId }) {
         if (cancelled) return;
 
         if (!response.ok) {
-          setErrorMessage(responseBody.message || t("Ativacao falhou"));
+          setErrorMessage(responseBody.message || "");
+          setErrorFallbackKey(responseBody.message ? "" : "Ativacao falhou");
           setStatus("error");
           return;
         }
@@ -37,7 +39,8 @@ export default function CardAtivacao({ tokenId }) {
         setStatus("success");
       } catch {
         if (cancelled) return;
-        setErrorMessage(t("Erro de conexao"));
+        setErrorMessage("");
+        setErrorFallbackKey("Erro de conexao");
         setStatus("error");
       }
     }
@@ -48,6 +51,9 @@ export default function CardAtivacao({ tokenId }) {
       cancelled = true;
     };
   }, [tokenId]);
+
+  const resolvedError =
+    errorMessage || (errorFallbackKey ? t(errorFallbackKey) : "");
 
   return (
     <CardNormal
@@ -93,7 +99,7 @@ export default function CardAtivacao({ tokenId }) {
             {t("Ativacao falhou")}
           </p>
           <p className="text-sm text-zinc-300 leading-relaxed max-w-xs border border-white p-2.5">
-            {errorMessage}
+            {resolvedError}
           </p>
           <Link href="/cadastro" className="win-btn px-6 py-2.5 text-sm mt-2">
             {t("Voltar ao cadastro")}

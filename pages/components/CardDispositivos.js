@@ -10,6 +10,11 @@ import {
 import useLanguage from "hooks/useLanguage";
 import CardNormal from "./CardNormal";
 
+const DATE_FORMATTERS = {
+  pt: new Intl.DateTimeFormat("pt-BR"),
+  en: new Intl.DateTimeFormat("en-US"),
+};
+
 const fetcher = (url) =>
   fetch(url, { credentials: "include" }).then((r) =>
     r.ok ? r.json() : Promise.reject(r),
@@ -37,7 +42,7 @@ function formatRelative(iso, language) {
   if (hours < 24) return isPt ? `${hours}h atrás` : `${hours}h ago`;
   const days = Math.floor(hours / 24);
   if (days < 30) return isPt ? `${days}d atrás` : `${days}d ago`;
-  return date.toLocaleDateString(isPt ? "pt-BR" : "en-US");
+  return (DATE_FORMATTERS[language] || DATE_FORMATTERS.pt).format(date);
 }
 
 function osLabel(os) {

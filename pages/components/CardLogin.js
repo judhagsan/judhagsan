@@ -3,10 +3,12 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { SignInIcon, AlertFillIcon } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
+import useUser from "hooks/useUser";
 import CardNormal from "./CardNormal";
 
 export default function CardLogin({ onCadastroClick, onBack }) {
   const { t } = useLanguage();
+  const { refresh } = useUser();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,6 +34,7 @@ export default function CardLogin({ onCadastroClick, onBack }) {
         return;
       }
 
+      await refresh();
       router.push("/sessao");
     } catch {
       setErrorMessage(t("Erro de conexao"));

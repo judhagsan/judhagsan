@@ -110,6 +110,12 @@
   .win-input {
     @apply px-3 py-2 bg-black border border-zinc-700 text-white placeholder-zinc-500 text-base transition-colors focus:border-white focus:outline-none;
   }
+
+  /* Evita layout e pintura de itens fora da área visível em listas longas. */
+  .user-row-item {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 58px;
+  }
 }
 
 /* Entrada das janelas. A classe vale aplicada na própria janela ou num

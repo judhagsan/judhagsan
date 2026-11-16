@@ -11,6 +11,7 @@ import {
   CheckCircleFillIcon,
 } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
+import useUser from "hooks/useUser";
 import CardNormal from "./CardNormal";
 
 function DiscordIcon({ size = 16, className }) {
@@ -30,6 +31,7 @@ function DiscordIcon({ size = 16, className }) {
 
 export default function CardUsuario({ user }) {
   const { t } = useLanguage();
+  const { clear: clearUser } = useUser();
   const router = useRouter();
   const [isConfirming, setIsConfirming] = useState(false);
   const [confirmationInput, setConfirmationInput] = useState("");
@@ -158,6 +160,7 @@ export default function CardUsuario({ user }) {
         return;
       }
 
+      await clearUser();
       router.replace("/");
     } catch {
       setErrorMessage(t("Erro de conexao"));
