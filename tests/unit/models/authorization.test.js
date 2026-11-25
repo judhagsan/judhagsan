@@ -55,6 +55,7 @@ describe("models/authorization.js", () => {
       expect(authorization.can(adminUser, "update:user:others")).toBe(false);
       expect(authorization.can(adminUser, "delete:user:others")).toBe(false);
       expect(authorization.can(adminUser, "read:status:all")).toBe(false);
+      expect(authorization.can(adminUser, "send:release_email")).toBe(false);
     });
   });
 
@@ -72,6 +73,7 @@ describe("models/authorization.js", () => {
         // Colunas que existem na tabela e não podem sair na listagem.
         password: "$2a$hash",
         mercadopago_preapproval_id: "preapproval-123",
+        email_unsubscribe_token: "11111111-1111-4111-8111-111111111111",
       },
     ];
 
@@ -101,6 +103,7 @@ describe("models/authorization.js", () => {
 
       expect(output).not.toHaveProperty("password");
       expect(output).not.toHaveProperty("mercadopago_preapproval_id");
+      expect(output).not.toHaveProperty("email_unsubscribe_token");
     });
 
     test("with an empty list", () => {

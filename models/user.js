@@ -1,6 +1,7 @@
 import database from "infra/database.js";
 import password from "models/password.js";
 import emailValidation from "infra/emailValidation.js";
+import { validate as isUuid } from "uuid";
 import { ValidationError, NotFoundError } from "infra/errors.js";
 
 const UPDATABLE_FIELDS = ["username", "email"];
@@ -545,6 +546,77 @@ async function addFeatures(userId, features) {
   }
 }
 
+async function updateReleaseEmailPreference(userId, enabled) {
+  if (typeof enabled !== "boolean") {
+    throw new ValidationError({
+      message: "O valor de preferência de email deve ser verdadeiro ou falso.",
+      action: "Informe um booleano para `release_emails_enabled`.",
+    });
+  }
+
+  const results = await database.query({
+    text: `
+      UPDATE
+        users
+      SET
+        release_emails_enabled = $2,
+        updated_at = timezone('utc', now())
+      WHERE
+        id = $1
+      RETURNING
+        *
+      ;`,
+    values: [userId, enabled],
+  });
+
+  if (results.rowCount === 0) {
+    throw new NotFoundError({
+      message: "O id informado não foi encontrado no sistema.",
+      action: "Verifique se o id está digitado corretamente.",
+    });
+  }
+
+  return results.rows[0];
+}
+
+async function unsubscribeReleaseEmailsByToken(token) {
+  // Valida o formato UUID antes da query: um token malformado passado direto
+  // para uma coluna `uuid` faria o Postgres devolver erro 22P02 (500), quando
+  // para quem acessa um link quebrado a resposta correta é 404.
+  if (typeof token !== "string" || !isUuid(token)) {
+    throw new NotFoundError({
+      message:
+        "O link de descadastro informado é inválido ou não foi encontrado.",
+      action: "Faça login e remova a permissão no seu painel.",
+    });
+  }
+
+  const results = await database.query({
+    text: `
+      UPDATE
+        users
+      SET
+        release_emails_enabled = false,
+        updated_at = timezone('utc', now())
+      WHERE
+        email_unsubscribe_token = $1
+      RETURNING
+        *
+      ;`,
+    values: [token],
+  });
+
+  if (results.rowCount === 0) {
+    throw new NotFoundError({
+      message:
+        "O link de descadastro informado é inválido ou não foi encontrado.",
+      action: "Faça login e remova a permissão no seu painel.",
+    });
+  }
+
+  return results.rows[0];
+}
+
 const user = {
   create,
   findOneById,
@@ -556,6 +628,8 @@ const user = {
   remove,
   setFeatures,
   addFeatures,
+  updateReleaseEmailPreference,
+  unsubscribeReleaseEmailsByToken,
 };
 
 export default user;

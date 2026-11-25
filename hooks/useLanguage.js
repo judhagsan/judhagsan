@@ -113,6 +113,8 @@ const translations = {
     Cancelar: "Cancelar",
     "Excluindo...": "Excluindo...",
     "Bem vindo": "Bem-vindo, {username}",
+    Painel: "Painel",
+    "Voltar ao painel": "Voltar ao painel",
     "Exportar meus dados": "Exportar meus dados",
     "Exportando...": "Exportando...",
     "Erro exportar": "Não foi possível exportar.",
@@ -127,6 +129,75 @@ const translations = {
     "Salvando...": "Salvando...",
     "Senha alterada": "Senha alterada. As outras sessões foram encerradas.",
     "Erro alterar senha": "Não foi possível alterar a senha.",
+    "Avisos de novos releases": "Avisos de novos releases",
+    "Descricao avisos de releases":
+      "Receber email quando sair uma nova versão do Pindorama.",
+
+    // Descadastro de emails
+    "Preferencias de email": "Preferências de email",
+    "Atualizando preferencia...": "Atualizando sua preferência...",
+    "Avisos desativados": "Avisos desativados",
+    "Sucesso descadastro releases":
+      "Você não receberá mais emails sobre novos releases do Pindorama. Se mudar de ideia, faça login e ative novamente no seu painel.",
+    "Descadastro falhou": "Não foi possível atualizar sua preferência.",
+    "Ir para minha conta": "Ir para o meu painel",
+
+    // Card de envios de release (admin)
+    "Emails de releases": "Emails de releases",
+    "Atalho emails de releases desc":
+      "Escreva, teste e envie avisos personalizados sobre novas versões.",
+    "Escrever email": "Escrever email",
+    "n elegiveis": "{n} elegíveis",
+    "Erro ao carregar envios": "Não foi possível carregar os envios.",
+    Editar: "Editar",
+    Previa: "Prévia",
+    "Previa do email": "Prévia do email",
+    "Novo rascunho": "Novo rascunho",
+    Versao: "Versão",
+    Assunto: "Assunto",
+    "Placeholder assunto release": "Pindorama {{tag}} chegou!",
+    "Placeholder mensagem release":
+      "Conte aqui as novidades desta versão.\n\n- Novidade 1\n- Novidade 2",
+    "Dica formatacao email": "Use **negrito**, listas com - e {{username}}",
+    "Simular apoiador no teste": "Simular bloco de apoiador no email de teste",
+    "Sem dispositivo": "Sem dispositivo",
+    Rascunho: "Rascunho",
+    Enviando: "Enviando",
+    Enviado: "Enviado",
+    "Salvar rascunho": "Salvar rascunho",
+    "Rascunho salvo": "Rascunho salvo.",
+    "Erro salvar rascunho": "Não foi possível salvar o rascunho.",
+    "Enviar teste para mim": "Enviar teste para mim",
+    "Enviando teste...": "Enviando teste...",
+    "Erro enviar teste": "Não foi possível enviar o teste.",
+    "Teste enviado com sucesso":
+      "Teste enviado para {email}. Confira na sua caixa de entrada — o envio para todos está desbloqueado.",
+    "Envio bloqueado ate testar":
+      "O envio para todos começa travado. Envie um teste para o seu email para revisar e liberar o disparo.",
+    "Texto alterado apos teste":
+      "Você editou o texto depois do último teste. Envie um novo teste para desbloquear o envio para todos.",
+    "Envio desbloqueado aviso":
+      "Conteúdo testado em {date}. O envio para todos está desbloqueado.",
+    "Enviar para todos n": "Enviar para todos ({n})",
+    "Confirmar envio de release": "Confirmar envio de release",
+    "Enviar para n destinatarios": "Enviar para {n} destinatários?",
+    "Texto confirmar envio release":
+      "O email personalizado será enviado em lotes para todas as contas confirmadas com avisos de releases ativos. Contas pendentes ou descadastradas ficam de fora.",
+    "Confirmar envio": "Confirmar envio",
+    "Disparo finalizado": "Disparo finalizado",
+    "Enviando lotes...": "Enviando em lotes...",
+    "Pausar envio": "Pausar",
+    "Envio pausado aviso":
+      "Envio pausado. Você pode retomar de onde parou no histórico abaixo.",
+    "Envio concluido resumo":
+      "Disparo concluído: {sent} enviados, {failed} com falha.",
+    "Erro enviar release": "Ocorreu um erro durante o disparo.",
+    "Historico de envios": "Histórico de envios",
+    "Contagem entregas": "{sent}/{total} enviados · {failed} falhas",
+    "Retomar envio": "Retomar",
+    "Retentar falhas": "Retentar falhas",
+    "Excluir rascunho": "Excluir rascunho",
+    "Erro excluir rascunho": "Não foi possível excluir o rascunho.",
 
     // Painel administrativo
     "Usuarios cadastrados": "Usuários cadastrados",
@@ -369,6 +440,8 @@ const translations = {
     Cancelar: "Cancel",
     "Excluindo...": "Deleting...",
     "Bem vindo": "Welcome, {username}",
+    Painel: "Dashboard",
+    "Voltar ao painel": "Back to dashboard",
     "Exportar meus dados": "Export my data",
     "Exportando...": "Exporting...",
     "Erro exportar": "Could not export data.",
@@ -383,6 +456,75 @@ const translations = {
     "Salvando...": "Saving...",
     "Senha alterada": "Password changed. Your other sessions were signed out.",
     "Erro alterar senha": "Could not change the password.",
+    "Avisos de novos releases": "New release emails",
+    "Descricao avisos de releases":
+      "Receive an email whenever a new Pindorama version is released.",
+
+    // Email unsubscribe
+    "Preferencias de email": "Email preferences",
+    "Atualizando preferencia...": "Updating your preference...",
+    "Avisos desativados": "Release emails disabled",
+    "Sucesso descadastro releases":
+      "You will no longer receive emails about new Pindorama releases. If you change your mind, sign in and re-enable it in your dashboard.",
+    "Descadastro falhou": "Could not update your email preference.",
+    "Ir para minha conta": "Go to my dashboard",
+
+    // Release emails card (admin)
+    "Emails de releases": "Release emails",
+    "Atalho emails de releases desc":
+      "Write, test, and send personalized notifications about new versions.",
+    "Escrever email": "Write email",
+    "n elegiveis": "{n} eligible",
+    "Erro ao carregar envios": "Could not load release announcements.",
+    Editar: "Edit",
+    Previa: "Preview",
+    "Previa do email": "Email preview",
+    "Novo rascunho": "New draft",
+    Versao: "Version",
+    Assunto: "Subject",
+    "Placeholder assunto release": "Pindorama {{tag}} is out!",
+    "Placeholder mensagem release":
+      "Share what is new in this release.\n\n- Highlight 1\n- Highlight 2",
+    "Dica formatacao email": "Use **bold**, - lists, and {{username}}",
+    "Simular apoiador no teste": "Simulate supporter block in test email",
+    "Sem dispositivo": "No device",
+    Rascunho: "Draft",
+    Enviando: "Sending",
+    Enviado: "Sent",
+    "Salvar rascunho": "Save draft",
+    "Rascunho salvo": "Draft saved.",
+    "Erro salvar rascunho": "Could not save the draft.",
+    "Enviar teste para mim": "Send test to me",
+    "Enviando teste...": "Sending test...",
+    "Erro enviar teste": "Could not send the test email.",
+    "Teste enviado com sucesso":
+      "Test sent to {email}. Check your inbox — sending to everyone is now unlocked.",
+    "Envio bloqueado ate testar":
+      "Broadcast is locked until tested. Send a test to your own email first to review and unlock.",
+    "Texto alterado apos teste":
+      "You edited the content after the last test. Send a new test to unlock sending to everyone.",
+    "Envio desbloqueado aviso":
+      "Content tested on {date}. Sending to everyone is unlocked.",
+    "Enviar para todos n": "Send to all ({n})",
+    "Confirmar envio de release": "Confirm release broadcast",
+    "Enviar para n destinatarios": "Send to {n} recipients?",
+    "Texto confirmar envio release":
+      "A personalized email will be sent in batches to all confirmed accounts with release emails enabled. Pending and unsubscribed accounts are skipped.",
+    "Confirmar envio": "Confirm send",
+    "Disparo finalizado": "Broadcast finished",
+    "Enviando lotes...": "Sending batches...",
+    "Pausar envio": "Pause",
+    "Envio pausado aviso":
+      "Broadcast paused. You can resume where it left off from the history below.",
+    "Envio concluido resumo":
+      "Broadcast finished: {sent} sent, {failed} failed.",
+    "Erro enviar release": "An error occurred while sending.",
+    "Historico de envios": "Broadcast history",
+    "Contagem entregas": "{sent}/{total} sent · {failed} failed",
+    "Retomar envio": "Resume",
+    "Retentar falhas": "Retry failed",
+    "Excluir rascunho": "Delete draft",
+    "Erro excluir rascunho": "Could not delete the draft.",
 
     // Admin panel
     "Usuarios cadastrados": "Registered users",
