@@ -45,11 +45,13 @@ describe("GET /api/v1/user/export", () => {
 
       expect(body.user.username).toBe("exporter");
       expect(body.user.email).toBe("exporter@judhagsan.com");
+      expect(body.user.release_emails_enabled).toBe(true);
       expect(Date.parse(body.user.created_at)).not.toBeNaN();
       expect(body.user).not.toHaveProperty("id");
       expect(body.user).not.toHaveProperty("password");
       expect(body.user).not.toHaveProperty("features");
       expect(body.user).not.toHaveProperty("updated_at");
+      expect(body.user).not.toHaveProperty("email_unsubscribe_token");
 
       expect(body.sessions).toHaveLength(1);
       expect(body.sessions[0]).not.toHaveProperty("id");

@@ -18,8 +18,8 @@ export default function CardPrivacidade({ onClose }) {
 
   const lastUpdateLabel =
     language === "en"
-      ? "Last update: May 28, 2026"
-      : "Última atualização: 28 de maio de 2026";
+      ? "Last update: November 24, 2026"
+      : "Última atualização: 24 de novembro de 2026";
 
   return (
     <CardNormal
@@ -132,6 +132,12 @@ export default function CardPrivacidade({ onClose }) {
               <li>Sending transactional account activation emails.</li>
               <li>Distribution and updates of the Pindorama software.</li>
               <li>
+                Sending email news about Judhagsan projects and Pindorama
+                updates to confirmed accounts (you can opt out in one click from
+                the footer of any news email, or sign in and remove the
+                permission in your dashboard).
+              </li>
+              <li>
                 Bug diagnosis, technical support, and development of Software
                 compatibility with different hardware setups (via device
                 specifications collected upon login).
@@ -176,7 +182,8 @@ export default function CardPrivacidade({ onClose }) {
               </li>
               <li>
                 <span className="text-white">SMTP Email Provider</span> —
-                sending transactional emails.
+                sending transactional emails and news about Judhagsan projects
+                (when enabled).
               </li>
             </ul>
           </Section>
@@ -368,6 +375,12 @@ export default function CardPrivacidade({ onClose }) {
               <li>Envio de email transacional de ativação de conta.</li>
               <li>Distribuição e atualização do software Pindorama.</li>
               <li>
+                Envio de novidades por email sobre projetos Judhagsan e
+                atualizações do Pindorama para contas confirmadas (você pode
+                cancelar em um clique no rodapé de qualquer aviso, ou fazer
+                login e remover a permissão no seu painel).
+              </li>
+              <li>
                 Diagnóstico de bugs, suporte técnico e desenvolvimento da
                 compatibilidade do Software com diferentes hardwares (via
                 especificações de dispositivo coletadas após login).
@@ -412,7 +425,8 @@ export default function CardPrivacidade({ onClose }) {
               </li>
               <li>
                 <span className="text-white">Provedor de email SMTP</span> —
-                envio de emails transacionais.
+                envio de emails transacionais e novidades dos projetos Judhagsan
+                (quando habilitados).
               </li>
             </ul>
           </Section>

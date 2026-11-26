@@ -84,7 +84,10 @@
 @layer components {
   /* Moldura de janela. A barra de título mora no CardNormal. */
   .win-panel {
-    @apply relative flex w-full flex-col overflow-hidden rounded-2xl border-2 border-white bg-black bg-noise;
+    @apply relative flex w-full flex-col overflow-hidden rounded-2xl border-2 border-white bg-black;
+    /* Mantém só 35% do contraste do grão, sem afetar texto ou controles. */
+    background-image:
+      linear-gradient(rgb(0 0 0 / 65%), rgb(0 0 0 / 65%)), url("/noise.png");
   }
 
   /* Botão em pílula com inversão de contraste no hover */

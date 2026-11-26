@@ -70,6 +70,7 @@ async function getHandler(request, response) {
       email: userFound.email,
       privacy_accepted_at: userFound.privacy_accepted_at,
       discord_user_id: userFound.discord_user_id,
+      release_emails_enabled: userFound.release_emails_enabled !== false,
       created_at: userFound.created_at,
     },
     sessions: sessionsResult.rows,

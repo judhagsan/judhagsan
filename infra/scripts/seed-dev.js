@@ -40,6 +40,7 @@ const ADMIN_FEATURES = [
   "create:migration",
   "read:migration",
   "manage:supporter",
+  "send:release_email",
 ];
 
 // Apoiador concedido à mão: a feature entra sem `supporter_until`, que é

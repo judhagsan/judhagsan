@@ -54,6 +54,12 @@ const availableFeatures = [
   // dar benefício pago de graça são poderes diferentes, e quem tem um não
   // precisa herdar o outro.
   "manage:supporter",
+
+  // RELEASES (comunicação por e-mail de novas versões do Pindorama)
+  // Redigir, testar e disparar avisos de novos releases para a base pelo
+  // painel administrativo. Separada de `admin` para poder ser concedida ou
+  // revogada sem mexer nas outras ferramentas do painel.
+  "send:release_email",
 ];
 
 function can(user, feature, resource) {
@@ -114,6 +120,7 @@ function filterOutput(user, feature, resource) {
         email: resource.email,
         features: resource.features,
         discord_connected: Boolean(resource.discord_user_id),
+        release_emails_enabled: resource.release_emails_enabled !== false,
         created_at: resource.created_at,
         updated_at: resource.updated_at,
       };

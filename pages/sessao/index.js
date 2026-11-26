@@ -1,12 +1,15 @@
 import Head from "next/head";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import { MailIcon, PencilIcon } from "@primer/octicons-react";
 import CardYoutube from "../components/cardYoutube";
 import CardUsuario from "../components/CardUsuario";
 import CardDispositivos from "../components/CardDispositivos";
 import CardApoiar from "../components/CardApoiar";
 import CardSessao from "../components/CardSessao";
+import CardNormal from "../components/CardNormal";
 import MainFrame from "../components/MainFrame";
 import useUser from "hooks/useUser";
 import useSidePanel from "hooks/useSidePanel";
@@ -44,15 +47,40 @@ export default function SessaoPage() {
       <div className="relative z-10 w-full h-full flex flex-col p-2 lg:p-4 gap-6 overflow-y-auto lg:overflow-hidden">
         {/* Seção Central */}
         <div className="lg:flex-1 lg:min-h-0 lg:-mt-8 relative flex flex-col lg:block gap-4 lg:gap-0 overflow-visible shrink-0">
-          {/* Coluna da esquerda: Usuário + Apoio (ou Pindorama compacto para
-              o admin). `top-8` compensa o `-mt-8` da seção para os cards não
-              entrarem por baixo da borda superior do MainFrame. */}
-          <div className="w-full lg:absolute lg:top-8 lg:left-0 lg:w-1/4 lg:max-h-[calc(100%-2rem)] flex flex-col gap-4 lg:overflow-y-auto lg:pr-4">
+          {/* Coluna da esquerda: Usuário + Apoio (ou Pindorama compacto e
+              atalho de e-mails para o admin). `top-8` compensa o `-mt-8`
+              da seção para os cards não entrarem por baixo da borda superior
+              do MainFrame. Os cards mantêm a altura e a coluna rola quando
+              faltar espaço vertical. */}
+          <div className="w-full lg:absolute lg:top-8 lg:left-0 lg:w-1/4 lg:max-h-[calc(100%-2rem)] flex flex-col gap-4 [&>*]:shrink-0 lg:overflow-y-auto lg:pr-4">
             {isLoggedIn && <CardUsuario user={user} />}
             {/* No painel o Pindorama sobe para cá, logo abaixo do card do
                 usuário, e vem sem o texto de divulgação: a área central fica
                 livre para os cards de administração. */}
             {isLoggedIn && isAdmin && <CardSessao compact />}
+
+            {isLoggedIn &&
+              isAdmin &&
+              user?.features?.includes("send:release_email") && (
+                <CardNormal
+                  title={t("Emails de releases")}
+                  icon={MailIcon}
+                  className="card-enter"
+                  bodyClassName="p-4 lg:p-5 flex flex-col gap-3"
+                >
+                  <p className="text-xs text-zinc-400">
+                    {t("Atalho emails de releases desc")}
+                  </p>
+
+                  <Link
+                    href="/admin/releases"
+                    className="win-btn-primary w-full text-xs"
+                  >
+                    <PencilIcon size={13} />
+                    <span>{t("Escrever email")}</span>
+                  </Link>
+                </CardNormal>
+              )}
 
             {/* Apoio não é assunto de painel administrativo. Para os demais,
                 o card fica sem condição de propósito: ele decide sozinho o

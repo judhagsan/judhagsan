@@ -9,6 +9,7 @@ import {
   AlertFillIcon,
   HeartFillIcon,
   CheckCircleFillIcon,
+  MailIcon,
 } from "@primer/octicons-react";
 import useLanguage from "hooks/useLanguage";
 import useUser from "hooks/useUser";
@@ -31,7 +32,7 @@ function DiscordIcon({ size = 16, className }) {
 
 export default function CardUsuario({ user }) {
   const { t } = useLanguage();
-  const { clear: clearUser } = useUser();
+  const { clear: clearUser, refresh: refreshUser } = useUser();
   const router = useRouter();
   const [isConfirming, setIsConfirming] = useState(false);
   const [confirmationInput, setConfirmationInput] = useState("");
@@ -46,7 +47,10 @@ export default function CardUsuario({ user }) {
   const [isSavingPassword, setIsSavingPassword] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [passwordChanged, setPasswordChanged] = useState(false);
+  const [isSavingEmailPref, setIsSavingEmailPref] = useState(false);
+  const [emailPrefError, setEmailPrefError] = useState("");
   const isSupporter = user?.features?.includes("apoiador");
+  const releaseEmailsEnabled = user?.release_emails_enabled !== false;
   const discordResult = router.query.discord;
   const discordReason = router.query.reason;
 
@@ -140,6 +144,35 @@ export default function CardUsuario({ user }) {
     }
   }
 
+  async function handleToggleReleaseEmails() {
+    if (isSavingEmailPref) return;
+    setIsSavingEmailPref(true);
+    setEmailPrefError("");
+
+    try {
+      const response = await fetch("/api/v1/user/email-preferences", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          release_emails_enabled: !releaseEmailsEnabled,
+        }),
+      });
+
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        setEmailPrefError(body.message || t("Erro ao salvar"));
+        return;
+      }
+
+      await refreshUser();
+    } catch {
+      setEmailPrefError(t("Erro de conexao"));
+    } finally {
+      setIsSavingEmailPref(false);
+    }
+  }
+
   async function handleDelete(event) {
     event.preventDefault();
     if (!confirmationMatches || isDeleting) return;
@@ -170,7 +203,7 @@ export default function CardUsuario({ user }) {
 
   return (
     <CardNormal
-      title={t("Bem vindo", { username: user?.username })}
+      title={t("Painel")}
       icon={PersonFillIcon}
       bodyClassName="p-4 lg:p-5 flex flex-col"
     >
@@ -379,6 +412,49 @@ export default function CardUsuario({ user }) {
               </div>
             </div>
           )}
+
+          {/* Preferência de avisos de release */}
+          <div className="flex flex-col gap-2 border-b border-zinc-800 pb-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-start gap-2 min-w-0">
+                <MailIcon size={14} className="shrink-0 mt-0.5 text-zinc-400" />
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <span className="text-sm text-white leading-snug">
+                    {t("Avisos de novos releases")}
+                  </span>
+                  <span className="text-xs text-zinc-500 leading-snug">
+                    {t("Descricao avisos de releases")}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                role="switch"
+                aria-checked={releaseEmailsEnabled}
+                aria-label={t("Avisos de novos releases")}
+                disabled={isSavingEmailPref}
+                onClick={handleToggleReleaseEmails}
+                className={`cursor-pointer shrink-0 inline-flex items-center w-10 h-6 rounded-full border p-0.5 transition-colors disabled:opacity-50 ${
+                  releaseEmailsEnabled
+                    ? "border-white bg-white justify-end"
+                    : "border-zinc-700 bg-black justify-start"
+                }`}
+              >
+                <span
+                  className={`w-4 h-4 rounded-full transition-colors ${
+                    releaseEmailsEnabled ? "bg-black" : "bg-zinc-500"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {emailPrefError && (
+              <p className="text-white text-xs border border-white p-2">
+                {emailPrefError}
+              </p>
+            )}
+          </div>
 
           {/* Ações de conta, lado a lado. O erro de exportação fica embaixo
               para não empurrar os botões de linha. */}
