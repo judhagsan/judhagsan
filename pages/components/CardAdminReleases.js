@@ -19,6 +19,7 @@ import releaseEmailTemplate from "models/releaseEmailTemplate.js";
 import CardNormal from "./CardNormal";
 import ReleaseEmailPreview from "./ReleaseEmailPreview";
 import ReleaseEmailHistory from "./ReleaseEmailHistory";
+import EmailMarkdownEditor from "./EmailMarkdownEditor";
 
 const EMPTY_LIST = [];
 
@@ -159,9 +160,15 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
     },
   );
 
-  const { data: versionData } = useSWR("/api/v1/version", versionFetcher, {
-    revalidateOnFocus: false,
-  });
+  const [kind, setKind] = useState("general");
+  const isPindorama = kind === "pindorama";
+  const { data: versionData } = useSWR(
+    isPindorama ? "/api/v1/version" : null,
+    versionFetcher,
+    {
+      revalidateOnFocus: false,
+    },
+  );
 
   const announcements = data?.announcements ?? EMPTY_LIST;
   const eligibleRecipients = data?.eligible_recipients ?? 0;
@@ -179,6 +186,7 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
 
   const [isTesting, setIsTesting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingMedia, setIsUploadingMedia] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -197,11 +205,11 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
 
   useEffect(() => {
     if (initializedRef.current) return;
-    if (versionData?.tag && !activeId && !tag) {
+    if (isPindorama && versionData?.tag && !activeId && !tag) {
       setTag(versionData.tag);
       initializedRef.current = true;
     }
-  }, [versionData, activeId, tag]);
+  }, [isPindorama, versionData, activeId, tag]);
 
   const activeAnnouncement = useMemo(
     () => announcements.find((item) => item.id === activeId) || null,
@@ -233,9 +241,22 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
     };
 
     return releaseEmailTemplate.buildReleaseEmail({
+      kind,
       tag,
-      subject: subject || t("Placeholder assunto release"),
-      body: body || t("Placeholder mensagem release"),
+      subject:
+        subject ||
+        t(
+          isPindorama
+            ? "Placeholder assunto release"
+            : "Placeholder assunto novidade",
+        ),
+      body:
+        body ||
+        t(
+          isPindorama
+            ? "Placeholder mensagem release"
+            : "Placeholder mensagem novidade",
+        ),
       recipient: {
         username: user?.username || "animador",
         isSupporter: previewSupporter,
@@ -246,9 +267,22 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
       origin,
       isTest: false,
     });
-  }, [tag, subject, body, user, previewSupporter, previewPlatform, t]);
+  }, [
+    kind,
+    isPindorama,
+    tag,
+    subject,
+    body,
+    user,
+    previewSupporter,
+    previewPlatform,
+    t,
+  ]);
 
   function loadDraft(announcement) {
+    if (isUploadingMedia) return;
+    initializedRef.current = true;
+    setKind(announcement.kind || "pindorama");
     setActiveId(announcement.id);
     setTag(announcement.tag || "");
     setSubject(announcement.subject || "");
@@ -260,8 +294,11 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
   }
 
   function startNewDraft() {
+    if (isUploadingMedia) return;
+    initializedRef.current = false;
+    setKind("general");
     setActiveId(null);
-    setTag(versionData?.tag || "");
+    setTag("");
     setSubject("");
     setBody("");
     setIsDirty(false);
@@ -272,7 +309,8 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
 
   async function persistDraft() {
     const payload = {
-      tag: tag.trim(),
+      kind,
+      tag: isPindorama ? tag.trim() : "",
       subject: subject.trim(),
       body: body.trim(),
     };
@@ -294,6 +332,7 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
       throw new Error(responseBody.message || t("Erro salvar rascunho"));
     }
 
+    setKind(responseBody.kind || "pindorama");
     setActiveId(responseBody.id);
     setTag(responseBody.tag || "");
     setSubject(responseBody.subject || "");
@@ -337,7 +376,7 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify({
-            simulate_supporter: simulateSupporterTest,
+            simulate_supporter: isPindorama && simulateSupporterTest,
           }),
         },
       );
@@ -456,7 +495,8 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
     }
   }
 
-  const formDisabled = isLockedDraft || isSending || isTesting || isSaving;
+  const formDisabled =
+    isLockedDraft || isSending || isTesting || isSaving || isUploadingMedia;
 
   return (
     <>
@@ -551,7 +591,7 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
                   <button
                     type="button"
                     onClick={startNewDraft}
-                    disabled={isSending}
+                    disabled={isSending || isUploadingMedia}
                     className="win-btn text-xs px-3 py-1 ml-auto"
                   >
                     <PlusIcon size={12} />
@@ -569,26 +609,36 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
                     : "flex"
                 }`}
               >
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <label className="flex flex-col gap-1">
+                <div
+                  className={`grid grid-cols-1 items-start gap-3 ${
+                    isPindorama
+                      ? "sm:grid-cols-[minmax(0,12rem)_minmax(0,1fr)_5.5rem]"
+                      : "sm:grid-cols-[minmax(0,12rem)_minmax(0,1fr)]"
+                  }`}
+                >
+                  <label className="flex min-w-0 flex-col gap-1">
                     <span className="text-xs uppercase tracking-wider text-zinc-400">
-                      {t("Versao")}
+                      {t("Tipo de novidade")}
                     </span>
-                    <input
-                      type="text"
-                      value={tag}
+                    <select
+                      value={kind}
+                      disabled={formDisabled}
                       onChange={(event) => {
-                        setTag(event.target.value);
+                        setKind(event.target.value);
+                        setTag("");
+                        initializedRef.current = false;
                         setIsDirty(true);
                       }}
-                      disabled={formDisabled}
-                      maxLength={32}
-                      placeholder={versionData?.tag || "v0.6.2"}
-                      className="win-input text-sm"
-                    />
+                      className="win-input h-10 min-w-0 w-full text-sm"
+                    >
+                      <option value="general">{t("Novidade geral")}</option>
+                      <option value="pindorama">
+                        {t("Versao do Pindorama")}
+                      </option>
+                    </select>
                   </label>
 
-                  <label className="sm:col-span-2 flex flex-col gap-1">
+                  <label className="flex min-w-0 flex-col gap-1">
                     <span className="text-xs uppercase tracking-wider text-zinc-400">
                       {t("Assunto")}
                     </span>
@@ -601,38 +651,62 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
                       }}
                       disabled={formDisabled}
                       maxLength={160}
-                      placeholder={t("Placeholder assunto release")}
-                      className="win-input text-sm"
+                      placeholder={t(
+                        isPindorama
+                          ? "Placeholder assunto release"
+                          : "Placeholder assunto novidade",
+                      )}
+                      className="win-input h-10 min-w-0 w-full text-sm"
                     />
                   </label>
+
+                  {isPindorama && (
+                    <label className="flex min-w-0 flex-col gap-1">
+                      <span className="text-xs uppercase tracking-wider text-zinc-400">
+                        {t("Versao")}
+                      </span>
+                      <input
+                        type="text"
+                        value={tag}
+                        onChange={(event) => {
+                          initializedRef.current = true;
+                          setTag(event.target.value);
+                          setIsDirty(true);
+                        }}
+                        disabled={formDisabled}
+                        maxLength={32}
+                        placeholder={versionData?.tag || "v0.6.2"}
+                        className="win-input h-10 min-w-0 w-full text-sm"
+                      />
+                    </label>
+                  )}
                 </div>
+                <p className="text-xs text-zinc-500">
+                  {t(
+                    isPindorama
+                      ? "Descricao tipo Pindorama"
+                      : "Descricao tipo geral",
+                  )}
+                </p>
 
-                <label className="flex flex-col gap-1">
-                  <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <span className="text-xs uppercase tracking-wider text-zinc-400">
-                      {t("Mensagem")}
-                    </span>
-                    <span className="text-xs text-zinc-500">
-                      {t("Dica formatacao email")}
-                    </span>
-                  </div>
-                  <textarea
-                    rows={fullPage ? 10 : 6}
-                    value={body}
-                    onChange={(event) => {
-                      setBody(event.target.value);
-                      setIsDirty(true);
-                    }}
-                    disabled={formDisabled}
-                    maxLength={12000}
-                    placeholder={t("Placeholder mensagem release")}
-                    className={`win-input text-sm leading-relaxed resize-y ${
-                      fullPage ? "min-h-[12rem]" : "min-h-[8rem]"
-                    }`}
-                  />
-                </label>
+                <EmailMarkdownEditor
+                  key={activeId || "new"}
+                  value={body}
+                  onChange={(value) => {
+                    setBody(value);
+                    setIsDirty(true);
+                  }}
+                  onUploadingChange={setIsUploadingMedia}
+                  disabled={formDisabled}
+                  fullPage={fullPage}
+                  placeholder={t(
+                    isPindorama
+                      ? "Placeholder mensagem release"
+                      : "Placeholder mensagem novidade",
+                  )}
+                />
 
-                {!isLockedDraft && (
+                {isPindorama && !isLockedDraft && (
                   <label className="inline-flex items-center gap-2 text-xs text-zinc-400 cursor-pointer select-none">
                     <input
                       type="checkbox"
@@ -741,6 +815,7 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
                       isSaving ||
                       isTesting ||
                       isSending ||
+                      isUploadingMedia ||
                       !subject.trim() ||
                       !body.trim()
                     }
@@ -756,6 +831,7 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
                       isTesting ||
                       isSaving ||
                       isSending ||
+                      isUploadingMedia ||
                       !subject.trim() ||
                       !body.trim()
                     }
@@ -781,6 +857,7 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
                     disabled={
                       !isUnlockedForBroadcast ||
                       isSending ||
+                      isUploadingMedia ||
                       eligibleRecipients === 0
                     }
                     className={`${
@@ -817,7 +894,7 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
               <ReleaseEmailHistory
                 announcements={announcements}
                 activeId={activeId}
-                isSending={isSending}
+                isSending={isSending || isUploadingMedia}
                 deletingId={deletingId}
                 formatDateTime={formatDateTime}
                 onSelect={loadDraft}
@@ -831,6 +908,7 @@ export default function CardAdminReleases({ fullPage = false, onBack } = {}) {
 
             <ReleaseEmailPreview
               previewEmail={previewEmail}
+              showPindoramaOptions={isPindorama}
               previewSupporter={previewSupporter}
               onToggleSupporter={setPreviewSupporter}
               previewPlatform={previewPlatform}

@@ -129,23 +129,34 @@ const translations = {
     "Salvando...": "Salvando...",
     "Senha alterada": "Senha alterada. As outras sessões foram encerradas.",
     "Erro alterar senha": "Não foi possível alterar a senha.",
-    "Avisos de novos releases": "Avisos de novos releases",
+    "Avisos de novos releases": "Novidades por email",
     "Descricao avisos de releases":
-      "Receber email quando sair uma nova versão do Pindorama.",
+      "Receber novidades dos projetos Judhagsan e novas versões do Pindorama.",
 
     // Descadastro de emails
     "Preferencias de email": "Preferências de email",
     "Atualizando preferencia...": "Atualizando sua preferência...",
     "Avisos desativados": "Avisos desativados",
     "Sucesso descadastro releases":
-      "Você não receberá mais emails sobre novos releases do Pindorama. Se mudar de ideia, faça login e ative novamente no seu painel.",
+      "Você não receberá mais emails de novidades dos projetos Judhagsan. Se mudar de ideia, faça login e ative novamente no seu painel.",
     "Descadastro falhou": "Não foi possível atualizar sua preferência.",
     "Ir para minha conta": "Ir para o meu painel",
 
-    // Card de envios de release (admin)
-    "Emails de releases": "Emails de releases",
+    "Tipo de novidade": "Tipo de novidade",
+    "Novidade geral": "Novidade geral",
+    "Versao do Pindorama": "Versão do Pindorama",
+    "Descricao tipo geral":
+      "Use para novidades de qualquer projeto. O título da janela será o assunto do email.",
+    "Descricao tipo Pindorama":
+      "Inclui download conforme o dispositivo e agradecimento para apoiadores.",
+    "Placeholder assunto novidade": "Uma novidade para você",
+    "Placeholder mensagem novidade":
+      "Conte aqui a novidade que você quer compartilhar.",
+
+    // Emails de novidades (admin)
+    "Emails de releases": "Emails de novidades",
     "Atalho emails de releases desc":
-      "Escreva, teste e envie avisos personalizados sobre novas versões.",
+      "Escreva, teste e envie novidades dos seus projetos.",
     "Escrever email": "Escrever email",
     "n elegiveis": "{n} elegíveis",
     "Erro ao carregar envios": "Não foi possível carregar os envios.",
@@ -179,10 +190,10 @@ const translations = {
     "Envio desbloqueado aviso":
       "Conteúdo testado em {date}. O envio para todos está desbloqueado.",
     "Enviar para todos n": "Enviar para todos ({n})",
-    "Confirmar envio de release": "Confirmar envio de release",
+    "Confirmar envio de release": "Confirmar envio de novidade",
     "Enviar para n destinatarios": "Enviar para {n} destinatários?",
     "Texto confirmar envio release":
-      "O email personalizado será enviado em lotes para todas as contas confirmadas com avisos de releases ativos. Contas pendentes ou descadastradas ficam de fora.",
+      "O email personalizado será enviado em lotes para todas as contas confirmadas com emails de novidades ativos. Contas pendentes ou descadastradas ficam de fora.",
     "Confirmar envio": "Confirmar envio",
     "Disparo finalizado": "Disparo finalizado",
     "Enviando lotes...": "Enviando em lotes...",
@@ -456,26 +467,37 @@ const translations = {
     "Salvando...": "Saving...",
     "Senha alterada": "Password changed. Your other sessions were signed out.",
     "Erro alterar senha": "Could not change the password.",
-    "Avisos de novos releases": "New release emails",
+    "Avisos de novos releases": "News by email",
     "Descricao avisos de releases":
-      "Receive an email whenever a new Pindorama version is released.",
+      "Receive news about Judhagsan projects and new Pindorama versions.",
 
     // Email unsubscribe
     "Preferencias de email": "Email preferences",
     "Atualizando preferencia...": "Updating your preference...",
-    "Avisos desativados": "Release emails disabled",
+    "Avisos desativados": "News emails disabled",
     "Sucesso descadastro releases":
-      "You will no longer receive emails about new Pindorama releases. If you change your mind, sign in and re-enable it in your dashboard.",
+      "You will no longer receive news emails about Judhagsan projects. If you change your mind, sign in and re-enable it in your dashboard.",
     "Descadastro falhou": "Could not update your email preference.",
     "Ir para minha conta": "Go to my dashboard",
 
-    // Release emails card (admin)
-    "Emails de releases": "Release emails",
+    "Tipo de novidade": "Announcement type",
+    "Novidade geral": "General news",
+    "Versao do Pindorama": "Pindorama version",
+    "Descricao tipo geral":
+      "Share news about any project. The window title will match the email subject.",
+    "Descricao tipo Pindorama":
+      "Includes device-specific downloads and a thank-you for supporters.",
+    "Placeholder assunto novidade": "Something new for you",
+    "Placeholder mensagem novidade":
+      "Share the news you want your readers to hear.",
+
+    // News emails (admin)
+    "Emails de releases": "News emails",
     "Atalho emails de releases desc":
-      "Write, test, and send personalized notifications about new versions.",
+      "Write, test, and send news about your projects.",
     "Escrever email": "Write email",
     "n elegiveis": "{n} eligible",
-    "Erro ao carregar envios": "Could not load release announcements.",
+    "Erro ao carregar envios": "Could not load announcements.",
     Editar: "Edit",
     Previa: "Preview",
     "Previa do email": "Email preview",
@@ -506,10 +528,10 @@ const translations = {
     "Envio desbloqueado aviso":
       "Content tested on {date}. Sending to everyone is unlocked.",
     "Enviar para todos n": "Send to all ({n})",
-    "Confirmar envio de release": "Confirm release broadcast",
+    "Confirmar envio de release": "Confirm news broadcast",
     "Enviar para n destinatarios": "Send to {n} recipients?",
     "Texto confirmar envio release":
-      "A personalized email will be sent in batches to all confirmed accounts with release emails enabled. Pending and unsubscribed accounts are skipped.",
+      "A personalized email will be sent in batches to all confirmed accounts with news emails enabled. Pending and unsubscribed accounts are skipped.",
     "Confirmar envio": "Confirm send",
     "Disparo finalizado": "Broadcast finished",
     "Enviando lotes...": "Sending batches...",

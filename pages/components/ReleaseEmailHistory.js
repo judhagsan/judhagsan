@@ -59,6 +59,13 @@ export default function ReleaseEmailHistory({
                 className="cursor-pointer flex flex-col items-start text-left min-w-0 flex-1 gap-0.5 group"
               >
                 <div className="flex flex-wrap items-center gap-2 min-w-0">
+                  <span className="text-xs text-zinc-400">
+                    {t(
+                      item.kind === "general"
+                        ? "Novidade geral"
+                        : "Versao do Pindorama",
+                    )}
+                  </span>
                   {item.tag && (
                     <span className="text-xs font-bold text-zinc-300">
                       {item.tag}

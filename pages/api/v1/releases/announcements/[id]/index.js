@@ -24,6 +24,7 @@ async function patchHandler(request, response) {
   const input = request.body || {};
 
   const updated = await releaseAnnouncement.update(request.query.id, {
+    kind: input.kind,
     tag: input.tag,
     subject: input.subject,
     body: input.body,

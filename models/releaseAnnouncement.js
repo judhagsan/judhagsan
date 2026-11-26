@@ -18,8 +18,9 @@ const MAX_SUBJECT_LENGTH = 160;
 const MIN_BODY_LENGTH = 5;
 const MAX_BODY_LENGTH = 12000;
 
-function computeContentHash({ tag, subject, body }) {
+function computeContentHash({ kind = "pindorama", tag, subject, body }) {
   const payload = JSON.stringify([
+    kind,
     String(tag || "").trim(),
     String(subject || "").trim(),
     String(body || "").trim(),
@@ -37,14 +38,22 @@ function isTestedForCurrentContent(announcement) {
 function validateUuidOrThrow(id) {
   if (typeof id !== "string" || !isUuid(id)) {
     throw new NotFoundError({
-      message: "O aviso de release informado não foi encontrado.",
+      message: "O aviso informado não foi encontrado.",
       action: "Verifique o identificador do aviso e tente novamente.",
     });
   }
 }
 
 function validateInput(input = {}) {
-  const rawTag = input.tag == null ? "" : String(input.tag);
+  const kind = input.kind ?? "pindorama";
+  if (!["general", "pindorama"].includes(kind)) {
+    throw new ValidationError({
+      message: "O tipo de novidade informado não é válido.",
+      action: "Escolha novidade geral ou versão do Pindorama.",
+    });
+  }
+  const rawTag =
+    kind === "general" || input.tag == null ? "" : String(input.tag);
   const rawSubject = input.subject == null ? "" : String(input.subject);
   const rawBody = input.body == null ? "" : String(input.body);
 
@@ -88,7 +97,7 @@ function validateInput(input = {}) {
   if (body.length < MIN_BODY_LENGTH) {
     throw new ValidationError({
       message: `A mensagem deve ter pelo menos ${MIN_BODY_LENGTH} caracteres.`,
-      action: "Escreva o conteúdo das novidades do release.",
+      action: "Escreva o conteúdo das novidades.",
     });
   }
   if (body.length > MAX_BODY_LENGTH) {
@@ -99,6 +108,7 @@ function validateInput(input = {}) {
   }
 
   return {
+    kind,
     tag: tag || null,
     subject,
     body,
@@ -116,6 +126,7 @@ function formatAnnouncementRow(row) {
 
   return {
     id: row.id,
+    kind: row.kind ?? "pindorama",
     tag: row.tag,
     subject: row.subject,
     body: row.body,
@@ -187,7 +198,7 @@ async function findOneById(id) {
 
   if (results.rowCount === 0) {
     throw new NotFoundError({
-      message: "O aviso de release informado não foi encontrado.",
+      message: "O aviso informado não foi encontrado.",
       action: "Verifique o identificador do aviso e tente novamente.",
     });
   }
@@ -243,15 +254,15 @@ async function listAll({ limit } = {}) {
   };
 }
 
-async function create({ tag, subject, body, actorUserId }) {
-  const validated = validateInput({ tag, subject, body });
+async function create({ kind, tag, subject, body, actorUserId }) {
+  const validated = validateInput({ kind, tag, subject, body });
 
   const results = await database.query({
     text: `
       INSERT INTO
-        release_announcements (tag, subject, body, created_by_user_id)
+        release_announcements (tag, subject, body, created_by_user_id, kind)
       VALUES
-        ($1, $2, $3, $4)
+        ($1, $2, $3, $4, $5)
       RETURNING
         *
     ;`,
@@ -260,6 +271,7 @@ async function create({ tag, subject, body, actorUserId }) {
       validated.subject,
       validated.body,
       actorUserId || null,
+      validated.kind,
     ],
   });
 
@@ -277,7 +289,7 @@ async function update(id, input) {
 
   if (existing.rowCount === 0) {
     throw new NotFoundError({
-      message: "O aviso de release informado não foi encontrado.",
+      message: "O aviso informado não foi encontrado.",
       action: "Verifique o identificador do aviso e tente novamente.",
     });
   }
@@ -294,7 +306,7 @@ async function update(id, input) {
   const nextHash = computeContentHash(validated);
   const contentChanged = nextHash !== currentRow.tested_content_hash;
 
-  // Se qualquer campo do texto mudou em relação ao que foi testado, limpa os
+  // Se o tipo ou qualquer campo do texto mudou em relação ao que foi testado, limpa os
   // metadados do teste anterior para travar o envio até novo teste real.
   await database.query({
     text: `
@@ -304,6 +316,7 @@ async function update(id, input) {
         tag = $2,
         subject = $3,
         body = $4,
+        kind = $6,
         tested_at = CASE WHEN $5 THEN NULL ELSE tested_at END,
         tested_by_user_id = CASE WHEN $5 THEN NULL ELSE tested_by_user_id END,
         tested_content_hash = CASE WHEN $5 THEN NULL ELSE tested_content_hash END,
@@ -317,6 +330,7 @@ async function update(id, input) {
       validated.subject,
       validated.body,
       contentChanged,
+      validated.kind,
     ],
   });
 
@@ -333,7 +347,7 @@ async function removeDraft(id) {
 
   if (existing.rowCount === 0) {
     throw new NotFoundError({
-      message: "O aviso de release informado não foi encontrado.",
+      message: "O aviso informado não foi encontrado.",
       action: "Verifique o identificador do aviso e tente novamente.",
     });
   }
@@ -385,6 +399,7 @@ async function sendTest(id, { actorUser, simulateSupporter = false } = {}) {
 
   const latestDevice = await findLatestDeviceForUser(actorUser.id);
   const rendered = releaseEmailTemplate.buildReleaseEmail({
+    kind: announcement.kind,
     tag: announcement.tag,
     subject: announcement.subject,
     body: announcement.body,
@@ -645,6 +660,7 @@ async function sendBatch(
 
     const recipientEmail = row.current_email || row.email_snapshot;
     const rendered = releaseEmailTemplate.buildReleaseEmail({
+      kind: current.kind,
       tag: current.tag,
       subject: current.subject,
       body: current.body,

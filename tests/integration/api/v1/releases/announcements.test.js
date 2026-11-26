@@ -394,4 +394,94 @@ describe("Release announcements API (/api/v1/releases/announcements)", () => {
     );
     expect(getRes.status).toBe(404);
   });
+  test("persists general news, sends it without Pindorama sections, and re-locks when its kind changes", async () => {
+    const { session } = await createSenderSession();
+    const headers = {
+      "Content-Type": "application/json",
+      Cookie: `session_id=${session.token}`,
+    };
+    const endpoint = `${webserver.origin}/api/v1/releases/announcements`;
+    const content = {
+      subject: "Novidade para {{username}}",
+      body: "Conheça nosso novo projeto.",
+      tag: "v0.6.2",
+      kind: "general",
+    };
+
+    const invalid = await fetch(endpoint, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ ...content, kind: "unknown" }),
+    });
+    expect(invalid.status).toBe(400);
+    const createdResponse = await fetch(endpoint, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(content),
+    });
+    expect(createdResponse.status).toBe(201);
+    const created = await createdResponse.json();
+    expect(created.kind).toBe("general");
+    expect(created.tag).toBeNull();
+    const savedResponse = await fetch(`${endpoint}/${created.id}`, { headers });
+    expect((await savedResponse.json()).kind).toBe("general");
+
+    const testResponse = await fetch(`${endpoint}/${created.id}/test`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ simulate_supporter: true }),
+    });
+    expect(testResponse.status).toBe(200);
+    expect(
+      (await testResponse.json()).announcement.is_tested_for_current_content,
+    ).toBe(true);
+    const testEmails = await getAllEmails();
+    expect(testEmails).toHaveLength(1);
+    expect(testEmails[0].html).toMatch(
+      /<h2[^>]*>Novidade para releasesender<\/h2>/,
+    );
+    expect(testEmails[0].html).not.toContain("Pindorama");
+    expect(testEmails[0].text).not.toContain("Pindorama");
+
+    const editResponse = await fetch(`${endpoint}/${created.id}`, {
+      method: "PATCH",
+      headers,
+      body: JSON.stringify({ ...content, tag: "", kind: "pindorama" }),
+    });
+    expect(editResponse.status).toBe(200);
+    const edited = await editResponse.json();
+    expect(edited.kind).toBe("pindorama");
+    expect(edited.tested_at).toBeNull();
+    expect(edited.is_tested_for_current_content).toBe(false);
+    const blocked = await fetch(`${endpoint}/${created.id}/send`, {
+      method: "POST",
+      headers,
+      body: "{}",
+    });
+    expect(blocked.status).toBe(400);
+
+    await fetch(`${endpoint}/${created.id}`, {
+      method: "PATCH",
+      headers,
+      body: JSON.stringify(content),
+    });
+    const retest = await fetch(`${endpoint}/${created.id}/test`, {
+      method: "POST",
+      headers,
+      body: "{}",
+    });
+    expect(retest.status).toBe(200);
+    await orchestrator.deleteAllEmails();
+    const broadcast = await fetch(`${endpoint}/${created.id}/send`, {
+      method: "POST",
+      headers,
+      body: "{}",
+    });
+    expect(broadcast.status).toBe(200);
+    const sent = await getAllEmails();
+    expect(sent).toHaveLength(1);
+    expect(sent[0].subject).toBe("Novidade para releasesender");
+    expect(sent[0].html).not.toContain("Pindorama");
+    expect(sent[0].text).not.toContain("/api/v1/download/");
+  });
 });

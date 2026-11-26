@@ -9,6 +9,7 @@ import CardUsuario from "../components/CardUsuario";
 import CardDispositivos from "../components/CardDispositivos";
 import CardApoiar from "../components/CardApoiar";
 import CardSessao from "../components/CardSessao";
+import CardNormal from "../components/CardNormal";
 import MainFrame from "../components/MainFrame";
 import useUser from "hooks/useUser";
 import useSidePanel from "hooks/useSidePanel";
@@ -61,18 +62,15 @@ export default function SessaoPage() {
             {isLoggedIn &&
               isAdmin &&
               user?.features?.includes("send:release_email") && (
-                <div className="win-panel card-enter px-4 py-3 flex flex-col gap-3">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <MailIcon size={16} className="shrink-0 text-white" />
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-sm font-bold uppercase tracking-wider text-white truncate">
-                        {t("Emails de releases")}
-                      </span>
-                      <span className="text-xs text-zinc-400">
-                        {t("Atalho emails de releases desc")}
-                      </span>
-                    </div>
-                  </div>
+                <CardNormal
+                  title={t("Emails de releases")}
+                  icon={MailIcon}
+                  className="card-enter"
+                  bodyClassName="p-4 lg:p-5 flex flex-col gap-3"
+                >
+                  <p className="text-xs text-zinc-400">
+                    {t("Atalho emails de releases desc")}
+                  </p>
 
                   <Link
                     href="/admin/releases"
@@ -81,7 +79,7 @@ export default function SessaoPage() {
                     <PencilIcon size={13} />
                     <span>{t("Escrever email")}</span>
                   </Link>
-                </div>
+                </CardNormal>
               )}
 
             {/* Apoio não é assunto de painel administrativo. Para os demais,

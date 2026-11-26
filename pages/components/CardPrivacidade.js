@@ -132,10 +132,10 @@ export default function CardPrivacidade({ onClose }) {
               <li>Sending transactional account activation emails.</li>
               <li>Distribution and updates of the Pindorama software.</li>
               <li>
-                Sending email notifications about new Pindorama releases to
-                confirmed accounts (you can opt out in one click from the footer
-                of any release email, or sign in and remove the permission in
-                your dashboard).
+                Sending email news about Judhagsan projects and Pindorama
+                updates to confirmed accounts (you can opt out in one click from
+                the footer of any news email, or sign in and remove the
+                permission in your dashboard).
               </li>
               <li>
                 Bug diagnosis, technical support, and development of Software
@@ -182,7 +182,7 @@ export default function CardPrivacidade({ onClose }) {
               </li>
               <li>
                 <span className="text-white">SMTP Email Provider</span> —
-                sending transactional emails and Pindorama release notifications
+                sending transactional emails and news about Judhagsan projects
                 (when enabled).
               </li>
             </ul>
@@ -375,10 +375,10 @@ export default function CardPrivacidade({ onClose }) {
               <li>Envio de email transacional de ativação de conta.</li>
               <li>Distribuição e atualização do software Pindorama.</li>
               <li>
-                Envio de avisos por email sobre novos releases do Pindorama para
-                contas confirmadas (você pode cancelar em um clique no rodapé de
-                qualquer aviso, ou fazer login e remover a permissão no seu
-                painel).
+                Envio de novidades por email sobre projetos Judhagsan e
+                atualizações do Pindorama para contas confirmadas (você pode
+                cancelar em um clique no rodapé de qualquer aviso, ou fazer
+                login e remover a permissão no seu painel).
               </li>
               <li>
                 Diagnóstico de bugs, suporte técnico e desenvolvimento da
@@ -425,8 +425,8 @@ export default function CardPrivacidade({ onClose }) {
               </li>
               <li>
                 <span className="text-white">Provedor de email SMTP</span> —
-                envio de emails transacionais e avisos de novos releases do
-                Pindorama (quando habilitados).
+                envio de emails transacionais e novidades dos projetos Judhagsan
+                (quando habilitados).
               </li>
             </ul>
           </Section>

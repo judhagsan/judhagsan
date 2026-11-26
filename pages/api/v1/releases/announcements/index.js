@@ -25,6 +25,7 @@ async function postHandler(request, response) {
   const input = request.body || {};
 
   const created = await releaseAnnouncement.create({
+    kind: input.kind,
     tag: input.tag,
     subject: input.subject,
     body: input.body,

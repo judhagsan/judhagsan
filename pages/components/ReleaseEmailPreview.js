@@ -5,6 +5,7 @@ const EMPTY_PREVIEW = { subject: "", html: "" };
 
 export default function ReleaseEmailPreview({
   previewEmail = EMPTY_PREVIEW,
+  showPindoramaOptions = true,
   previewSupporter = false,
   onToggleSupporter,
   previewPlatform = "windows",
@@ -32,32 +33,36 @@ export default function ReleaseEmailPreview({
           </span>
         )}
 
-        <label className="inline-flex items-center gap-1.5 text-zinc-300 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={previewSupporter}
-            onChange={(event) => onToggleSupporter?.(event.target.checked)}
-            className="accent-amber-400 cursor-pointer"
-          />
-          <span>{t("Apoiador")}</span>
-        </label>
+        {showPindoramaOptions && (
+          <>
+            <label className="inline-flex items-center gap-1.5 text-zinc-300 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={previewSupporter}
+                onChange={(event) => onToggleSupporter?.(event.target.checked)}
+                className="accent-amber-400 cursor-pointer"
+              />
+              <span>{t("Apoiador")}</span>
+            </label>
 
-        <div className="flex flex-wrap items-center gap-1 ml-auto">
-          {["windows", "macos", "linux", "none"].map((key) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => onChangePlatform?.(key)}
-              className={`cursor-pointer rounded-full px-2.5 py-0.5 border text-xs transition-colors ${
-                previewPlatform === key
-                  ? "border-white bg-white text-black font-bold"
-                  : "border-zinc-800 bg-black text-zinc-400 hover:text-white"
-              }`}
-            >
-              {key === "none" ? t("Sem dispositivo") : key}
-            </button>
-          ))}
-        </div>
+            <div className="flex flex-wrap items-center gap-1 ml-auto">
+              {["windows", "macos", "linux", "none"].map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => onChangePlatform?.(key)}
+                  className={`cursor-pointer rounded-full px-2.5 py-0.5 border text-xs transition-colors ${
+                    previewPlatform === key
+                      ? "border-white bg-white text-black font-bold"
+                      : "border-zinc-800 bg-black text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  {key === "none" ? t("Sem dispositivo") : key}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       <div className="border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-400 truncate">

@@ -85,4 +85,51 @@ describe("models/releaseEmailTemplate.js", () => {
     expect(releaseEmailTemplate.normalizePlatform("FreeBSD")).toBeNull();
     expect(releaseEmailTemplate.normalizePlatform(null)).toBeNull();
   });
+  test("general news uses the personalized subject as its title without Pindorama sections", () => {
+    const result = releaseEmailTemplate.buildReleaseEmail({
+      kind: "general",
+      tag: "v0.6.2",
+      subject: "Novo projeto para {{username}} & amigos",
+      body: "Conheça o novo projeto que preparamos para você.",
+      recipient: {
+        username: "Ana",
+        isSupporter: true,
+        deviceOs: "Windows 11",
+        deviceVersion: "0.6.1",
+        unsubscribeToken: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      },
+      isTest: true,
+    });
+
+    expect(result.subject).toBe("[TESTE] Novo projeto para Ana & amigos");
+    expect(result.html).toMatch(
+      /<h2[^>]*>Novo projeto para Ana &amp; amigos<\/h2>/,
+    );
+    expect(result.html).not.toContain("Pindorama");
+    expect(result.html).not.toContain("/api/v1/download/");
+    expect(result.text).toContain("Novo projeto para Ana & amigos");
+    expect(result.text).not.toContain("Pindorama");
+    expect(result.text).not.toContain("0.6.1");
+    expect(result.meta.primaryActionUrl).toBeNull();
+    expect(result.headers["List-Unsubscribe-Post"]).toBe(
+      "List-Unsubscribe=One-Click",
+    );
+    expect(result.html).toContain(
+      "/descadastrar/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+    );
+  });
+
+  test("the window title escapes subject HTML and interpolates release details", () => {
+    const result = releaseEmailTemplate.buildReleaseEmail({
+      tag: "v0.7.0",
+      subject: "<img src=x onerror=alert(1)> {{tag}} para {{username}}",
+      body: "Mensagem de novidades.",
+      recipient: { username: "Ana" },
+    });
+    expect(result.html).toMatch(
+      /<h2[^>]*>&lt;img src=x onerror=alert\(1\)&gt; v0.7.0 para Ana<\/h2>/,
+    );
+    expect(result.html).not.toContain("<img src=x");
+    expect(result.html).toContain("Acessar download no site");
+  });
 });
